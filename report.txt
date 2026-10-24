@@ -1,0 +1,202 @@
+1337 Ranks — V2 implementation report
+Date: 2026-10-19
+Repository: ikosoftT/LEET_RANK
+Production site: https://eleet-phi.vercel.app/
+Deployed commit: 6c5c5038e4a573fc6fa9378cfb7fdc54707d16aa
+
+WHAT WAS ADDED OR CHANGED
+
+1. Ranking data and eligibility
+   - Separated Piscine year/month from Common Core entry cohort. The cohort uses
+     the UTC year of the Common Core cursus_users.begin_at value; missing dates
+     display as Unknown.
+   - Added verified 1337 campus coverage: Khouribga (16), Benguerir (21),
+     Tétouan (55), and Rabat (75).
+   - Added a central classification layer to exclude API-marked staff,
+     nonstudents, inactive accounts, alumni, ended enrollments, and optional
+     explicitly listed user IDs from competitive rankings. Authentication
+     remains separate from ranking eligibility.
+   - Kept global ranking deduplicated across campus memberships. Selected
+     populations recalculate competition ranks before search and pagination.
+     Students at equal levels share a rank.
+   - Did not treat blackholed_at alone as proof of a current status: live active
+     records often contain a future deadline in that field.
+
+2. Leaderboard and profiles
+   - Redesigned /leaderboard with campus, Common Core cohort, Piscine year,
+     Piscine month, and login filters; two-decimal level display; responsive
+     desktop and mobile layouts; and dataset freshness information.
+   - Defaulted the leaderboard to the signed-in student's primary campus and
+     Common Core cohort. The last selected cohort is saved per user in browser
+     localStorage.
+   - Updated /me and student profiles to use the same cohort rank calculation
+     and show Common Core and Piscine information separately.
+   - Added 42 profile images where the browser can load them, with an initials
+     fallback when an image fails.
+   - Kept separate on-site and 42 Intra profile links. External Intra links
+     open in a new browser tab.
+
+3. Piscine Explorer
+   - Added /piscines and navigation to it. It filters candidates by campus,
+     Piscine year/month, login, and admission outcome.
+   - Added bounded, complete API pagination and a one-hour cache for Piscine
+     lists. Staff and nonstudent accounts are filtered from the explorer.
+   - Shows Accepted only when a Common Core enrollment verifies it. Other
+     outcomes stay Unknown; absence of a Common Core record is not treated as
+     rejection.
+
+4. Activity, reliability, and documentation
+   - Kept the existing UTC workstation-session calculation: Monday–Sunday
+     weeks and monthly cycles from the 28th through the 27th. The UI now labels
+     the result as workstation session time rather than official Intra logtime.
+   - Added a loading state, updated API schemas, documented optional excluded
+     user IDs, and updated README deployment and API-limit notes.
+   - Added or updated regression tests for cohort classification, campus scope,
+     eligibility, rank ties, Piscine filters, admission uncertainty, complete
+     pagination, OAuth, and logtime boundaries/overlap.
+
+LOCAL AND LIVE VERIFICATION
+
+   - 13 tests passed; TypeScript checking and the production build passed.
+   - Local homepage returned HTTP 200; protected /piscines redirected to sign-in.
+   - Live 42 API check loaded all four complete campus datasets: 4,750 cursus
+     records, 3,350 eligible students, and no duplicate global entries.
+   - 132 eligible students had a Piscine year different from their Common Core
+     entry year, confirming why the two fields need separate filters.
+   - Live Piscine pagination returned 282 unique users for the sampled
+     Khouribga July 2024 session, all matching that session.
+   - The V2 commit was pushed to main; Vercel reported success, and the
+     production homepage returned HTTP 200.
+
+CURRENT LIMITS
+
+   - The authorized API data checked here does not establish a reliable
+     Not accepted outcome. That filter therefore has no inferred results.
+   - Piscine level is omitted until it can be fetched reliably within the API
+     request budget.
+   - Some 42 image URLs may return HTTP 403 in a browser; initials remain the
+     fallback.
+   - The in-memory request pacer is per server instance. A shared rate limiter
+     and persistent snapshots would be needed for stronger traffic guarantees.
+   - A signed-in production walkthrough of /leaderboard, /piscines, /me, and
+     student profiles is still the final user-facing check.
+
+DEPLOYMENT CONFIGURATION
+
+   Required private Vercel variables: FORTYTWO_CLIENT_ID,
+   FORTYTWO_CLIENT_SECRET, FORTYTWO_CURSUS_ID=21, AUTH_SECRET, and
+   AUTH_URL=https://eleet-phi.vercel.app. Optional variables:
+   FORTYTWO_CAMPUS_IDS=16,21,55,75 and FORTYTWO_EXCLUDED_USER_IDS.
+   The exact 42 callback URI is
+   https://eleet-phi.vercel.app/api/auth/callback/42.
+   Credentials were kept in ignored .env.local and were not committed.
+
+V3 ADDITION — CLUSTER EXPLORER
+
+   - Added protected /clusters navigation and a four-campus explorer for
+     Khouribga, Benguerir, Tétouan, and Rabat. A verified 1337 campus
+     membership is required; a member can switch among the four campuses.
+   - Added a privacy-filtered /api/clusters endpoint. It returns workstation
+     IDs, anonymous states, counts, completeness, and snapshot freshness.
+     It does not return user IDs, logins, avatars, raw location records, or
+     individual session timestamps.
+   - Verified the 42 campus-location endpoint and active-location filter
+     against all four campuses. Active pages are checked for total count,
+     uniqueness, and campus consistency. Recent location records supply a
+     bounded sample of observed workstation names, not a seat inventory.
+   - Added campus-specific workstation parsing and discovered groups from
+     live hosts: Khouribga e1/e2/e3; Benguerir e1/c3/c4; Tétouan c1/c2;
+     Rabat c1/c2. These are observed groups, not a claim that no others exist.
+   - Added Occupied, Available, and Unknown classification. Duplicate
+     sessions for one user are merged; conflicting users, stale, ended,
+     malformed, or partial data cannot certify an empty seat. Disabled
+     workstations are excluded from available counts.
+   - Added workstation search, Find Empty Seats, occupancy summaries, seat
+     details, responsive directory views, a future-ready floor-plan renderer,
+     and 60-second visible-page refresh with a manual button.
+   - Added an empty version-controlled layout registry for verified physical
+     coordinates and enabled-seat inventory. The supplied screenshots are
+     design references only. No authoritative Khouribga layout or inventory
+     was available, so the current interface clearly labels its directory
+     fallback and certifies zero empty seats.
+   - Anonymous active-host snapshots cache for 180 seconds. The bounded
+     observed-host sample caches for one day. The interface shows the
+     actual update time and treats snapshots older than four minutes as
+     Unknown.
+
+V3 VERIFICATION
+
+   - 25 automated tests passed. TypeScript checking and the production
+     build passed.
+   - Local anonymous requests to /clusters and /api/clusters redirected
+     or returned 401 as appropriate.
+   - Local authenticated requests returned HTTP 200 for Khouribga and
+     Tétouan. Their response bodies had complete, fresh snapshots and no
+     identity fields.
+   - Live API checks completed active-location pagination on all four
+     campuses and confirmed their observed group names.
+
+V3 LIMITS AND NEXT STEP
+
+   - No real floor plan or verified enabled-seat inventory is available.
+     Until one is supplied, Find Empty Seats cannot recommend a seat.
+   - Identifiable student presence remains disabled because general 42
+     OAuth does not establish consent for revealing physical location.
+   - Serverless instances do not share the in-memory request pacer.
+     A shared cache and distributed rate limiter are the smallest
+     infrastructure additions if usage grows.
+   - A signed-in browser walkthrough on the production deployment remains
+     the final visual check.
+
+AVATAR ACCESS INVESTIGATION (2026-10-19)
+
+   - GET /v2/users/yikoubaz with a 42 application OAuth token returned JSON
+     image.link and image.versions URLs on cdn.intra.42.fr. It did not return
+     image bytes. No documented 42 user-image byte endpoint was found.
+   - The same CDN URL returned HTTP 403 without an Intra browser session.
+     One bearer-token request returned JPEG bytes, but repeated bearer-token
+     requests from Python and Node returned HTTP 403. A local Next.js image
+     route using the bearer token also returned no image. Bearer access is
+     therefore not reliable enough to deploy as an avatar proxy.
+   - The attempted proxy was removed before deployment. Existing pages still
+     show an image when the browser can access its 42 URL and otherwise use
+     the shared Avatar component's initials fallback. No Intra cookies were
+     copied or used, and no third-party image storage was added.
+   - No production change was deployed for this investigation. A browser
+     authenticated only to 1337 Ranks remains subject to the CDN's 403, so
+     cookie-independent avatar display is not currently verified.
+
+V3.1 — PERSISTENT STUDENT AVATARS (LOCAL IMPLEMENTATION)
+
+   - Added a private Supabase Storage design with an SQL setup file for the
+     student-avatars bucket and student_avatars user-ID mapping table.
+     The Supabase service-role key is used only in server code.
+   - Added owner-only upload and delete routes using the existing 42 Auth.js
+     session. Uploads are limited to 4 MB JPEG, PNG, or WebP with matching
+     file signatures, bounded dimensions, and server-side Sharp processing
+     into a 256-pixel WebP. No URL uploads or 42 CDN imports were added.
+   - Added versioned object paths and one-hour signed, session-protected image
+     reads.
+     Pages look up avatar mappings in batches; no avatar metadata query is
+     required for each leaderboard row. Replacements use new object paths.
+   - Added avatar management on /me and switched the leaderboard, student
+     profiles, dashboard, and Piscine Explorer to uploaded avatars with an
+     initials fallback. Cluster Explorer remains anonymous.
+   - 40 automated tests passed. TypeScript checking and the production build
+     passed. Tests cover validation, owner checks, private reads, batch
+     lookup, replacement, deletion, missing objects, and storage errors.
+   - The built app returned 401 for anonymous avatar reads and uploads, 403
+     for a cross-origin delete, 404 for an invalid signed image reference,
+     and 503 for a signed upload while Supabase was unconfigured.
+
+V3.1 DEPLOYMENT STATUS AND REQUIRED SETUP
+
+   - No Supabase project URL or service-role key was available in this
+     workspace, so real Storage upload/download and a fresh-browser
+     production walkthrough remain unverified. Do not call V3.1 live yet.
+   - Run supabase/avatars.sql in a Supabase project, then set private
+     SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in local and Vercel envs.
+     Keep AUTH_SECRET and existing 42 OAuth variables. Redeploy only after
+     this setup and verify upload, replacement, deletion, and display in a
+     browser signed in only to 1337 Ranks.
+   - README.md contains complete configuration and access-control steps.

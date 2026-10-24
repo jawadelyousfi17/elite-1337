@@ -1,0 +1,38 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "createdAt": "2026-10-22T23:50:17.503Z",
+        "reason": "Agent verified: General Sans is the active font at globals.css:287; Arial is a fallback or overridden legacy declaration."
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-22T23:50:17.510Z",
+        "reason": "Agent verified: legacy body declaration at globals.css:99 is overridden by General Sans through var(--font-sans) at line 287; preserve established typography."
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-23T13:52:42.049Z",
+        "reason": "Agent reviewed the sole finding: .sc-you-arrow::after draws a triangular chart arrowhead with borders, not a rounded card accent. This rule cannot extract a narrower value."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-23T17:28:02.370Z",
+        "reason": "Agent reviewed the remaining finding: SVG donut stroke-width affects paint, not document layout. The actual survey width animation was replaced with scaleX. Detector cannot extract a narrower value."
+      }
+    ]
+  }
+}
