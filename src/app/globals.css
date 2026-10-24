@@ -1392,16 +1392,16 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 @media(hover:none){.pl-row:hover .pl-intra{display:none}}
 .pl-podium-item{position:relative;display:flex;flex-direction:column;align-items:center}
 /* Race: versus lanes and the "race against" picker */
-.race-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.race-head{position:relative;z-index:20;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .race-head-actions{display:flex;align-items:center;gap:8px;margin-bottom:20px}
-.race-vs{display:flex;align-items:center;gap:8px;height:46px;padding:4px 4px 4px 16px;border-radius:999px;background:#202020;border:1px solid transparent;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}
+.race-vs{display:flex;align-items:center;gap:8px;height:46px;padding:4px 4px 4px 16px;border-radius:999px;background:#202020;border:1px solid transparent;transition:background .18s,border-color .18s}
 .race-vs:hover{background:#2b2b2b;border-color:#ffffff1f}
 .race-vs-icon{flex-shrink:0;color:#8a8a8a;transition:color .18s}
 .race-vs:focus-within .race-vs-icon,.race-vs:hover .race-vs-icon{color:#cafbd2}
 .race-vs input{width:260px;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:14px}
 .race-vs input::placeholder{color:#8a8a8a}
 .race-vs button{height:34px;padding:0 14px;border:0;border-radius:999px;background:#fff;color:#0a0a0a;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.race-vs:focus-within{background:#262626;border-color:#cafbd2;box-shadow:0 0 0 4px #cafbd22e;transform:translateY(-1px)}
+.race-vs:focus-within{background:#262626;border-color:#ffffff1f}
 .race-vs button{transition:transform .15s,background .15s}
 .race-vs button:hover{transform:scale(1.04)}
 .race-intra{display:inline-flex;align-items:center;gap:4px;height:42px;padding:0 16px;border-radius:999px;background:#202020;color:var(--text);font-size:14px;font-weight:500}
@@ -1433,7 +1433,7 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .race-tries .is-folded{padding:1px 6px;font-size:10px;opacity:.85}
 /* Race picker suggestions */
 .race-vs{position:relative}
-.race-vs-list{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;min-width:280px;list-style:none;margin:0;padding:6px;border:1px solid #ffffff14;border-radius:18px;background:#161616;box-shadow:0 18px 40px -16px #000;max-height:360px;overflow-y:auto}
+.race-vs-list{position:absolute;z-index:40;top:calc(100% + 6px);left:0;right:0;min-width:280px;list-style:none;margin:0;padding:6px;border:1px solid #ffffff14;border-radius:18px;background:#161616;box-shadow:0 18px 40px -16px #000}
 .race-vs-list li{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;cursor:pointer}
 .race-vs-list li.is-active{background:#2b2b2b}
 .race-vs-list span{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}
@@ -1595,3 +1595,23 @@ main[data-pending]{cursor:progress}
 .fb-reply input{width:18px;height:18px;accent-color:#cafbd2;flex-shrink:0}
 .fb-error{color:#ff8a8f;margin-top:6px}
 @media(max-width:700px){.fb-pill span{display:none}.fb-pill{width:48px;padding:0;justify-content:center}}
+
+/* Admin feedback inbox. */
+.fa-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.fa-filter{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:#161616;border:1px solid #ffffff14;color:#d8d8d8;font-size:13px;font-weight:500}
+.fa-filter span{color:var(--muted);font-variant-numeric:tabular-nums}
+.fa-filter:hover{background:#202020}
+.fa-filter.is-picked{background:#cafbd2;border-color:transparent;color:#173923}
+.fa-filter.is-picked span{color:#31543b}
+.fa-list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.fa-item{padding:16px 18px;border-radius:18px;background:#161616;border:1px solid #ffffff0d;min-width:0}
+.fa-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.fa-meta a{color:#f2f2f2;font-weight:500}
+.fa-meta a:hover{color:#cafbd2}
+.fa-meta time{margin-left:auto}
+.fa-kind{padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;background:#cafbd2;color:#173923}
+.fa-kind.is-bug{background:#ff8a8f;color:#4c111a}
+.fa-kind.is-idea{background:#fff0b5;color:#46340a}
+.fa-message{margin:10px 0 0;color:#f2f2f2;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.fa-context{margin:10px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.fa-empty{padding:48px 0;color:var(--muted);text-align:center}

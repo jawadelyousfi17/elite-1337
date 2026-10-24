@@ -6,9 +6,9 @@ import { Dialog } from 'radix-ui';
 import { usePathname } from 'next/navigation';
 import { X } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { FEEDBACK_ACCESS_KEY, submitWeb3Form } from '@/lib/web3forms';
+import { sendFeedback } from '@/components/feedback-actions';
 
-/** Bug reports and feedback, sent to the team through Web3Forms. The login is only attached when the student opts in. */
+/** Bug reports and feedback, saved for the team in our database. The login is only attached when the student opts in. */
 const KINDS = [
   { value: 'bug', label: 'Bug', title: 'Something is broken' },
   { value: 'idea', label: 'Idea', title: 'I have an idea' },
@@ -45,14 +45,9 @@ export function FeedbackButton({ login }: { login: string }) {
     setSending(true);
     setError('');
     try {
-      await submitWeb3Form(`Elite 1337 — ${KINDS.find((item) => item.value === kind)!.label}`, {
-        type: kind,
-        message: text,
-        page: pathname,
-        screen: `${window.innerWidth}×${window.innerHeight}`,
-        ...(reply ? { intra: login } : {}),
-      }, FEEDBACK_ACCESS_KEY);
-      setSent(true);
+      const result = await sendFeedback({ kind, message: text, page: pathname, screen: `${window.innerWidth}×${window.innerHeight}`, reply });
+      if (result === 'sent') setSent(true);
+      else setError(result === 'limited' ? 'You have sent a lot of feedback this hour. Please try again later.' : 'Your message could not be sent. Please try again in a moment.');
     } catch {
       setError('Your message could not be sent. Please try again in a moment.');
     } finally {
