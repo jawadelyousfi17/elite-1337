@@ -1,11 +1,12 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Image from 'next/image';
 import { Dialog } from 'radix-ui';
 import { usePathname } from 'next/navigation';
-import { Check, ChatText, X } from '@/components/icons';
+import { X } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { submitWeb3Form } from '@/lib/web3forms';
+import { FEEDBACK_ACCESS_KEY, submitWeb3Form } from '@/lib/web3forms';
 
 /** Bug reports and feedback, sent to the team through Web3Forms. The login is only attached when the student opts in. */
 const KINDS = [
@@ -21,7 +22,7 @@ export function FeedbackButton({ login }: { login: string }) {
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<Kind>('bug');
   const [message, setMessage] = useState('');
-  const [reply, setReply] = useState(false);
+  const [reply, setReply] = useState(true);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +31,7 @@ export function FeedbackButton({ login }: { login: string }) {
   const change = (next: boolean) => {
     if (submitting.current) return;
     setOpen(next);
-    if (next && sent) { setSent(false); setMessage(''); setKind('bug'); setReply(false); }
+    if (next && sent) { setSent(false); setMessage(''); setKind('bug'); setReply(true); }
     if (!next) setError('');
   };
 
@@ -49,8 +50,8 @@ export function FeedbackButton({ login }: { login: string }) {
         message: text,
         page: pathname,
         screen: `${window.innerWidth}×${window.innerHeight}`,
-        ...(reply ? { login } : {}),
-      });
+        ...(reply ? { intra: login } : {}),
+      }, FEEDBACK_ACCESS_KEY);
       setSent(true);
     } catch {
       setError('Your message could not be sent. Please try again in a moment.');
@@ -61,17 +62,18 @@ export function FeedbackButton({ login }: { login: string }) {
   };
 
   return <Dialog.Root open={open} onOpenChange={change}>
-    <Dialog.Trigger className="sv-pill fb-pill"><ChatText size={18}/><span>Feedback</span></Dialog.Trigger>
+    <Dialog.Trigger className="sv-pill fb-pill" aria-label="Feedback"><Image src="/assets/feedback/chat.webp" alt="" width={28} height={28}/><span>Feedback</span></Dialog.Trigger>
     <Dialog.Portal>
       <Dialog.Overlay className="sv-overlay"/>
       <Dialog.Content className="sv-dialog" aria-busy={sending} aria-describedby={undefined}>
         <Dialog.Close className="sv-close" aria-label="Close" disabled={sending}><X size={16}/></Dialog.Close>
         {sent ? <div className="sv-step sv-done">
-          <span className="sv-icon is-done"><Check size={22}/></span>
+          <Image className="fb-art" src="/assets/feedback/sent.webp" alt="" width={80} height={80}/>
           <Dialog.Title className="sv-title">Thanks, got it!</Dialog.Title>
           <p className="sv-lead">{reply ? `We'll message ${login} on 42 Intra if we need more details.` : 'Every report is read by the team.'}</p>
           <div className="sv-actions"><Dialog.Close className="sv-primary">Close</Dialog.Close></div>
         </div> : <form className="sv-step" onSubmit={send}>
+          <Image className="fb-art" src="/assets/feedback/chat.webp" alt="" width={80} height={80}/>
           <Dialog.Title className="sv-title">Report a bug or share feedback</Dialog.Title>
           <p className="sv-lead">Tell us what went wrong or what would make Elite 1337 better.</p>
           <div className="fb-kinds" role="radiogroup" aria-label="Type">

@@ -1580,7 +1580,8 @@ main[data-pending]{cursor:progress}
 /* Feedback: the survey's pill and dialog, plus a message box. */
 .fb-pill{gap:8px;height:48px;padding:0 18px 0 15px;color:#f2f2f2;font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background .18s}
 .fb-pill:hover{background:#2b2b2b}
-.fb-pill svg{color:#cafbd2}
+.fb-pill img{flex-shrink:0;object-fit:contain}
+.fb-art{display:block;width:80px;height:80px;object-fit:contain;margin-bottom:14px;flex-shrink:0}
 .fb-pill:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
 .fb-kinds{display:flex;gap:6px;margin-top:16px}
 .fb-kinds .sv-option{flex:1;justify-content:center;min-height:40px}
