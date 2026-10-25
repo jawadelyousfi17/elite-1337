@@ -24,11 +24,11 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
 /**
  * Each campus is cached on its own. A cold download takes 30+ seconds of paced requests; if a visit is cut off
  * at the 60 s function limit, the campuses it finished stay cached and the next visit only fetches the rest,
- * instead of starting over and spending every request again. Rankings refresh every 6 hours: a full download is
- * about 50 requests, and levels only move when a project is graded.
+ * instead of starting over and spending every request again. Rankings refresh every 30 minutes: a full download is
+ * about 50 requests, so about 100 an hour.
  */
 const campusRecords = singleFlight(unstable_cache(async (campusId: number, curriculum: number) => ({ records: await fortyTwoApi.cursusUsers(campusId, curriculum), fetchedAt: new Date().toISOString() }),
-  ['1337-campus-cursus-users-v2'], { revalidate: 6 * 3600 }));
+  ['1337-campus-cursus-users-v2'], { revalidate: 1800 }));
 const campusInfo = singleFlight(unstable_cache(async (campusId: number) => fortyTwoApi.campus(campusId), ['1337-campus-info-v1'], { revalidate: 86_400 }));
 
 /**
