@@ -19,4 +19,8 @@ describe('blackholed students', () => {
     expect(lost.map((item) => item.id)).toEqual([1]);
     expect(lost[0]).toMatchObject({ login: 'u1', commonCoreEntryYear: '2023', campusIds: [16] });
   });
+  it('leaves alumni out of the blackholed list', () => {
+    const lost = collectBlackholed([{ campusId: 16, records: [record(7, {}, { 'alumni?': true }), record(10)] }], 21, new Set(), now);
+    expect(lost.map((item) => item.id)).toEqual([10]);
+  });
 });

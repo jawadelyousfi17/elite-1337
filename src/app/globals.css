@@ -375,7 +375,7 @@ input{caret-color:var(--mint)}
 .pl-copy strong em{font-style:normal;font-size:11px;font-weight:600;color:#060606;background:var(--mint);border-radius:999px;padding:2px 8px}
 .pl-copy>span{font-size:14px;line-height:21px;color:#747474;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pl-rank{height:34px;min-width:34px;padding:0 6px;flex-shrink:0;display:grid;place-items:center;border-radius:999px;background:var(--pastel);color:#060606;font-size:16px;font-weight:600}
-.pl-empty{text-align:center;padding:60px 20px;color:var(--muted)}.pl-empty h2{color:var(--text);font-weight:500;font-size:21px;margin:12px 0 18px}.pl-empty .pl-scope{display:inline-grid;padding:0 22px}
+.pl-empty{text-align:center;padding:60px 20px;color:var(--muted)}.pl-empty h2{color:var(--text);font-weight:500;font-size:21px;margin:12px 0 18px}.pl-empty .pl-scope{display:inline-grid;padding:0 22px;margin-top:26px}.pl-empty .kiwi-note{gap:10px}.pl-empty .kiwi-note h2{margin:10px 0 0}.pl-empty .kiwi-note p{line-height:1.5}
 .pl-pager{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:20px;color:#bdbdbd;font-size:16px}
 .pl-round{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;border:1px solid #e5e5e5;color:var(--text);transition:background .18s}
 .pl-round:hover{background:#232323}
@@ -973,6 +973,10 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .pl-chip.is-mint[data-active]{background:#cafbd2;color:#0a0a0a;font-weight:500}
 .pl-token.is-red{background:#ff8a8f}
 .pl-bh.is-lost{background:#3a1416;color:#ff8a8f}
+.pl-chip.is-alumni[data-active]{background:#a9d4ff;color:#0a0a0a;font-weight:500}
+.pl-token.is-alumni{background:#a9d4ff}
+.pl-chip.is-frozen[data-active]{background:#bff3f0;color:#0a0a0a;font-weight:500}
+.pl-token.is-frozen{background:#bff3f0}
 
 /* Tweaks overlay (experiment) */
 .tw-trigger{position:fixed;z-index:30;right:20px;bottom:20px;display:grid;place-items:center;width:52px;height:52px;border:1px solid #ffffff14;border-radius:50%;background:#202020;color:#f2f2f2;cursor:pointer;box-shadow:0 12px 30px -10px #000;transition:background .18s,transform .18s}
@@ -1391,6 +1395,13 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 @keyframes pl-intra-in{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
 @media(hover:none){.pl-row:hover .pl-intra{display:none}}
 .pl-podium-item{position:relative;display:flex;flex-direction:column;align-items:center}
+.pl-intra.is-podium{position:absolute;z-index:3;left:50%;bottom:calc(100% + 8px);display:inline-flex;height:30px;padding:0 12px;font-size:12px;background:#1a1a1a;opacity:0;visibility:hidden;transform:translate(-50%,4px);animation:none;transition:opacity .15s,transform .15s,visibility .15s,background .15s,border-color .15s,color .15s}
+.pl-intra.is-podium::after{content:'';position:absolute;left:0;right:0;top:100%;height:12px}
+.pl-podium-item:has(.pl-winner) .pl-intra.is-podium{bottom:calc(100% + 34px)}
+.pl-podium-item:has(.pl-winner) .pl-intra.is-podium::after{height:38px}
+.pl-podium-item:hover .pl-intra.is-podium,.pl-podium-item:focus-within .pl-intra.is-podium{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.pl-intra.is-podium:hover{background:#2b2b2b}
+@media(hover:none){.pl-podium-item:hover .pl-intra.is-podium{opacity:0;visibility:hidden}}
 /* Race: versus lanes and the "race against" picker */
 .race-head{position:relative;z-index:20;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .race-head-actions{display:flex;align-items:center;gap:8px;margin-bottom:20px}
@@ -1626,6 +1637,8 @@ main[data-pending]{cursor:progress}
 .hk-rules li{display:flex;gap:10px}
 .hk-rules li span{flex-shrink:0;font-size:14px;line-height:1.35}
 .hk-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#ff8a8f;color:#4c111a;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
+.al-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#a9d4ff;color:#0d2740;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
+.fz-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#bff3f0;color:#0b3a38;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
 h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 
 /* Navbar GitHub hover tip. */
@@ -1635,3 +1648,20 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 @media(hover:hover){.gh-stars.is-nav:hover .gh-tip{opacity:1;transform:translate(-50%,0)}}
 .gh-stars.is-nav:focus-visible .gh-tip{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){.gh-tip{transition:none}}
+
+/* Landing: brand line inside the h1. */
+.landing-brand{display:block;margin-bottom:10px;color:#9fd8ff;font-size:13px;font-weight:600;letter-spacing:.22em;line-height:1.2;text-transform:uppercase}
+.landing-hero .landing-visual{width:min(100%,720px,max(220px,(100svh - 430px) * 1.568))}
+@media(max-height:760px){.landing-brand{margin-bottom:6px;font-size:12px}}
+
+.landing{padding-bottom:clamp(20px,4svh,36px)}
+
+.avatar .avatar-fallback{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:inherit;background:var(--muted-surface);color:var(--foreground);font-weight:600;overflow:hidden}
+.avatar .avatar-fallback.is-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%);transform:translateX(-100%);animation:avatar-shimmer 1.3s ease-in-out infinite}
+@keyframes avatar-shimmer{to{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.avatar .avatar-fallback.is-loading::after{animation:none}}
+
+/* Clip avatars once; prevent legacy pastel backings from bleeding around the edge. */
+:root body .avatar[data-slot="avatar"][data-size]{background:transparent!important}
+:root body .avatar .avatar-fallback{border-radius:0!important}
+:root body .pl-winner-portrait,:root body .pl-runner-portrait{background:transparent!important}

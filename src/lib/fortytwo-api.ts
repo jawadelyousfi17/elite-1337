@@ -6,7 +6,7 @@ export const summarySchema = z.object({
   id: z.number().int(), login: z.string().min(1), displayname: z.string().nullish(),
   pool_year: z.string().nullish(), pool_month: z.string().nullish(),
   kind: z.string().nullish(), active: z.boolean().optional(), 'active?': z.boolean().optional(),
-  'staff?': z.boolean().optional(), 'alumni?': z.boolean().optional(), alumni: z.boolean().optional(),
+  'staff?': z.boolean().optional(), 'alumni?': z.boolean().optional(), alumni: z.boolean().optional(), alumnized_at: z.string().nullish(),
   image: z.unknown().transform(intraPhotoPath).optional(),
 });
 export const meSchema = summarySchema.extend({ campus: z.array(campusSchema).default([]), campus_users: z.array(z.object({ campus_id: z.number().int(), is_primary: z.boolean().nullish() })).default([]) });

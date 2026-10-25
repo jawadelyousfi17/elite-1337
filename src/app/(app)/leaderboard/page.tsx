@@ -2,6 +2,8 @@ import { StickySide } from '@/components/sticky-side';
 import { KiwiNote } from '@/components/kiwi-guide';
 import Link from 'next/link';
 import { HackerBadge } from '@/components/hacker-badge';
+import { AlumniBadge } from '@/components/alumni-badge';
+import { FrozenBadge } from '@/components/frozen-badge';
 import { hackerLogins } from '@/lib/hackers';
 import { ArrowUpRight, Campus, ChevronLeft, ChevronRight, Cohort, Hourglass, Reverse, RotateCcw, Search, X } from '@/components/icons';
 import { z } from 'zod';
@@ -30,7 +32,7 @@ const filtersSchema = z.object({
   campus: z.coerce.number().int().positive().optional(),
   cohort: z.string().regex(/^\d{4}$/).optional(),
   q: z.string().trim().max(40).optional(),
-  bh: z.enum(['blackholed']).optional(),
+  bh: z.enum(['blackholed', 'alumni', 'frozen']).optional(),
   page: z.coerce.number().int().min(1).max(10000).default(1),
   order: z.enum(['desc']).optional(),
 });
@@ -40,7 +42,7 @@ const profileHref = (login: string) => `https://profile.intra.42.fr/users/${enco
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 const appHref = (login: string) => `/students/${encodeURIComponent(login)}`;
 /** Ghost button before the rank, shown on hover: the rest of the row opens the student in the app. */
-const IntraButton = ({ login }: { login: string }) => <a className="pl-intra" href={profileHref(login)} {...external} aria-label={`${login} on 42 Intra (opens in a new tab)`}>Intra<ArrowUpRight size={13} weight="bold"/></a>;
+const IntraButton = ({ login, podium }: { login: string; podium?: boolean }) => <a className={podium ? 'pl-intra is-podium' : 'pl-intra'} href={profileHref(login)} {...external} aria-label={`${login} on 42 Intra (opens in a new tab)`}>Intra<ArrowUpRight size={13} weight="bold"/></a>;
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
 const pastel = (rank: number) => pastels[(rank - 2 + pastels.length * 100) % pastels.length];
 const href = (filters: Partial<Filters>) => {
@@ -71,9 +73,10 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   const filters: Filters = parsed.success ? parsed.data : { campus: defaultCampus, cohort: defaultCohort, page: 1 };
   if (filters.campus && !validCampusIds.has(filters.campus)) filters.campus = undefined;
   const cohorts = [...new Set(dataset.students.map((student) => student.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
-  const blackholedMode = filters.bh === 'blackholed';
-  const { rows, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, filters, own?.id);
-  const lost = blackholedMode ? dataset.blackholed.filter((student) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreEntryYear === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]))) : [];
+  const blackholedMode = filters.bh === 'blackholed', alumniMode = filters.bh === 'alumni', frozenMode = filters.bh === 'frozen';
+  const { rows, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode }, own?.id);
+  const inScope = (student: { campusIds: number[]; commonCoreEntryYear: string | null; login: string; displayName: string | null }) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreEntryYear === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
+  const lost = blackholedMode ? dataset.blackholed.filter(inScope) : [];
   if (filters.order === 'desc') lost.reverse();
   const lostPages = Math.max(1, Math.ceil(lost.length / 25)), lostPage = Math.min(filters.page, lostPages);
   const lostRows = lost.slice((lostPage - 1) * 25, lostPage * 25);
@@ -109,17 +112,17 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
     </aside>
 
     <section className="pl-list" aria-label="Leaderboard">
-      <div className="pl-list-head"><p className="pl-count"><strong>{total.toLocaleString()}</strong> {blackholedMode ? 'blackholed' : total === 1 ? 'student' : 'students'}{filters.q && <> matching “{filters.q}”</>}<span className="pl-updated"> · updated {timeAgo(dataset.fetchedAt)}</span></p>
+      <div className="pl-list-head"><p className="pl-count"><strong>{total.toLocaleString()}</strong> {blackholedMode ? 'blackholed' : alumniMode ? 'alumni' : total === 1 ? 'student' : 'students'}{filters.q && <> matching “{filters.q}”</>}<span className="pl-updated"> · updated {timeAgo(dataset.fetchedAt)}</span></p>
         <Link href={href({ ...filters, order: filters.order === 'desc' ? undefined : 'desc', page: 1 })} className={cn('pl-reverse', filters.order === 'desc' && 'is-on')} aria-pressed={filters.order === 'desc'} title={filters.order === 'desc' ? 'Show from the first rank' : 'Show from the last rank'}><Reverse size={15}/>Reverse</Link></div>
       {blackholedMode ? lostRows.length ? <ol className="pl-rows">{lostRows.map((student) => <li key={student.id} className="pl-item"><BlackholedRow student={student} src={avatars[student.id]} campus={student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}/></li>)}</ol> : <div className="pl-empty"><KiwiNote><h2>Nobody blackholed here</h2><p>Good news for this group.</p></KiwiNote></div> : listed.length ? <ol className="pl-rows">{listed.map((student) => {
         const mine = String(student.id) === user.id;
         return <li key={student.id} className="pl-item"><div className={cn('pl-row', mine && 'is-mine')} style={{ '--pastel': pastel(student.rank) } as React.CSSProperties}>
           <span className="pl-avatar"><Avatar login={student.login} src={avatars[student.id]} size={45}/></span>
-          <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link>{hackers.has(student.login.toLowerCase()) && <HackerBadge/>}{mine && <em>You</em>}</strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</span></span>
+          <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}{hackers.has(student.login.toLowerCase()) && <HackerBadge/>}{mine && <em>You</em>}</strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</span></span>
           <IntraButton login={student.login}/>
           <span className="pl-rank" aria-label={`Rank ${student.rank}`}>{student.rank}</span>
         </div></li>;
-      })}</ol> : !showWinner || total > podium.length ? <div className="pl-empty"><KiwiNote><h2>No students here</h2><p>Kiwi looked everywhere. Try another filter.</p></KiwiNote><Link className="pl-scope is-active" href={href(scopes[0].filters)}>Back to my cohort</Link></div> : null}
+      })}</ol> : !showWinner || total > podium.length ? <div className="pl-empty"><KiwiNote>{alumniMode ? <><h2>No alumni here yet</h2><p>Nobody from this group has graduated so far.</p></> : frozenMode ? <><h2>Nobody frozen here</h2><p>Everyone in this group is on the move.</p></> : <><h2>No students here</h2><p>Kiwi looked everywhere. Try another filter.</p></>}</KiwiNote><Link className="pl-scope is-active" href={href(scopes[0].filters)}>Back to my cohort</Link></div> : null}
 
       {pages > 1 && <nav className="pl-pager" aria-label="Pagination">
         <Link className={cn('pl-round', page === 1 && 'is-disabled')} href={href({ ...filters, page: Math.max(1, page - 1) })} aria-disabled={page === 1} tabIndex={page === 1 ? -1 : undefined} aria-label="Previous page"><ChevronLeft size={22}/></Link>
@@ -144,9 +147,9 @@ function BlackholedRow({ student, src, campus }: { student: BlackholedStudent; s
 function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
   return <span className="pl-podium-item"><Link href={appHref(student.login)} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>{student.login}</strong>
+    <strong>{student.login}</strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
-  </Link></span>;
+  </Link><IntraButton login={student.login} podium/></span>;
 }
 
 function Winner({ student, src }: { student: Ranked; src?: string }) {
@@ -155,9 +158,9 @@ function Winner({ student, src }: { student: Ranked; src?: string }) {
       <Avatar login={student.login} src={src} size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>{student.login}</h2>
+    <h2>{student.login}</h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-pill">Level {student.level.toFixed(2)}</span>
-  </Link></span>;
+  </Link><IntraButton login={student.login} podium/></span>;
 }
 
 function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { filters: Filters; campuses: { id: number; name: string }[]; cohorts: string[]; open: boolean; reset: string; isDefault: boolean }) {
@@ -166,7 +169,7 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
   const tokens = [
     filters.campus ? { key: 'campus', label: campusLabel(filters.campus), tone: 'lilac', remove: go({ campus: undefined }) } : null,
     filters.cohort ? { key: 'cohort', label: `Cohort ${filters.cohort}`, tone: 'yellow', remove: go({ cohort: undefined }) } : null,
-    filters.bh ? { key: 'bh', label: 'Blackholed', tone: 'red', remove: go({ bh: undefined }) } : null,
+    filters.bh ? { key: 'bh', label: filters.bh === 'alumni' ? 'Alumni' : filters.bh === 'frozen' ? 'Frozen' : 'Blackholed', tone: filters.bh === 'alumni' ? 'alumni' : filters.bh === 'frozen' ? 'frozen' : 'red', remove: go({ bh: undefined }) } : null,
   ].filter((token): token is NonNullable<typeof token> => !!token);
   const hidden: Record<string, string> = { campus: filters.campus ? String(filters.campus) : ALL, cohort: filters.cohort ?? ALL, ...(filters.bh ? { bh: filters.bh } : {}) };
   return <FilterShell action="/leaderboard" hidden={hidden} q={filters.q} placeholder="Search a login or name" clearHref={go({ q: undefined })} activeCount={isDefault ? 0 : tokens.length} defaultOpen={open}>
@@ -177,7 +180,7 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
     <div className="pl-groups">
       <ChipGroup icon={<Campus size={17}/>} label="Campus" tone="lilac" chips={[{ label: 'All', href: go({ campus: undefined }), active: !filters.campus }, ...campuses.map((campus) => ({ label: campus.name, href: go({ campus: campus.id }), active: filters.campus === campus.id }))]}/>
       <ChipGroup icon={<Cohort size={17}/>} label="Cohort" tone="yellow" scroll chips={[{ label: 'All', href: go({ cohort: undefined }), active: !filters.cohort }, ...cohorts.map((year) => ({ label: year, href: go({ cohort: year }), active: filters.cohort === year }))]}/>
-      <ChipGroup icon={<Hourglass size={17}/>} label="Status" tone="mint" chips={[{ label: 'Active students', href: go({ bh: undefined }), active: !filters.bh }, { label: 'Blackholed', href: go({ bh: 'blackholed' }), active: filters.bh === 'blackholed', tone: 'red' }]}/>
+      <ChipGroup icon={<Hourglass size={17}/>} label="Status" tone="mint" chips={[{ label: 'Active students', href: go({ bh: undefined }), active: !filters.bh }, { label: 'Alumni', href: go({ bh: 'alumni' }), active: filters.bh === 'alumni', tone: 'alumni' }, { label: 'Frozen', href: go({ bh: 'frozen' }), active: filters.bh === 'frozen', tone: 'frozen' }, { label: 'Blackholed', href: go({ bh: 'blackholed' }), active: filters.bh === 'blackholed', tone: 'red' }]}/>
     </div>
   </FilterShell>;
 }

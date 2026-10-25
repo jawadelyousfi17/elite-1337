@@ -14,7 +14,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-The 42 application's registered redirect URI must be **exactly** `http://localhost:3000/api/auth/callback/42` for local sign-in. If the developer portal permits only one redirect URI, use a separate 42 development application. The production URI for this app is `https://www.elite1337.app/api/auth/callback/42`. A site root URL alone does not complete Auth.js OAuth. The provider ID is `42`, which determines the callback path. Keep `.env.local` private; it is ignored by Git.
+The 42 application's registered redirect URI must be **exactly** `http://localhost:3000/api/auth/callback/42` for local sign-in. If the developer portal permits only one redirect URI, use a separate 42 development application. The production URI for this app is `https://www.elite-1337.app/api/auth/callback/42`. A site root URL alone does not complete Auth.js OAuth. The provider ID is `42`, which determines the callback path. Keep `.env.local` private; it is ignored by Git.
 
 The live 42 API was queried to verify the 1337 campus IDs `16` (Khouribga), `21` (Benguerir), `55` (Tétouan), `75` (Rabat), and Common Core `42cursus` ID `21`. The app always includes these four campuses. An optional `FORTYTWO_CAMPUS_IDS` value is validated against this list. `FORTYTWO_CURSUS_ID` should be `21`.
 
@@ -82,4 +82,4 @@ Tests cover cohort semantics, Piscine filters and admission uncertainty, ties, c
 
 ## Vercel deployment
 
-Set `FORTYTWO_CLIENT_ID`, `FORTYTWO_CLIENT_SECRET`, `FORTYTWO_CURSUS_ID=21`, `AUTH_SECRET`, and `AUTH_URL=https://www.elite1337.app` as private Vercel environment variables. `FORTYTWO_CAMPUS_IDS=16,21,55,75` and `FORTYTWO_EXCLUDED_USER_IDS` are optional. V3.1 avatars additionally require private `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` values plus the one-time SQL setup above. Register `https://www.elite1337.app/api/auth/callback/42` as the exact 42 redirect URI. Redeploy after changing Vercel environment variables, then check a real 1337 sign-in. The protected pages allow up to 60 seconds for a cold complete refresh; verify that your Vercel plan supports that function duration. Use HTTPS in production.
+Set `FORTYTWO_CLIENT_ID`, `FORTYTWO_CLIENT_SECRET`, `FORTYTWO_CURSUS_ID=21`, `AUTH_SECRET`, and `AUTH_URL=https://www.elite-1337.app` as private Vercel environment variables. `FORTYTWO_CAMPUS_IDS=16,21,55,75` and `FORTYTWO_EXCLUDED_USER_IDS` are optional. V3.1 avatars additionally require private `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` values plus the one-time SQL setup above. Register `https://www.elite-1337.app/api/auth/callback/42` as the exact 42 redirect URI. Redeploy after changing Vercel environment variables, then check a real 1337 sign-in. The protected pages allow up to 60 seconds for a cold complete refresh; verify that your Vercel plan supports that function duration. Use HTTPS in production.

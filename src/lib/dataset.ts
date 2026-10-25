@@ -12,7 +12,7 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
   for (const { campusId, records } of sources) for (const record of records) {
     const user = record.user, at = record.blackholed_at ? Date.parse(record.blackholed_at) : NaN;
     if (record.cursus_id !== curriculum || ranked.has(user.id) || !Number.isFinite(at) || at > now) continue;
-    if (user['staff?'] === true || (user.kind && user.kind !== 'student')) continue;
+    if (user['staff?'] === true || (user.kind && user.kind !== 'student') || user['alumni?'] === true || user.alumni === true) continue;
     if (!record.end_at || Date.parse(record.end_at) > now) continue;
     const previous = found.get(user.id);
     if (previous) { if (!previous.campusIds.includes(campusId)) previous.campusIds.push(campusId); if (Date.parse(previous.blackholedAt) >= at) continue; }
@@ -32,7 +32,7 @@ async function fetchCompleteDataset(): Promise<RankingDataset> {
   const blackholed = collectBlackholed(sources, curriculum, new Set(students.map((student) => student.id)));
   return { students, blackholed, acceptedUserIds, campuses, fetchedAt: new Date().toISOString(), complete: true };
 }
-export const getRankingDataset = unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v6'], { revalidate: 3600 });
+export const getRankingDataset = unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 3600 });
 export async function loadRankingDataset(): Promise<{ status: 'ready'; data: RankingDataset } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   try { return { status: 'ready', data: await getRankingDataset() }; }
   catch (error) {

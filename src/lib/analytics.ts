@@ -1,7 +1,7 @@
 // Umami Cloud. The website id is public by design (it ships in the page); override it per environment if needed.
 export const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ?? '38abc134-8c22-485b-9c67-442d916d38e9';
 /** Only the production host reports, so local development and previews never use up the monthly event quota. */
-export const UMAMI_DOMAINS = process.env.NEXT_PUBLIC_UMAMI_DOMAINS ?? 'www.elite1337.app,elite1337.app';
+export const UMAMI_DOMAINS = process.env.NEXT_PUBLIC_UMAMI_DOMAINS ?? 'www.elite-1337.app,elite-1337.app';
 
 type UmamiWindow = Window & { umami?: { track: (event: string, data?: Record<string, string | number>) => void } };
 

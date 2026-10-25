@@ -12,17 +12,30 @@ export function commonCoreEntryYear(beginAt: string | null | undefined): string 
   return Number.isFinite(date.getTime()) ? String(date.getUTCFullYear()) : null;
 }
 
-export function classifyCommonCore(record: ApiCursusUser, cursusId: number, excludedUserIds: ReadonlySet<number> = new Set()): Classification {
+/**
+ * The 42 API hides freezes from non-staff apps. A paused account whose enrollment
+ * has not ended and whose blackhole is still ahead is the closest public signal.
+ * Level 0 rules out new students whose accounts are not activated yet.
+ */
+export function likelyFrozen(record: ApiCursusUser, now = Date.now()): boolean {
+  const user = record.user, blackhole = record.blackholed_at ? Date.parse(record.blackholed_at) : NaN;
+  return (user.active === false || user['active?'] === false) && user['alumni?'] !== true && user.alumni !== true
+    && !record.end_at && Number.isFinite(blackhole) && blackhole > now && (record.level ?? 0) > 0;
+}
+
+export function classifyCommonCore(record: ApiCursusUser, cursusId: number, excludedUserIds: ReadonlySet<number> = new Set(), now = Date.now()): Classification {
   const user = record.user;
   if (record.cursus_id !== cursusId) return { eligible: false, reason: 'wrong-cursus' };
   if (excludedUserIds.has(user.id)) return { eligible: false, reason: 'manual-exclusion' };
   if (user['staff?'] === true || (user.kind !== null && user.kind !== undefined && user.kind !== 'student')) return { eligible: false, reason: 'staff-or-nonstudent' };
-  if (user.active === false || user['active?'] === false) return { eligible: false, reason: 'inactive' };
-  if (user['alumni?'] === true || user.alumni === true || record.end_at) return { eligible: false, reason: 'alumni-or-completed' };
+  // Alumni stay ranked: their accounts often go inactive and their enrollment ends after graduating.
+  const alumni = user['alumni?'] === true || user.alumni === true, paused = alumni || likelyFrozen(record, now);
+  if (!paused && (user.active === false || user['active?'] === false)) return { eligible: false, reason: 'inactive' };
+  if (!alumni && record.end_at) return { eligible: false, reason: 'alumni-or-completed' };
   // blackholed_at is often a future deadline on live, active records. It is
   // not an authoritative current account state by itself.
   if (record.level === null || record.level === undefined || !Number.isFinite(record.level)) return { eligible: false, reason: 'missing-level' };
-  if ((user.active !== true && user['active?'] !== true) || (user.kind !== 'student' && user['staff?'] !== false)) return { eligible: false, reason: 'unverified-account' };
+  if ((!paused && user.active !== true && user['active?'] !== true) || (user.kind !== 'student' && user['staff?'] !== false)) return { eligible: false, reason: 'unverified-account' };
   return { eligible: true };
 }
 

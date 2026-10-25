@@ -1,15 +1,15 @@
 import type { ApiCursusUser } from './fortytwo-api';
 import { matchesSearch } from './search';
-import { classifyCommonCore, commonCoreEntryYear, piscineSession, type ExclusionReason } from './classification';
+import { classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession, type ExclusionReason } from './classification';
 
 export type StudentRank = {
   id: number; login: string; displayName: string | null;
   poolYear: string | null; poolMonth: string | null; commonCoreEntryYear: string | null;
   level: number; campusIds: number[]; globalRank: number; campusRanks: Record<number, number>;
-  photo?: string | null;
+  photo?: string | null; alumni?: boolean; frozen?: boolean;
 };
 export type CampusCursusRecords = { campusId: number; records: ApiCursusUser[] };
-export type RankingFilters = { campus?: number; cohort?: string; poolYear?: string; poolMonth?: string; q?: string; page: number; order?: 'desc' };
+export type RankingFilters = { campus?: number; cohort?: string; poolYear?: string; poolMonth?: string; q?: string; alumni?: boolean; frozen?: boolean; page: number; order?: 'desc' };
 const ordered = (items: StudentRank[]) => items.sort((a, b) => b.level - a.level || a.login.localeCompare(b.login) || a.id - b.id);
 
 export function isEligible(record: ApiCursusUser, cursusId: number, excludedUserIds: ReadonlySet<number> = new Set()): boolean {
@@ -36,7 +36,7 @@ export function classifyPopulation(sources: CampusCursusRecords[], cursusId: num
       id, login: record.user.login, displayName: record.user.displayname ?? null,
       ...session, commonCoreEntryYear: commonCoreEntryYear(record.begin_at),
       level: record.level!, campusIds: [...group.campuses].sort((a, b) => a - b), globalRank: 0, campusRanks: {},
-      photo: record.user.image ?? null,
+      photo: record.user.image ?? null, ...(record.user['alumni?'] === true || record.user.alumni === true ? { alumni: true } : {}), ...(likelyFrozen(record) ? { frozen: true } : {}),
     });
   }
   ordered(students);
@@ -69,7 +69,8 @@ export function selectLeaderboard(students: StudentRank[], filters: RankingFilte
   ));
   const ranked: (StudentRank & { rank: number })[] = [];
   assignRanks(scope, (student, rank) => { ranked.push({ ...student, rank }); });
-  const found = ranked.filter((student) => (!filters.q || matchesSearch(filters.q, [student.login, student.displayName])));
+  // Like search, the alumni and frozen filters keep each student's rank within the full scope.
+  const found = ranked.filter((student) => (!filters.alumni || student.alumni) && (!filters.frozen || student.frozen) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName])));
   // Reversed lists run from the last rank to the first; ranks themselves never change.
   const matches = filters.order === 'desc' ? [...found].reverse() : found;
   const pages = Math.max(1, Math.ceil(matches.length / 25));

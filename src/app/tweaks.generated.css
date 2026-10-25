@@ -213,6 +213,10 @@ html[data-tw-surface]:not(:has(.landing)) .pl-chip.is-red[data-active]{backgroun
 html[data-tw-surface]:not(:has(.landing)) .pl-chip.is-mint[data-active]{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-token.is-red{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-bh.is-lost{background:#3a1416!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-chip.is-alumni[data-active]{background:#a9d4ff!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-token.is-alumni{background:#a9d4ff!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-chip.is-frozen[data-active]{background:#bff3f0!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-token.is-frozen{background:#bff3f0!important}
 html[data-tw-surface]:not(:has(.landing)) .tw-trigger{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .tw-trigger:hover,html[data-tw-surface]:not(:has(.landing)) .tw-trigger[data-state=open]{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .tw-dot{background:var(--tw-accent,#cafbd2)!important}
@@ -321,6 +325,8 @@ html[data-tw-surface]:not(:has(.landing)) .race-stats>div{background:var(--tw-ca
 html[data-tw-surface]:not(:has(.landing)) .race-empty{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-intra{background:transparent!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-intra:hover{background:#ffffff14!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-intra.is-podium{background:#1a1a1a!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-intra.is-podium:hover{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .race-vs{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .race-vs:hover{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .race-vs input{background:transparent!important}
@@ -379,8 +385,12 @@ html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-bug{background:#ff8a8f!imp
 html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-idea{background:#fff0b5!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-icon{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-badge{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .al-badge{background:#a9d4ff!important}
+html[data-tw-surface]:not(:has(.landing)) .fz-badge{background:#bff3f0!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!important}
+html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback{background:var(--muted-surface)!important}
+html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback.is-loading::after{background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%)!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger:hover,html[data-tw-surface]:not(:has(.landing)) .support-trigger[data-state=open]{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger-icon{background:#cafbd2!important}
@@ -672,7 +682,10 @@ html[data-tw-radius] .fa-filter{border-radius:999px!important}
 html[data-tw-radius] .fa-item{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .fa-kind{border-radius:999px!important}
 html[data-tw-radius] .hk-badge{border-radius:999px!important}
+html[data-tw-radius] .al-badge{border-radius:999px!important}
+html[data-tw-radius] .fz-badge{border-radius:999px!important}
 html[data-tw-radius] .gh-tip{border-radius:999px!important}
+html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
 html[data-tw-radius] .support-trigger{border-radius:999px!important}
 html[data-tw-radius] .support-trigger-icon{border-radius:50%!important}
 html[data-tw-radius] .support-dialog{border-radius:calc(28px * var(--tw-r))!important}
@@ -1024,6 +1037,8 @@ html[data-tw-light]:not(:has(.landing)) .race-stats dt{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .race-empty{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .pl-intra{color:#3d3d3d!important;border:1px solid #00000026!important}
 html[data-tw-light]:not(:has(.landing)) .pl-intra:hover{background:#00000014!important;border-color:#00000040!important}
+html[data-tw-light]:not(:has(.landing)) .pl-intra.is-podium{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .pl-intra.is-podium:hover{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs:hover{background:#e2e2df!important;border-color:#0000001f!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs-icon{color:#5f5f5f!important}
@@ -1096,6 +1111,7 @@ html[data-tw-light]:not(:has(.landing)) .fa-meta a{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .fa-message{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .hk-rules{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .gh-tip{background:#141414!important;color:#fff!important}
+html[data-tw-light]:not(:has(.landing)) .avatar .avatar-fallback.is-loading::after{background:linear-gradient(100deg,transparent 20%,#00000014 50%,transparent 80%)!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger{background:#ecece9!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger:hover,html[data-tw-light]:not(:has(.landing)) .support-trigger[data-state=open]{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger-arrow{color:#5f5f5f!important}

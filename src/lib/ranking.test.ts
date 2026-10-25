@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { cursusUserSchema } from './fortytwo-api';
-import { admissionOutcome, classifyCommonCore, commonCoreEntryYear, piscineSession } from './classification';
+import { admissionOutcome, classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession } from './classification';
 import { cohortRank, isEligible, rankStudents, selectLeaderboard } from './ranking';
 
 const record = (id: number, userId: number, login: string, level: number | null, options: {
-  active?: boolean; endAt?: string | null; beginAt?: string | null; blackholedAt?: string | null; poolYear?: string; poolMonth?: string; staff?: boolean; kind?: string;
+  active?: boolean; endAt?: string | null; beginAt?: string | null; blackholedAt?: string | null; poolYear?: string; poolMonth?: string; staff?: boolean; kind?: string; alumni?: boolean;
 } = {}) => cursusUserSchema.parse({
   id, cursus_id: 21, level, begin_at: options.beginAt ?? '2025-10-01T00:00:00Z', end_at: options.endAt ?? null, blackholed_at: options.blackholedAt ?? null,
-  user: { id: userId, login, 'active?': options.active ?? true, 'staff?': options.staff ?? false, kind: options.kind ?? 'student', pool_year: options.poolYear ?? '2024', pool_month: options.poolMonth ?? 'july' },
+  user: { id: userId, login, 'active?': options.active ?? true, 'staff?': options.staff ?? false, kind: options.kind ?? 'student', pool_year: options.poolYear ?? '2024', pool_month: options.poolMonth ?? 'july', ...(options.alumni ? { 'alumni?': true } : {}) },
 });
 
 describe('classification and rankings', () => {
@@ -54,6 +54,26 @@ describe('classification and rankings', () => {
   it('keeps unverified admissions unknown', () => {
     expect(admissionOutcome(true)).toBe('Accepted');
     expect(admissionOutcome(false)).toBe('Unknown');
+  });
+  it('ranks alumni even with an inactive account and an ended enrollment, and filters them in place', () => {
+    const students = rankStudents([{ campusId: 16, records: [
+      record(1, 1, 'grad', 15, { alumni: true, active: false, endAt: '2026-01-01' }),
+      record(2, 2, 'alpha', 12),
+      record(3, 3, 'grad2', 9, { alumni: true }),
+    ] }], 21);
+    expect(students.map((student) => [student.login, student.alumni ?? false])).toEqual([['grad', true], ['alpha', false], ['grad2', true]]);
+    expect(selectLeaderboard(students, { page: 1, alumni: true }).rows.map((student) => [student.login, student.rank])).toEqual([['grad', 1], ['grad2', 3]]);
+  });
+  it('ranks likely-frozen students: paused, enrollment open, blackhole ahead, past level 0', () => {
+    const now = Date.parse('2026-10-25T00:00:00Z'), ahead = '2026-12-01T00:00:00Z';
+    const frozen = record(1, 1, 'frozen', 4.2, { active: false, blackholedAt: ahead });
+    expect(likelyFrozen(frozen, now)).toBe(true);
+    expect(likelyFrozen(record(2, 2, 'fresh', 0, { active: false, blackholedAt: ahead }), now)).toBe(false);
+    expect(likelyFrozen(record(3, 3, 'gone', 4, { active: false, blackholedAt: '2026-09-01T00:00:00Z' }), now)).toBe(false);
+    expect(likelyFrozen(record(4, 4, 'ended', 4, { active: false, blackholedAt: ahead, endAt: '2026-10-01T00:00:00Z' }), now)).toBe(false);
+    expect(likelyFrozen(record(5, 5, 'live', 4, { blackholedAt: ahead }), now)).toBe(false);
+    expect(classifyCommonCore(frozen, 21, new Set(), now)).toEqual({ eligible: true });
+    expect(classifyCommonCore(record(2, 2, 'fresh', 0, { active: false, blackholedAt: ahead }), 21, new Set(), now)).toEqual({ eligible: false, reason: 'inactive' });
   });
 });
 

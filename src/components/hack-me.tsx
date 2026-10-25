@@ -7,7 +7,7 @@ import { HackerBadge } from '@/components/hacker-badge';
 
 /** Desktop-only invitation to look for vulnerabilities; reports go to the maintainer directly, there is no form. */
 const RULES = [
-  'Test elite1337.app with your own account only.',
+  'Test elite-1337.app with your own account only.',
   'Stop at proof: never read, change or delete other students’ data.',
   'No DoS, flooding or mass automated scans.',
   '42 Intra, Vercel, Neon and Discord are out of scope.',
