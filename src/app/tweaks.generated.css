@@ -392,6 +392,7 @@ html[data-tw-surface]:not(:has(.landing)) .gh-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback{background:var(--muted-surface)!important}
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback.is-loading::after{background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%)!important}
+html[data-tw-surface]:not(:has(.landing)) .dn-home{background:var(--mint)!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -670,6 +671,8 @@ html[data-tw-radius] .al-badge{border-radius:999px!important}
 html[data-tw-radius] .fz-badge{border-radius:999px!important}
 html[data-tw-radius] .gh-tip{border-radius:999px!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
+html[data-tw-radius] .dn-cat{border-radius:50%!important}
+html[data-tw-radius] .dn-home{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
