@@ -27,23 +27,36 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
  * instead of starting over and spending every request again. Rankings refresh every 6 hours: a full download is
  * about 50 requests, and levels only move when a project is graded.
  */
-const campusRecords = singleFlight(unstable_cache(async (campusId: number, curriculum: number) => fortyTwoApi.cursusUsers(campusId, curriculum),
-  ['1337-campus-cursus-users-v1'], { revalidate: 6 * 3600 - 300 }));
+const campusRecords = singleFlight(unstable_cache(async (campusId: number, curriculum: number) => ({ records: await fortyTwoApi.cursusUsers(campusId, curriculum), fetchedAt: new Date().toISOString() }),
+  ['1337-campus-cursus-users-v2'], { revalidate: 6 * 3600 }));
 const campusInfo = singleFlight(unstable_cache(async (campusId: number) => fortyTwoApi.campus(campusId), ['1337-campus-info-v1'], { revalidate: 86_400 }));
 
+/**
+ * The ranked view is rebuilt from the campus caches, not cached a second time: a second cache would be rebuilt
+ * from campus entries that are themselves about to expire, showing data up to twice the refresh interval old.
+ * Classifying is cheap, so each server instance keeps the last result until a campus entry changes.
+ */
+let built: { stamp: string; data: RankingDataset } | undefined;
 async function fetchCompleteDataset(): Promise<RankingDataset> {
   const ids = campusIds(), curriculum = cursusId();
-  const [campuses, sources] = await Promise.all([
+  const [campuses, loaded] = await Promise.all([
     Promise.all(ids.map((id) => campusInfo(id))),
-    Promise.all(ids.map(async (campusId) => ({ campusId, records: await campusRecords(campusId, curriculum) })))
+    Promise.all(ids.map(async (campusId) => ({ campusId, ...(await campusRecords(campusId, curriculum)) })))
   ]);
+  const stamp = loaded.map((source) => `${source.campusId}:${source.fetchedAt}`).join('|');
+  if (built?.stamp === stamp) return built.data;
+  const sources = loaded.map(({ campusId, records }) => ({ campusId, records }));
   const { students, exclusions } = classifyPopulation(sources, curriculum, excludedUserIds());
   console.info('42 ranking population:', { eligible: students.length, exclusions });
   const acceptedUserIds = [...new Set(sources.flatMap((source) => source.records.filter((record) => record.cursus_id === curriculum && !!record.begin_at).map((record) => record.user.id)))];
   const blackholed = collectBlackholed(sources, curriculum, new Set(students.map((student) => student.id)));
-  return { students, blackholed, acceptedUserIds, campuses, fetchedAt: new Date().toISOString(), complete: true };
+  // "Updated" is the oldest campus download, so the label never claims fresher data than it shows.
+  const fetchedAt = loaded.map((source) => source.fetchedAt).sort()[0];
+  const data: RankingDataset = { students, blackholed, acceptedUserIds, campuses, fetchedAt, complete: true };
+  built = { stamp, data };
+  return data;
 }
-export const getRankingDataset = singleFlight(unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 6 * 3600 }));
+export const getRankingDataset = singleFlight(fetchCompleteDataset, 5_000);
 export async function loadRankingDataset(): Promise<{ status: 'ready'; data: RankingDataset } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   try { return { status: 'ready', data: await getRankingDataset() }; }
   catch (error) {
