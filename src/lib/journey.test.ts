@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildJourney, summarizeJourney, type JourneyRecord } from './journey';
+import { buildJourney, summarizeJourney, type JourneyRecord, fellFrom } from './journey';
 
 const day = (n: number) => new Date(Date.parse('2024-10-21T00:00:00Z') + n * 86_400_000).toISOString();
 let id = 1;
@@ -42,5 +42,15 @@ describe('buildJourney', () => {
   it('summarizes the run', () => {
     expect(summarizeJourney(journey)).toEqual({ days: 100, passed: 3, retries: 2, longestBreak: 25, toughest: { project: 'Libft', tries: 3 } });
     expect(summarizeJourney({ ...journey, fell: day(40) }).days).toBe(40);
+  });
+});
+
+describe('fellFrom', () => {
+  const now = Date.parse('2026-10-25T00:00:00Z');
+  it('is the blackhole date only once the enrollment ended and the date passed', () => {
+    expect(fellFrom({ end_at: '2026-09-01T00:00:00Z', blackholed_at: '2026-08-30T00:00:00Z' }, now)).toBe('2026-08-30T00:00:00Z');
+    expect(fellFrom({ end_at: null, blackholed_at: '2026-08-30T00:00:00Z' }, now)).toBeNull();
+    expect(fellFrom({ end_at: '2026-09-01T00:00:00Z', blackholed_at: '2026-12-01T00:00:00Z' }, now)).toBeNull();
+    expect(fellFrom(undefined, now)).toBeNull();
   });
 });

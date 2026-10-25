@@ -68,7 +68,13 @@ export function summarizeJourney(journey: Journey): JourneySummary {
   };
 }
 
-const cursusSchema = z.object({ cursus_id: z.number().int(), begin_at: z.string().nullish() });
+const cursusSchema = z.object({ cursus_id: z.number().int(), begin_at: z.string().nullish(), end_at: z.string().nullish(), blackholed_at: z.string().nullish() });
+
+/** Same rule as the blackholed list: the enrollment ended and its blackhole date has passed. */
+export function fellFrom(entry: { end_at?: string | null; blackholed_at?: string | null } | undefined, now = Date.now()): string | null {
+  if (!entry?.end_at || !entry.blackholed_at) return null;
+  return Date.parse(entry.end_at) <= now && Date.parse(entry.blackholed_at) <= now ? entry.blackholed_at : null;
+}
 
 const fetchRecords = singleFlight(unstable_cache(async (userId: number) => {
   const curriculum = cursusId();
@@ -80,15 +86,19 @@ const fetchRecords = singleFlight(unstable_cache(async (userId: number) => {
   const pages = Math.ceil((first.total ?? first.data.length) / 100);
   if (pages > 5) throw new IncompletePopulationError('Too many project records');
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request(path, z.array(recordSchema), { ...base, 'page[number]': String(i + 2) })));
-  return { records: [first.data, ...rest.map((page) => page.data)].flat(), start: cursus.data.find((entry) => entry.cursus_id === curriculum)?.begin_at ?? null };
-}, ['1337-journey-v1'], { revalidate: 3600 }));
+  const enrollment = cursus.data.find((entry) => entry.cursus_id === curriculum);
+  return { records: [first.data, ...rest.map((page) => page.data)].flat(), start: enrollment?.begin_at ?? null, fell: fellFrom(enrollment) };
+}, ['1337-journey-v2'], { revalidate: 3600 }));
 
-/** The student's Common Core race; `fell` is the blackhole date when their enrollment has ended. */
-export async function loadJourney(userId: number, fell: string | null): Promise<{ status: 'ready'; journey: Journey } | { status: 'empty' | 'rate-limited' | 'unavailable' }> {
+/**
+ * The student's Common Core race; `fell` is the blackhole date when their enrollment has ended. Leave it out to
+ * read it from the student's own enrollment, so the caller needs no rankings download.
+ */
+export async function loadJourney(userId: number, fell?: string | null): Promise<{ status: 'ready'; journey: Journey } | { status: 'empty' | 'rate-limited' | 'unavailable' }> {
   try {
-    const { records, start } = await fetchRecords(userId);
+    const { records, start, fell: own } = await fetchRecords(userId);
     if (!start) return { status: 'empty' };
-    return { status: 'ready', journey: buildJourney(records, start, fell, new Date().toISOString(), cursusId()) };
+    return { status: 'ready', journey: buildJourney(records, start, fell === undefined ? own : fell, new Date().toISOString(), cursusId()) };
   } catch (error) {
     if (error instanceof RateBudgetError) return { status: 'rate-limited' };
     console.error('Journey failed:', error instanceof Error ? error.name : 'unknown');

@@ -21,11 +21,21 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
   }
   return [...found.values()].sort((a, b) => Date.parse(b.blackholedAt) - Date.parse(a.blackholedAt) || a.login.localeCompare(b.login));
 }
+/**
+ * Each campus is cached on its own. A cold download takes 30+ seconds of paced requests; if a visit is cut off
+ * at the 60 s function limit, the campuses it finished stay cached and the next visit only fetches the rest,
+ * instead of starting over and spending every request again. Rankings refresh every 6 hours: a full download is
+ * about 50 requests, and levels only move when a project is graded.
+ */
+const campusRecords = singleFlight(unstable_cache(async (campusId: number, curriculum: number) => fortyTwoApi.cursusUsers(campusId, curriculum),
+  ['1337-campus-cursus-users-v1'], { revalidate: 6 * 3600 - 300 }));
+const campusInfo = singleFlight(unstable_cache(async (campusId: number) => fortyTwoApi.campus(campusId), ['1337-campus-info-v1'], { revalidate: 86_400 }));
+
 async function fetchCompleteDataset(): Promise<RankingDataset> {
   const ids = campusIds(), curriculum = cursusId();
   const [campuses, sources] = await Promise.all([
-    Promise.all(ids.map((id) => fortyTwoApi.campus(id))),
-    Promise.all(ids.map(async (campusId) => ({ campusId, records: await fortyTwoApi.cursusUsers(campusId, curriculum) })))
+    Promise.all(ids.map((id) => campusInfo(id))),
+    Promise.all(ids.map(async (campusId) => ({ campusId, records: await campusRecords(campusId, curriculum) })))
   ]);
   const { students, exclusions } = classifyPopulation(sources, curriculum, excludedUserIds());
   console.info('42 ranking population:', { eligible: students.length, exclusions });
@@ -33,7 +43,7 @@ async function fetchCompleteDataset(): Promise<RankingDataset> {
   const blackholed = collectBlackholed(sources, curriculum, new Set(students.map((student) => student.id)));
   return { students, blackholed, acceptedUserIds, campuses, fetchedAt: new Date().toISOString(), complete: true };
 }
-export const getRankingDataset = singleFlight(unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 3600 }));
+export const getRankingDataset = singleFlight(unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 6 * 3600 }));
 export async function loadRankingDataset(): Promise<{ status: 'ready'; data: RankingDataset } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   try { return { status: 'ready', data: await getRankingDataset() }; }
   catch (error) {

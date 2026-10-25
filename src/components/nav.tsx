@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { auth, signOut } from '@/auth';
 import { GitHubStars } from '@/components/github-stars';
@@ -32,8 +33,14 @@ async function logout() {
   await signOut({ redirectTo: '/' });
 }
 
+/** The rank pill streams in on its own: a cold rankings download must never hold up the page under it. */
+async function RankedChip({ login }: { login: string }) {
+  return <NavRank ranks={await viewerRanks()} login={login} logout={logout}/>;
+}
+
 export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
-  const [ranks, session] = loggedIn ? await Promise.all([viewerRanks(), auth()]) : [null, null];
+  const session = loggedIn ? await auth() : null;
+  const login = session?.user?.login ?? 'You';
   return <>
     <header className="shell nav">
       <Link className="brand" href="/" aria-label="Elite 1337 home"><img src="/assets/elite-1337-icy.webp" alt="Elite 1337" width={680} height={180}/></Link>
@@ -41,7 +48,7 @@ export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
         <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top"/></nav>
         <div className="nav-actions">
         <div className="nav-tools"><ThemeToggle/><GitHubStars variant="nav"/></div>
-        <NavRank ranks={ranks} login={session?.user?.login ?? 'You'} logout={logout}/>
+        <Suspense fallback={<NavRank ranks={null} login={login} logout={logout}/>}><RankedChip login={login}/></Suspense>
         </div>
       </> : <nav className="navlinks" aria-label="Main navigation"><Link href="/">Home</Link></nav>}
     </header>

@@ -12,7 +12,8 @@ import { JourneyRace } from './journey-race';
 import { PresenceLoading, PresenceView } from './presence-view';
 import { RaceSearch } from './race-search';
 
-type Subject = { id: number; login: string; fell: string | null };
+/** `fell` undefined: read the blackhole state from the student's own enrollment. */
+type Subject = { id: number; login: string; fell?: string | null };
 
 /** Finds a ranked or blackholed student by login, with their blackhole date when their enrollment ended. */
 export function findStudent(dataset: RankingDataset, login: string): Subject | null {

@@ -9,10 +9,11 @@ export const maxDuration = 60;
 export default async function Me({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const user = await requireStudent();
   const vs = (await searchParams).vs;
-  const state = await loadRankingDataset();
-  const dataset = state.status === 'ready' ? state.data : null;
-  const fell = dataset?.blackholed.find((student) => String(student.id) === user.id)?.blackholedAt ?? null;
+  // The rankings are only needed to find a "race against" opponent; the page itself never waits for them.
+  const wanted = typeof vs === 'string' && vs.trim() ? vs.trim().slice(0, 40) : undefined;
+  const state = wanted ? await loadRankingDataset() : null;
+  const dataset = state?.status === 'ready' ? state.data : null;
   return <main className="shell race-page">
-    <RaceView subject={{ id: Number(user.id), login: user.login, fell }} self title="My race" path="/me" vs={typeof vs === 'string' && vs.trim() ? vs.trim().slice(0, 40) : undefined} dataset={dataset}/>
+    <RaceView subject={{ id: Number(user.id), login: user.login }} self title="My race" path="/me" vs={wanted} dataset={dataset}/>
   </main>;
 }
