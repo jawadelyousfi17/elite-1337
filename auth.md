@@ -43,7 +43,7 @@ Step by step:
 2. **Authorize.** Auth.js redirects to `https://api.intra.42.fr/oauth/authorize` with `scope=public`. It also sends a random `state` value (`checks: ['state']`) to protect against CSRF.
 3. **Callback.** 42 redirects back to `/api/auth/callback/42`, which is handled by `src/app/api/auth/[...nextauth]/route.ts`. The `42` in the path is the provider `id`. That is why the redirect URI registered on the 42 app must match **exactly**:
    - local: `http://localhost:3000/api/auth/callback/42`
-   - production: `https://eleet-phi.vercel.app/api/auth/callback/42`
+   - production: `https://www.elite1337.app/api/auth/callback/42`
 4. **Token exchange.** The server sends the code, client ID and secret to `https://api.intra.42.fr/oauth/token` (`client_secret_post`). A custom `conform` step checks that the response is JSON. If 42 returns HTML instead (for example a Cloudflare page or an error page), sign-in fails with a detailed error that includes the status code, host, server and the page title.
 5. **Profile.** Auth.js calls `https://api.intra.42.fr/v2/me` with the user's token. `profile()` uses zod to check the response, keeps only the numeric `id` and the `login`, and sets `email` and `image` to `null`.
 6. **Session.** The `jwt` callback stores `fortyTwoId` (the immutable 42 user ID) and `login` in the token. The `session` callback exposes them as `session.user.id` and `session.user.login` (types are in `src/types/next-auth.d.ts`).
@@ -93,7 +93,7 @@ Pages also call `requireStudent()` themselves to get the user.
 | `FORTYTWO_CLIENT_ID` | OAuth sign-in and the app token |
 | `FORTYTWO_CLIENT_SECRET` | OAuth sign-in and the app token (keep private) |
 | `AUTH_SECRET` | Encrypting session cookies and signing avatar/photo URLs (`openssl rand -base64 32`) |
-| `AUTH_URL` | The site's public base URL, used to build the callback URL (`http://localhost:3000` locally, `https://eleet-phi.vercel.app` in production) |
+| `AUTH_URL` | The site's public base URL, used to build the callback URL (`http://localhost:3000` locally, `https://www.elite1337.app` in production) |
 
 ## Tests
 

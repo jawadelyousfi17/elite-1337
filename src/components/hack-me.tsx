@@ -3,6 +3,7 @@
 import { Dialog } from 'radix-ui';
 import Image from 'next/image';
 import { ArrowUpRight, Instagram, X } from '@/components/icons';
+import { HackerBadge } from '@/components/hacker-badge';
 
 /** Desktop-only invitation to look for vulnerabilities; reports go to the maintainer directly, there is no form. */
 const RULES = [
@@ -23,7 +24,7 @@ export function HackMe() {
         <div className="sv-step">
           <Image className="fb-art" src="/assets/hack-me/security-shield.webp" alt="" width={80} height={80}/>
           <Dialog.Title className="sv-title">Try hack me</Dialog.Title>
-          <p className="sv-lead" id="hk-lead">You have the green light to pentest Elite 1337. Find a real vulnerability and you get the <b>HACKER</b> badge next to your login, everywhere on the site.</p>
+          <p className="sv-lead" id="hk-lead">You have the green light to pentest Elite 1337. Find a real vulnerability and you get the <HackerBadge/> badge next to your login, everywhere on the site.</p>
           <ul className="hk-rules">{RULES.map((rule) => <li key={rule}><span aria-hidden="true">✅</span>{rule}</li>)}</ul>
           <div className="sv-actions">
             <a className="sv-secondary" href="https://www.instagram.com/jawad_elyo/" target="_blank" rel="noopener noreferrer"><Instagram size={16}/>Instagram</a>
