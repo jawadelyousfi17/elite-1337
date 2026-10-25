@@ -148,9 +148,9 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
         <section className="st-card" aria-labelledby="st-calendar">
           <header>
             <h2 id="st-calendar">{longMonth(month)}</h2>
-            <span className="st-month-nav">
-              <Link href={href({ month: shiftMonth(month, -1) })} aria-label="Previous month"><ChevronLeft size={16}/></Link>
-              <Link href={href({ month: shiftMonth(month, 1) === currentMonth ? null : shiftMonth(month, 1) })} aria-label="Next month" aria-disabled={month >= currentMonth} className={cn(month >= currentMonth && 'is-disabled')} tabIndex={month >= currentMonth ? -1 : undefined}><ChevronRight size={16}/></Link>
+            <span data-keep-scroll className="st-month-nav">
+              <Link href={href({ month: shiftMonth(month, -1) })} scroll={false} aria-label="Previous month"><ChevronLeft size={16}/></Link>
+              <Link href={href({ month: shiftMonth(month, 1) === currentMonth ? null : shiftMonth(month, 1) })} scroll={false} aria-label="Next month" aria-disabled={month >= currentMonth} className={cn(month >= currentMonth && 'is-disabled')} tabIndex={month >= currentMonth ? -1 : undefined}><ChevronRight size={16}/></Link>
             </span>
           </header>
           <BlackholeCalendar month={month} days={stats.calendar.days} today={new Date(now).toISOString().slice(0, 10)}/>

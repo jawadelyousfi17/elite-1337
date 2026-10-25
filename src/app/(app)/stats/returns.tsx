@@ -21,7 +21,7 @@ export async function ReturnsSection({ campuses, focus, window, hrefFor }: { cam
   const header = <header>
     <h2 id="st-returns">Project return rate</h2>
     <div className="st-head-tools">
-      <nav className="st-period" aria-label="Return rate period">{windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined} title={item.long}>{item.short}</Link>)}</nav>
+      <nav data-keep-scroll className="st-period" aria-label="Return rate period">{windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined} title={item.long}>{item.short}</Link>)}</nav>
       <span className="st-info" tabIndex={0} aria-label="How the return rate is counted" aria-describedby="st-returns-info">
         <Info size={18}/>
         <span className="st-info-tip" role="tooltip" id="st-returns-info">
@@ -79,7 +79,7 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
     <header>
       <h2 id="st-correctors">Strictest correctors</h2>
       <div className="st-head-tools">
-        <nav className="st-period" aria-label="Strict correctors period">{CORRECTOR_WINDOWS.map((window) => <Link key={window} href={hrefFor[window]} scroll={false} aria-current={window === days ? 'true' : undefined} title={`Last ${window} days`}>{window}d</Link>)}</nav>
+        <nav data-keep-scroll className="st-period" aria-label="Strict correctors period">{CORRECTOR_WINDOWS.map((window) => <Link key={window} href={hrefFor[window]} scroll={false} aria-current={window === days ? 'true' : undefined} title={`Last ${window} days`}>{window}d</Link>)}</nav>
         <span className="st-info" tabIndex={0} aria-label="How strictness is measured" aria-describedby="st-correctors-info">
           <Info size={18}/>
           <span className="st-info-tip" role="tooltip" id="st-correctors-info">

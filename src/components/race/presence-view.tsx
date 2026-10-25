@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import type { Presence } from '@/lib/presence';
+import { SESSION_DAYS, type Presence } from '@/lib/presence';
 
 const ZONE = 'Africa/Casablanca', DAY = 86_400_000, WEEKS = 53;
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -87,8 +87,8 @@ export function PresenceView({ presence }: { presence: Presence }) {
     { label: 'Total logtime', value: `${hrs(presence.totalHours)}h`, sub: `${presence.activeDays.toLocaleString('en-US')} days on campus` },
     { label: 'Longest streak', value: `${presence.longestStreak} ${presence.longestStreak === 1 ? 'day' : 'days'}`, sub: 'in a row', tone: 'gold' },
     { label: 'Current streak', value: `${presence.currentStreak} ${presence.currentStreak === 1 ? 'day' : 'days'}`, sub: presence.currentStreak ? 'keep it going' : 'start one today', tone: presence.currentStreak ? 'mint' : undefined },
-    { label: 'Favorite seat', value: topSeat?.host ?? '—', sub: topSeat ? `${hrs(topSeat.hours)}h there` : 'no sessions yet' },
-    { label: 'Favorite cluster', value: presence.cluster?.name ?? '—', sub: presence.cluster ? `${hrs(presence.cluster.hours)}h there` : 'no sessions yet' },
+    { label: 'Favorite seat', value: topSeat?.host ?? '—', sub: topSeat ? `${hrs(topSeat.hours)}h · last ${SESSION_DAYS} days` : 'no recent sessions' },
+    { label: 'Favorite cluster', value: presence.cluster?.name ?? '—', sub: presence.cluster ? `${hrs(presence.cluster.hours)}h · last ${SESSION_DAYS} days` : 'no recent sessions' },
     { label: 'Longest day', value: presence.bestDay ? `${hrs(presence.bestDay.hours)}h` : '—', sub: presence.bestDay ? dayLabel(presence.bestDay.date) : 'no sessions yet' },
   ];
   const seatMax = Math.max(1, ...presence.seats.map((seat) => seat.hours));
@@ -104,17 +104,17 @@ export function PresenceView({ presence }: { presence: Presence }) {
       <Card title="Hours per month">
         <Bars label="Hours per month" items={presence.months.map((month) => ({ key: month.key, value: month.hours, tip: monthLabel(month.key, 'long') }))} axis={(key, index) => index % 2 === presence.months.length % 2 ? '' : monthLabel(key)}/>
       </Card>
-      <Card title="When you code" note={<><b>{mood.name}</b> · {mood.note}</>}>
+      <Card title="When you code" note={<><b>{mood.name}</b> · {mood.note} · last {SESSION_DAYS} days</>}>
         <Bars dense label="Hours by time of day" items={presence.hours.map((value, hour) => ({ key: String(hour), value, tip: `${hourLabel(hour)} – ${hourLabel((hour + 1) % 24)}` }))} axis={(_, hour) => hour % 6 === 0 ? hourLabel(hour) : ''}/>
       </Card>
       <Card title="Weekdays">
         <Bars label="Hours by weekday" items={presence.weekdays.map((value, index) => ({ key: WEEKDAYS[index], value, tip: WEEKDAYS[index] }))} axis={(key) => key}/>
       </Card>
-      <Card title="Top seats">
+      <Card title="Top seats" note={`Last ${SESSION_DAYS} days`}>
         {presence.seats.length ? <ol className="pr-seats">{presence.seats.map((seat, index) => <li key={seat.host}>
           <span className="pr-seat"><b>{index + 1}</b>{seat.host}</span><strong>{hrs(seat.hours)}h</strong>
           <i aria-hidden="true"><em style={{ width: `${seat.hours / seatMax * 100}%` }}/></i>
-        </li>)}</ol> : <p className="pr-empty">No sessions yet.</p>}
+        </li>)}</ol> : <p className="pr-empty">No sessions in the last {SESSION_DAYS} days.</p>}
       </Card>
     </div>
   </div>;

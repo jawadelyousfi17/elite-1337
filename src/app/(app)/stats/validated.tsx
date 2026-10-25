@@ -22,7 +22,7 @@ export async function ValidatedWidget({ campusId, window, hrefFor }: { campusId?
   const active = windows.find((item) => item.key === window)!;
   return <section className="st-card st-validated" aria-labelledby="st-validated">
     <header><h2 id="st-validated">Validated projects</h2></header>
-    <nav className="st-validated-tiles" aria-label="Time window">
+    <nav data-keep-scroll className="st-validated-tiles" aria-label="Time window">
       {windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined}><span>{item.label}</span><strong>{fmt(counts[item.key])}</strong></Link>)}
     </nav>
     <h3 className="st-validated-sub">Most validated · {active.long}</h3>
@@ -52,7 +52,7 @@ export async function ValidatedCampusesWidget({ campuses, window, hrefFor }: { c
   return <section className="st-card st-validated-campuses" aria-labelledby="st-validated-campuses">
     <header>
       <h2 id="st-validated-campuses">Validated projects by campus</h2>
-      <nav className="st-period" aria-label="Time window">{windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined} title={`Last ${item.label}`}>{item.short}</Link>)}</nav>
+      <nav data-keep-scroll className="st-period" aria-label="Time window">{windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined} title={`Last ${item.label}`}>{item.short}</Link>)}</nav>
     </header>
     {state.status !== 'ready' ? <p className="st-empty">{state.status === 'rate-limited' ? 'The 42 API limit is reached; back shortly.' : 'Unavailable right now. Try again in a few minutes.'}</p> : <>
       <Donut label={`Validated projects by campus, ${active.long}`} caption="validated" total={total} parts={parts}/>

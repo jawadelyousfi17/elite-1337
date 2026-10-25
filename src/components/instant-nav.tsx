@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 /**
@@ -12,6 +12,17 @@ export function InstantNav() {
   const pathname = usePathname();
   const search = useSearchParams().toString();
   const [pending, setPending] = useState(false);
+  const kept = useRef<number | null>(null);
+
+  // Period switches deep in a page (marked data-keep-scroll) must not jump to the top when the new view commits.
+  // Restored before paint, so the jump never shows.
+  useLayoutEffect(() => {
+    if (kept.current === null) return;
+    const y = kept.current;
+    kept.current = null;
+    window.scrollTo(0, y);
+    requestAnimationFrame(() => { if (Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y); });
+  }, [pathname, search]);
 
   // The new page has rendered: stop the pending state.
   useEffect(() => {
@@ -31,7 +42,10 @@ export function InstantNav() {
       if (!link || link.target || link.hasAttribute('download')) return;
       const url = new URL(link.href, location.href);
       if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return;
-      if (url.pathname === location.pathname) choose(link);
+      if (url.pathname === location.pathname) {
+        choose(link);
+        if (link.closest('[data-keep-scroll]')) kept.current = window.scrollY;
+      }
       start(link.closest('main') ?? document.querySelector('main'));
     };
     const onSubmit = (event: SubmitEvent) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clusterOf, computeNeighbors, computePresence, neighborSeats } from './presence';
+import { clusterOf, computeNeighbors, computePresence, durationHours, neighborSeats } from './presence';
 
 // Local hours come from the timezone database (Morocco's offset has changed over the years), never a fixed offset.
 const localHour = (iso: string) => Number(new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Casablanca', hour: '2-digit', hourCycle: 'h23' }).format(Date.parse(iso)));
@@ -56,5 +56,25 @@ describe('seat neighbors', () => {
       { host: 'e3r3p8', begin: '2026-05-01T09:00:00Z', end: '2026-05-01T13:00:00Z', userId: 1, login: 'me', photo: null },
     ];
     expect(computeNeighbors(mine, theirs, 1, Date.parse('2026-06-01T00:00:00Z')).map((p) => [p.login, p.hours])).toEqual([['yassine', 4], ['amina', 2]]);
+  });
+});
+
+describe('daily logtime totals', () => {
+  it('parses 42 duration strings', () => {
+    expect(durationHours('06:59:44.125713')).toBeCloseTo(6.9956, 3);
+    expect(durationHours('00:30:00')).toBe(0.5);
+    expect(durationHours('bad')).toBe(0);
+  });
+  it('takes day figures from the daily totals and seats from the sessions', () => {
+    const daily = { '2026-10-01': 1, '2026-10-17': 3, '2026-10-18': 5, '2026-10-19': 2, '2026-10-20': 4 };
+    const presence = computePresence([{ host: 'e3r3p6', begin: at(19, 8), end: at(19, 10) }], at(2, 0), now, 12, daily);
+    expect(presence.totalHours).toBe(14);           // 2026-10-01 is before `from`
+    expect(presence.activeDays).toBe(4);
+    expect(presence.longestStreak).toBe(4);
+    expect(presence.currentStreak).toBe(4);
+    expect(presence.bestDay).toEqual({ date: '2026-10-18', hours: 5 });
+    expect(presence.months.at(-1)).toEqual({ key: '2026-10', hours: 14 });
+    expect(presence.weekdays[5]).toBe(3);           // 2026-10-17 is a Saturday
+    expect(presence.seats).toEqual([{ host: 'e3r3p6', hours: 2 }]);
   });
 });

@@ -24,8 +24,21 @@ const nextDate = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86
 /** Cluster of a seat such as "e3r3p6" → "e3". */
 export const clusterOf = (host: string) => host.match(/^([a-z]+\d+)r\d+/i)?.[1] ?? host;
 
-/** Logtime habits from computer sessions since `from`, split by Morocco local day and hour. */
-export function computePresence(sessions: Session[], from: string, now = Date.now(), monthsBack = 12): Presence {
+/** Seats and hours of the day come from raw sessions, which cost a request per 100; only this recent window is fetched. */
+export const SESSION_DAYS = 90;
+
+/** "06:59:44.125713" → hours. 42 reports each day's logtime as a duration string. */
+export function durationHours(value: string): number {
+  const [h, m, s] = value.split(':').map(Number);
+  return [h, m, s].every(Number.isFinite) ? h + m / 60 + s / 3600 : 0;
+}
+const weekdayOf = (date: string) => (new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7;
+
+/**
+ * Logtime habits split by Morocco local day and hour. `daily` (42's per-day totals since `from`) drives every
+ * day-based figure; without it they come from the sessions. Seats and hours of the day always come from the sessions.
+ */
+export function computePresence(sessions: Session[], from: string, now = Date.now(), monthsBack = 12, daily?: Record<string, number>): Presence {
   const start = Date.parse(from);
   const days: Record<string, number> = {}, hours = Array(24).fill(0), weekdays = Array(7).fill(0), byHost = new Map<string, number>(), byMonth = new Map<string, number>();
   for (const session of sessions) {
@@ -39,6 +52,16 @@ export function computePresence(sessions: Session[], from: string, now = Date.no
       days[at.date] = (days[at.date] ?? 0) + h; hours[at.hour] += h; weekdays[at.weekday] += h;
       byMonth.set(at.date.slice(0, 7), (byMonth.get(at.date.slice(0, 7)) ?? 0) + h);
       begin += slice;
+    }
+  }
+  if (daily) {
+    const first = local(start).date;
+    for (const key of Object.keys(days)) delete days[key];
+    weekdays.fill(0); byMonth.clear();
+    for (const [date, h] of Object.entries(daily)) {
+      if (date < first || !(h > 0)) continue;
+      days[date] = h; weekdays[weekdayOf(date)] += h;
+      byMonth.set(date.slice(0, 7), (byMonth.get(date.slice(0, 7)) ?? 0) + h);
     }
   }
   const active = Object.keys(days).filter((date) => days[date] >= .25).sort();
@@ -65,13 +88,31 @@ const locationSchema = z.object({ host: z.string(), begin_at: z.string(), end_at
 const fetchSessions = unstable_cache(async (userId: number, from: string): Promise<Session[]> => {
   const path = `users/${userId}/locations`, base = { 'range[begin_at]': `${from},${new Date(Date.now() + 86_400_000).toISOString()}`, sort: '-begin_at', 'page[size]': '100' };
   const first = await fortyTwoApi.request(path, z.array(locationSchema), { ...base, 'page[number]': '1' });
-  const pages = Math.min(30, Math.ceil((first.total ?? first.data.length) / 100));
+  const pages = Math.min(10, Math.ceil((first.total ?? first.data.length) / 100));
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request(path, z.array(locationSchema), { ...base, 'page[number]': String(i + 2) })));
   return [first.data, ...rest.map((page) => page.data)].flat().map((row) => ({ host: row.host, begin: row.begin_at, end: row.end_at ?? null, campus: row.campus_id ?? undefined }));
-}, ['1337-presence-v2'], { revalidate: 21_600 });
+}, ['1337-presence-v3'], { revalidate: 21_600 });
+
+const YEAR = 365 * 86_400_000;
+const dailySchema = z.record(z.string(), z.string());
+/** 42's logtime per day, one request per year of history instead of one per 100 sessions. */
+const fetchDaily = unstable_cache(async (userId: number, from: string): Promise<Record<string, number>> => {
+  const end = Date.now() + 86_400_000, ranges: [number, number][] = [];
+  for (let begin = Date.parse(from); begin < end; begin += YEAR) ranges.push([begin, Math.min(begin + YEAR, end)]);
+  const day = (time: number) => new Date(time).toISOString().slice(0, 10);
+  const parts = await Promise.all(ranges.slice(-4).map(([begin, stop]) => fortyTwoApi.request(`users/${userId}/locations_stats`, dailySchema, { begin_at: day(begin), end_at: day(stop) })));
+  const daily: Record<string, number> = {};
+  for (const part of parts) for (const [date, value] of Object.entries(part.data)) if (/^\d{4}-\d{2}-\d{2}$/.test(date)) daily[date] = Math.min(24, durationHours(value));
+  return daily;
+}, ['1337-presence-daily-v1'], { revalidate: 21_600 });
+
+const recentFrom = (from: string) => new Date(Math.max(Date.parse(from), Date.now() - SESSION_DAYS * 86_400_000)).toISOString();
 
 export async function loadPresence(userId: number, from: string): Promise<{ status: 'ready'; presence: Presence } | { status: 'rate-limited' | 'unavailable' }> {
-  try { return { status: 'ready', presence: computePresence(await fetchSessions(userId, from), from) }; }
+  try {
+    const [sessions, daily] = await Promise.all([fetchSessions(userId, recentFrom(from)), fetchDaily(userId, from)]);
+    return { status: 'ready', presence: computePresence(sessions, from, Date.now(), 12, daily) };
+  }
   catch (error) {
     if (error instanceof RateBudgetError) return { status: 'rate-limited' };
     console.error('Presence failed:', error instanceof Error ? error.name : 'unknown');
@@ -125,7 +166,7 @@ const fetchSeat = unstable_cache(async (campus: number, host: string, from: stri
 export async function loadNeighbors(userId: number, from: string): Promise<{ status: 'ready'; neighbors: Neighbor[] } | { status: 'rate-limited' | 'unavailable' }> {
   try {
     const since = new Date(Math.max(Date.parse(from), Date.now() - 365 * 86_400_000)).toISOString();
-    const mine = (await fetchSessions(userId, from)).filter((session) => Date.parse(session.begin) >= Date.parse(since));
+    const mine = (await fetchSessions(userId, recentFrom(from))).filter((session) => Date.parse(session.begin) >= Date.parse(since));
     const top = computePresence(mine, since).seats.slice(0, 3).map((seat) => seat.host);
     const campus = mine.find((session) => session.campus)?.campus;
     if (!campus || !top.length) return { status: 'ready', neighbors: [] };
