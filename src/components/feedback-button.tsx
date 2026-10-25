@@ -65,7 +65,7 @@ export function FeedbackButton({ login }: { login: string }) {
         {sent ? <div className="sv-step sv-done">
           <Image className="fb-art" src="/assets/feedback/sent.webp" alt="" width={80} height={80}/>
           <Dialog.Title className="sv-title">Thanks, got it!</Dialog.Title>
-          <p className="sv-lead">{reply ? `We'll message ${login} on 42 Intra if we need more details.` : 'Every report is read by the team.'}</p>
+          <p className="sv-lead">Every report is read by the team.</p>
           <div className="sv-actions"><Dialog.Close className="sv-primary">Close</Dialog.Close></div>
         </div> : <form className="sv-step" onSubmit={send}>
           <Image className="fb-art" src="/assets/feedback/chat.webp" alt="" width={80} height={80}/>
@@ -82,7 +82,6 @@ export function FeedbackButton({ login }: { login: string }) {
           </label>
           <input type="checkbox" name="botcheck" className="fb-bot" tabIndex={-1} autoComplete="off" aria-hidden="true"/>
           <label className="fb-reply"><input type="checkbox" checked={reply} onChange={(event) => setReply(event.target.checked)} disabled={sending}/><span>Add my login (<b>{login}</b>) so we can reply</span></label>
-          <p className="sv-hint">We also attach the page you are on ({pathname}) and your screen size.</p>
           {error && <p className="sv-hint fb-error" role="alert">{error}</p>}
           <div className="sv-actions">
             <button type="button" className="sv-secondary" onClick={() => change(false)} disabled={sending}>Cancel</button>

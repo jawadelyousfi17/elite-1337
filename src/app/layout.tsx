@@ -6,6 +6,7 @@ import localFont from 'next/font/local';
 import Script from 'next/script';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 import { UMAMI_DOMAINS, UMAMI_WEBSITE_ID } from '@/lib/analytics';
+import { VercelAnalytics } from '@/components/vercel-analytics';
 
 const generalSans = localFont({
   src: [
@@ -27,12 +28,12 @@ export const metadata: Metadata = {
     type: 'website', locale: 'en_US', siteName,
     title: 'Elite 1337 — Student Rankings & Common Core Progress',
     description: siteDescription,
-    images: [{ url: '/assets/elite-1337-social.webp', width: 1200, height: 630, alt: 'Elite 1337 — Student rankings. Common Core progress. Your community.' }],
+    images: [{ url: '/assets/elite-1337-social-v2.png', width: 1200, height: 630, alt: 'Elite 1337 — Stay up to date!' }],
   },
   twitter: {
     card: 'summary_large_image', title: 'Elite 1337 — Student Rankings & Common Core Progress',
     description: siteDescription,
-    images: ['/assets/elite-1337-social.webp'],
+    images: ['/assets/elite-1337-social-v2.png'],
   },
 };
 
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body suppressHydrationWarning>
         {children}
         <Script src="https://cloud.umami.is/script.js" data-website-id={UMAMI_WEBSITE_ID} data-domains={UMAMI_DOMAINS} data-exclude-search="true" strategy="afterInteractive"/>
+        <VercelAnalytics/>
       </body>
     </html>
   );

@@ -1,6 +1,8 @@
 import { StickySide } from '@/components/sticky-side';
 import { KiwiNote } from '@/components/kiwi-guide';
 import Link from 'next/link';
+import { HackerBadge } from '@/components/hacker-badge';
+import { hackerLogins } from '@/lib/hackers';
 import { ArrowUpRight, Campus, ChevronLeft, ChevronRight, Cohort, Hourglass, Reverse, RotateCcw, Search, X } from '@/components/icons';
 import { z } from 'zod';
 import { Avatar } from '@/components/avatar';
@@ -50,6 +52,7 @@ const href = (filters: Partial<Filters>) => {
 };
 
 export default async function Leaderboard({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const hackers = hackerLogins();
   const user = await requireStudent();
   const raw = await searchParams;
   const param = (key: string) => { const value = raw[key]; return value === ALL ? '' : value; };
@@ -112,7 +115,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
         const mine = String(student.id) === user.id;
         return <li key={student.id} className="pl-item"><div className={cn('pl-row', mine && 'is-mine')} style={{ '--pastel': pastel(student.rank) } as React.CSSProperties}>
           <span className="pl-avatar"><Avatar login={student.login} src={avatars[student.id]} size={45}/></span>
-          <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link>{mine && <em>You</em>}</strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</span></span>
+          <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link>{hackers.has(student.login.toLowerCase()) && <HackerBadge/>}{mine && <em>You</em>}</strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</span></span>
           <IntraButton login={student.login}/>
           <span className="pl-rank" aria-label={`Rank ${student.rank}`}>{student.rank}</span>
         </div></li>;
@@ -132,7 +135,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
 function BlackholedRow({ student, src, campus }: { student: BlackholedStudent; src?: string; campus: string }) {
   return <div className="pl-row is-lost" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties}>
     <span className="pl-avatar"><Avatar login={student.login} src={src} size={45}/></span>
-    <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link></strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {campus}</span></span>
+    <span className="pl-copy"><strong><Link href={appHref(student.login)} className="pl-row-link">{student.login}</Link>{hackerLogins().has(student.login.toLowerCase()) && <HackerBadge/>}</strong><span><b>Level {student.level.toFixed(2)}</b> · {student.commonCoreEntryYear ?? '?'} · {campus}</span></span>
     <IntraButton login={student.login}/>
     <span className="pl-bh is-lost"><Hourglass size={12}/>{shortDate(student.blackholedAt)}</span>
   </div>;

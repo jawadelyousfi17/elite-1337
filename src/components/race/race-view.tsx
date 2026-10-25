@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { ArrowUpRight, X } from '@/components/icons';
+import { HackerBadge } from '@/components/hacker-badge';
 import { KiwiNote } from '@/components/kiwi-guide';
+import { isHacker } from '@/lib/hackers';
 import { loadJourney, summarizeJourney, type Journey } from '@/lib/journey';
 import { circlesDone } from '@/lib/circles';
 import { loadPresence } from '@/lib/presence';
@@ -48,7 +50,7 @@ export async function RaceView({ subject, self, title, path, vs, dataset }: { su
   const intra = `https://profile.intra.42.fr/users/${encodeURIComponent(subject.login)}`;
 
   const head = <header className="race-head">
-    <div><h1>{title}</h1><p>{self ? 'Your Common Core, from day one to today. Every crash is a failed attempt.' : `${subject.login}'s Common Core. Every crash is a failed attempt.`}</p></div>
+    <div><h1>{title}{isHacker(subject.login) && <HackerBadge/>}</h1><p>{self ? 'Your Common Core, from day one to today. Every crash is a failed attempt.' : `${subject.login}'s Common Core. Every crash is a failed attempt.`}</p></div>
     <div className="race-head-actions">
       <RaceSearch path={path} initial={vs}/>
       {!self && <a className="race-intra" href={intra} target="_blank" rel="noopener noreferrer">Intra<ArrowUpRight size={14} weight="bold"/></a>}

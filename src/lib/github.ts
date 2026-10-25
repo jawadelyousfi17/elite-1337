@@ -1,5 +1,5 @@
-export const REPO_URL = 'https://github.com/ikosoftT/LEET_RANK';
-const REPO_API = 'https://api.github.com/repos/ikosoftT/LEET_RANK';
+export const REPO_URL = 'https://github.com/jawadelyousfi17/elite-1337';
+const REPO_API = 'https://api.github.com/repos/jawadelyousfi17/elite-1337';
 
 /** Star count, cached for an hour. A private repo needs GITHUB_TOKEN (read-only metadata access); null when unavailable. */
 export async function repoStars(): Promise<number | null> {

@@ -4,7 +4,7 @@ import {
   ChartLineUp, Check as PhCheck, ClockCountdown, Desktop, FolderSimple, GridFour, Lock, MagnifyingGlass, MagnifyingGlassMinus, MagnifyingGlassPlus,
   ArrowCounterClockwise, Buildings, GithubLogo, InstagramLogo, LinkedinLogo, HourglassMedium, SealCheck, CalendarBlank, UsersThree, FunnelSimple,
   ChartBar, CrownSimple, ArrowsDownUp, WhatsappLogo, CreditCard as PhCreditCard, Gift as PhGift, Cloud as PhCloud, Globe as PhGlobe, Briefcase as PhBriefcase, ShieldCheck as PhShieldCheck, Info as PhInfo, Sun as PhSun, Moon as PhMoon, Star as PhStar, Coffee as PhCoffee, Heart as PhHeart, GraduationCap, Heartbeat, TrendUp as PhTrendUp, TrendDown as PhTrendDown, Ranking as PhRanking,
-  ChatTeardropText, MapPin as PhMapPin, MapTrifold, SpeakerHigh, SpeakerSlash, Question, SignOut, SlidersHorizontal as PhSliders, Trophy as PhTrophy, User, Wallet as PhWallet, Waves as PhWaves, X as PhX,
+  ChatTeardropText, Bug as PhBug, MapPin as PhMapPin, MapTrifold, SpeakerHigh, SpeakerSlash, Question, SignOut, SlidersHorizontal as PhSliders, Trophy as PhTrophy, User, Wallet as PhWallet, Waves as PhWaves, X as PhX,
 } from '@phosphor-icons/react/dist/ssr';
 import type { IconProps as PhIconProps } from '@phosphor-icons/react';
 
@@ -81,3 +81,4 @@ export const Crown = icon(CrownSimple, 'fill');
 export const Sound = icon(SpeakerHigh);
 export const Muted = icon(SpeakerSlash);
 export const ChatText = icon(ChatTeardropText);
+export const Bug = icon(PhBug);

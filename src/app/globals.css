@@ -1615,3 +1615,23 @@ main[data-pending]{cursor:progress}
 .fa-message{margin:10px 0 0;color:#f2f2f2;font-size:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 .fa-context{margin:10px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
 .fa-empty{padding:48px 0;color:var(--muted);text-align:center}
+
+/* Try hack me: desktop-only pill above Feedback (shares .fb-pill), its dialog, and the HACKER badge. */
+.hk-pill{bottom:84px}
+.tw-trigger ~ .hk-pill,.hk-pill:has(~ .tw-trigger){bottom:148px}
+.hk-pill svg{color:#e5484d}
+@media(max-width:1023px),(hover:none) and (pointer:coarse){.hk-pill{display:none}}
+.hk-icon{background:#ff8a8f;color:#4c111a}
+.hk-rules{display:flex;flex-direction:column;gap:8px;list-style:none;margin:18px 0 4px;padding:0;color:#cfcfcf;font-size:13px;line-height:1.45}
+.hk-rules li{display:flex;gap:10px}
+.hk-rules li span{flex-shrink:0;font-size:14px;line-height:1.35}
+.hk-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#ff8a8f;color:#4c111a;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
+h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
+
+/* Navbar GitHub hover tip. */
+.gh-stars.is-nav{position:relative}
+.gh-tip{position:absolute;top:calc(100% + 10px);left:50%;z-index:60;padding:6px 11px;border-radius:999px;background:#fff;color:#0a0a0a;font-size:12px;font-weight:600;white-space:nowrap;pointer-events:none;opacity:0;transform:translate(-50%,-4px);transition:opacity .15s,transform .15s}
+.gh-tip::before{content:'';position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;background:inherit;transform:rotate(45deg)}
+@media(hover:hover){.gh-stars.is-nav:hover .gh-tip{opacity:1;transform:translate(-50%,0)}}
+.gh-stars.is-nav:focus-visible .gh-tip{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){.gh-tip{transition:none}}

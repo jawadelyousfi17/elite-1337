@@ -370,6 +370,17 @@ html[data-tw-surface]:not(:has(.landing)) .legal-body section{background:var(--t
 html[data-tw-surface]:not(:has(.landing)) .instant-bar span{background:linear-gradient(90deg,#d9f7fa,#cafbd2,#f2d1fb)!important}
 html[data-tw-surface]:not(:has(.landing)) .fb-pill:hover{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .fb-field textarea{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-filter{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-filter:hover{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-filter.is-picked{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-item{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-kind{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-bug{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-idea{background:#fff0b5!important}
+html[data-tw-surface]:not(:has(.landing)) .hk-icon{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .hk-badge{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .gh-tip{background:#fff!important}
+html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger:hover,html[data-tw-surface]:not(:has(.landing)) .support-trigger[data-state=open]{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .support-trigger-icon{background:#cafbd2!important}
@@ -406,7 +417,9 @@ html[data-tw-accent] .pr-cell.is-l4{background:var(--tw-accent)!important}
 html[data-tw-accent] .pr-seats em{background:var(--tw-accent)!important}
 html[data-tw-accent] .race-sound[aria-pressed=true]{color:var(--tw-accent)!important}
 html[data-tw-accent] .legal-body a{color:var(--tw-accent)!important}
-html[data-tw-accent] .fb-pill svg{color:var(--tw-accent)!important}
+html[data-tw-accent] .fa-filter.is-picked{background:var(--tw-accent)!important}
+html[data-tw-accent] .fa-meta a:hover{color:var(--tw-accent)!important}
+html[data-tw-accent] .fa-kind{background:var(--tw-accent)!important}
 html[data-tw-accent] .support-trigger-icon{background:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
@@ -655,6 +668,11 @@ html[data-tw-radius] .legal-other{border-radius:999px!important}
 html[data-tw-radius] .legal-body section{border-radius:calc(22px * var(--tw-r))!important}
 @media (max-width:860px){html[data-tw-radius] .legal-toc li a{border-radius:999px!important}}
 html[data-tw-radius] .fb-field textarea{border-radius:calc(14px * var(--tw-r))!important}
+html[data-tw-radius] .fa-filter{border-radius:999px!important}
+html[data-tw-radius] .fa-item{border-radius:calc(18px * var(--tw-r))!important}
+html[data-tw-radius] .fa-kind{border-radius:999px!important}
+html[data-tw-radius] .hk-badge{border-radius:999px!important}
+html[data-tw-radius] .gh-tip{border-radius:999px!important}
 html[data-tw-radius] .support-trigger{border-radius:999px!important}
 html[data-tw-radius] .support-trigger-icon{border-radius:50%!important}
 html[data-tw-radius] .support-dialog{border-radius:calc(28px * var(--tw-r))!important}
@@ -1011,7 +1029,7 @@ html[data-tw-light]:not(:has(.landing)) .race-vs:hover{background:#e2e2df!import
 html[data-tw-light]:not(:has(.landing)) .race-vs-icon{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs input::placeholder{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs button{background:#141414!important;color:#fff!important}
-html[data-tw-light]:not(:has(.landing)) .race-vs:focus-within{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .race-vs:focus-within{background:#e2e2df!important;border-color:#0000001f!important}
 html[data-tw-light]:not(:has(.landing)) .race-intra{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .race-intra:hover{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .race-versus-note{color:#5f5f5f!important}
@@ -1071,6 +1089,13 @@ html[data-tw-light]:not(:has(.landing)) .fb-field textarea{background:#ecece9!im
 html[data-tw-light]:not(:has(.landing)) .fb-field textarea::placeholder{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .fb-field small{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .fb-reply{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .fa-filter{background:#ffffff!important;color:#3d3d3d!important;border:1px solid #00000014!important}
+html[data-tw-light]:not(:has(.landing)) .fa-filter:hover{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .fa-item{background:#ffffff!important;border:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .fa-meta a{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .fa-message{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .hk-rules{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .gh-tip{background:#141414!important;color:#fff!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger{background:#ecece9!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger:hover,html[data-tw-light]:not(:has(.landing)) .support-trigger[data-state=open]{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .support-trigger-arrow{color:#5f5f5f!important}
@@ -1179,7 +1204,6 @@ html:not([data-tw-light]):not(:has(.landing)) .race-fell{background:#d9767b!impo
 html:not([data-tw-light]):not(:has(.landing)) .race-controls button:focus-visible,html:not([data-tw-light]):not(:has(.landing)) .race-scrub:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pl-row:has(.pl-row-link:focus-visible){outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .race-vs:focus-within .race-vs-icon,html:not([data-tw-light]):not(:has(.landing)) .race-vs:hover .race-vs-icon{color:#a7d8b1!important}
-html:not([data-tw-light]):not(:has(.landing)) .race-vs:focus-within{border-color:#a7d8b1!important;box-shadow:0 0 0 4px #a7d8b12e!important}
 html:not([data-tw-light]):not(:has(.landing)) .race-notice{color:#d89a9b!important}
 html:not([data-tw-light]):not(:has(.landing)) .race-vs-list em.is-lost{color:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .race-scrub{background:linear-gradient(90deg,#a7d8b1,#8fe0a2) 0/var(--p) 100% no-repeat,#ffffff14!important}
@@ -1195,11 +1219,17 @@ html:not([data-tw-light]):not(:has(.landing)) .race-sound[aria-pressed=true]{col
 html:not([data-tw-light]):not(:has(.landing)) .race-sound:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .legal-body a{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .instant-bar span{background:linear-gradient(90deg,#a9d1d6,#a7d8b1,#cdaed8)!important}
-html:not([data-tw-light]):not(:has(.landing)) .fb-pill svg{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-pill:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-field textarea:focus{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-reply input{accent-color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-error{color:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-filter.is-picked{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-meta a:hover{color:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-kind{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-kind.is-bug{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-kind.is-idea{background:#dccd92!important}
+html:not([data-tw-light]):not(:has(.landing)) .hk-icon{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .hk-badge{background:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .support-trigger-icon{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .support-option{--food-tone:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .support-option:nth-of-type(2){--food-tone:#c9a3d6!important}
