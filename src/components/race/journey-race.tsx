@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Journey, Stop } from '@/lib/journey';
 import { circlesDone } from '@/lib/circles';
-import { Crown, Muted, Sound } from '@/components/icons';
+import { Check, Crown, Muted, Sound, X } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { hushSfx, playSfx, unlockSfx, type Cue } from './race-sfx';
 
@@ -93,13 +93,13 @@ function revealedAt(segments: Segment[], t: number) {
   return shown;
 }
 
-/** Attempt badges above a hurdle: each crash shows while the runner is still trying; once cleared, they fold into one small "✗ ×N". */
+/** Attempt badges above a hurdle: each crash shows while the runner is still trying; once cleared, they fold into one small "× N" badge. */
 function Tries({ attempts }: { attempts: Stop['attempts'] }) {
   const fails = attempts.filter((attempt) => !attempt.passed), pass = attempts.find((attempt) => attempt.passed);
   const folded = !!pass || fails.length > 3;
   return <span className="race-tries">
-    {folded ? fails.length > 0 && <i className="is-fail is-folded" key={`n${fails.length}`}>✗<em>×{fails.length}</em></i> : fails.map((attempt, a) => <i key={a} className="is-fail">✗{attempt.mark !== null && <em>{attempt.mark}</em>}</i>)}
-    {pass && <i className="is-pass">✓{pass.mark !== null && <em>{pass.mark}</em>}</i>}
+    {folded ? fails.length > 0 && <i className="is-fail is-folded" key={`n${fails.length}`}><X size={10} weight="bold"/><em>×{fails.length}</em></i> : fails.map((attempt, a) => <i key={a} className="is-fail"><X size={11} weight="bold"/>{attempt.mark !== null && <em>{attempt.mark}</em>}</i>)}
+    {pass && <i className="is-pass"><Check size={11} weight="bold"/>{pass.mark !== null && <em>{pass.mark}</em>}</i>}
   </span>;
 }
 
@@ -138,7 +138,7 @@ function Lane({ runner, timeline, t, finished, versus, width, leading = false }:
     </div>)}
     <div className={cn('race-runner', `is-${pose.pose}`, finished && !fell && 'is-home')} style={{ transform: `translate3d(${pose.x - 32}px, ${GROUND - 64 + pose.y}px, 0) rotate(${pose.rot}deg)` }} aria-hidden="true">
       <img src={runner.art} alt="" width={64} height={64}/>
-      {pose.pose === 'crash' && <span className="race-bonk">✗</span>}
+      {pose.pose === 'crash' && <span className="race-bonk"><X size={14} weight="bold"/></span>}
       {runner.tag && <span className="race-tag">{leading && <span className="race-tag-crown" aria-hidden="true"><Crown size={22}/></span>}{runner.login}</span>}
     </div>
     {finished && !fell && <span className="race-here" style={{ left: timeline.endX }}>{versus ? 'Today' : 'You are here'}</span>}

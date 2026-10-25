@@ -335,7 +335,7 @@ html[data-tw-surface]:not(:has(.landing)) .race-notice{background:#2a1517!import
 html[data-tw-surface]:not(:has(.landing)) .race-versus-note a{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .race-tag{background:#0a0a0acc!important}
 html[data-tw-surface]:not(:has(.landing)) .race-circle-label{background:var(--tw-raise)!important}
-html[data-tw-surface]:not(:has(.landing)) .race-circle.is-unlocked .race-circle-star{background:radial-gradient(circle,#fff3c4,#f5c542 70%)!important}
+html[data-tw-surface]:not(:has(.landing)) .race-circle.is-unlocked .race-circle-star{background:#f5c542!important}
 html[data-tw-surface]:not(:has(.landing)) .race-circle.is-unlocked .race-circle-label{background:#f5c542!important}
 html[data-tw-surface]:not(:has(.landing)) .race-vs-list{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .race-vs-list li.is-active{background:var(--tw-hover)!important}
