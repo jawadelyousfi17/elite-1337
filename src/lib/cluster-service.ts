@@ -1,20 +1,21 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { campusIds } from './config';
 import { buildClusterSnapshot, normalizeWorkstationId, summarizeActiveLocations } from './cluster-core';
 import { inventoryFor } from './cluster-layout';
 import { fortyTwoApi } from './fortytwo-api';
 import { getStudentProfile } from './student-overview';
 
-const cachedActive = unstable_cache(async (campusId: number) => {
+const cachedActive = singleFlight(unstable_cache(async (campusId: number) => {
   const locations = await fortyTwoApi.campusActiveLocations(campusId);
   const fetchedAt = new Date().toISOString();
   return { fetchedAt, hosts: summarizeActiveLocations(campusId, locations, Date.parse(fetchedAt)) };
-}, ['1337-anonymous-active-hosts-v1'], { revalidate: 180 });
+}, ['1337-anonymous-active-hosts-v1'], { revalidate: 180 }));
 
-const cachedObserved = unstable_cache(async (campusId: number) => {
+const cachedObserved = singleFlight(unstable_cache(async (campusId: number) => {
   const hosts = await fortyTwoApi.campusObservedHosts(campusId);
   return [...new Set(hosts.map(normalizeWorkstationId).filter((host): host is string => !!host))];
-}, ['1337-observed-campus-hosts-v1'], { revalidate: 86_400 });
+}, ['1337-observed-campus-hosts-v1'], { revalidate: 86_400 }));
 
 export async function clusterMembership(userId: string): Promise<{ memberships: number[]; primary: number | null }> {
   const profile = await getStudentProfile(userId);

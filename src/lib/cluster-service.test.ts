@@ -4,6 +4,7 @@ import { getStudentProfile } from './student-overview';
 import { clusterMembership, getClusterSnapshot } from './cluster-service';
 
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
+vi.mock('./single-flight', () => ({ singleFlight: (fn: unknown) => fn }));
 vi.mock('./fortytwo-api', () => ({ fortyTwoApi: { campusActiveLocations: vi.fn(), campusObservedHosts: vi.fn() } }));
 vi.mock('./student-overview', () => ({ getStudentProfile: vi.fn() }));
 

@@ -1,9 +1,10 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { campusIds } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiUserSummary } from './fortytwo-api';
 
 export type PiscineCandidate = ApiUserSummary & { campusId: number };
-const cached = unstable_cache(async (campus: number | null, year: string, month: string | null) => {
+const cached = singleFlight(unstable_cache(async (campus: number | null, year: string, month: string | null) => {
   const ids = campus === null ? campusIds() : [campus];
   const lists = await Promise.all(ids.map(async (campusId) => (await fortyTwoApi.usersByPiscine(campusId, year, month ?? undefined)).map((user) => ({ ...user, campusId }))));
   const deduped = new Map<number, PiscineCandidate>();
@@ -12,7 +13,7 @@ const cached = unstable_cache(async (campus: number | null, year: string, month:
     deduped.set(candidate.id, candidate);
   }
   return [...deduped.values()].sort((a, b) => a.login.localeCompare(b.login));
-}, ['1337-piscine-candidates-v2'], { revalidate: 3600 });
+}, ['1337-piscine-candidates-v2'], { revalidate: 3600 }));
 
 export async function loadPiscineCandidates(campus: number | null, year: string, month: string | null):
   Promise<{ status: 'ready'; candidates: PiscineCandidate[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {

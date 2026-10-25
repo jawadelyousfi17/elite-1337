@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { z } from 'zod';
 import { fortyTwoApi, RateBudgetError } from './fortytwo-api';
 import { intraPhotoPath, intraPhotoUrl } from './avatars/intra-photo';
@@ -85,18 +86,18 @@ export function computePresence(sessions: Session[], from: string, now = Date.no
 
 const locationSchema = z.object({ host: z.string(), begin_at: z.string(), end_at: z.string().nullish(), campus_id: z.number().nullish() });
 
-const fetchSessions = unstable_cache(async (userId: number, from: string): Promise<Session[]> => {
+const fetchSessions = singleFlight(unstable_cache(async (userId: number, from: string): Promise<Session[]> => {
   const path = `users/${userId}/locations`, base = { 'range[begin_at]': `${from},${new Date(Date.now() + 86_400_000).toISOString()}`, sort: '-begin_at', 'page[size]': '100' };
   const first = await fortyTwoApi.request(path, z.array(locationSchema), { ...base, 'page[number]': '1' });
   const pages = Math.min(10, Math.ceil((first.total ?? first.data.length) / 100));
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request(path, z.array(locationSchema), { ...base, 'page[number]': String(i + 2) })));
   return [first.data, ...rest.map((page) => page.data)].flat().map((row) => ({ host: row.host, begin: row.begin_at, end: row.end_at ?? null, campus: row.campus_id ?? undefined }));
-}, ['1337-presence-v3'], { revalidate: 21_600 });
+}, ['1337-presence-v3'], { revalidate: 21_600 }));
 
 const YEAR = 365 * 86_400_000;
 const dailySchema = z.record(z.string(), z.string());
 /** 42's logtime per day, one request per year of history instead of one per 100 sessions. */
-const fetchDaily = unstable_cache(async (userId: number, from: string): Promise<Record<string, number>> => {
+const fetchDaily = singleFlight(unstable_cache(async (userId: number, from: string): Promise<Record<string, number>> => {
   const end = Date.now() + 86_400_000, ranges: [number, number][] = [];
   for (let begin = Date.parse(from); begin < end; begin += YEAR) ranges.push([begin, Math.min(begin + YEAR, end)]);
   const day = (time: number) => new Date(time).toISOString().slice(0, 10);
@@ -104,7 +105,7 @@ const fetchDaily = unstable_cache(async (userId: number, from: string): Promise<
   const daily: Record<string, number> = {};
   for (const part of parts) for (const [date, value] of Object.entries(part.data)) if (/^\d{4}-\d{2}-\d{2}$/.test(date)) daily[date] = Math.min(24, durationHours(value));
   return daily;
-}, ['1337-presence-daily-v1'], { revalidate: 21_600 });
+}, ['1337-presence-daily-v1'], { revalidate: 21_600 }));
 
 /** Day-aligned so the cache key (userId, from) stays the same for a whole day instead of changing every request. */
 const dayStart = (time: number) => Math.floor(time / 86_400_000) * 86_400_000;
@@ -156,13 +157,13 @@ export function computeNeighbors(mine: Session[], theirs: SeatSession[], selfId:
 
 const seatSchema = z.object({ host: z.string(), begin_at: z.string(), end_at: z.string().nullish(), user: z.object({ id: z.number(), login: z.string(), image: z.unknown().optional() }) });
 
-const fetchSeat = unstable_cache(async (campus: number, host: string, from: string): Promise<SeatSession[]> => {
+const fetchSeat = singleFlight(unstable_cache(async (campus: number, host: string, from: string): Promise<SeatSession[]> => {
   const path = `campus/${campus}/locations`, base = { 'filter[host]': host, 'range[begin_at]': `${from},${new Date(Date.now() + 86_400_000).toISOString()}`, sort: '-begin_at', 'page[size]': '100' };
   const first = await fortyTwoApi.request(path, z.array(seatSchema), { ...base, 'page[number]': '1' });
   const pages = Math.min(8, Math.ceil((first.total ?? first.data.length) / 100));
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request(path, z.array(seatSchema), { ...base, 'page[number]': String(i + 2) })));
   return [first.data, ...rest.map((page) => page.data)].flat().map((row) => ({ host: row.host, begin: row.begin_at, end: row.end_at ?? null, userId: row.user.id, login: row.user.login, photo: intraPhotoPath(row.user.image) }));
-}, ['1337-seat-v1'], { revalidate: 21_600 });
+}, ['1337-seat-v1'], { revalidate: 21_600 }));
 
 /** Your most frequent seat neighbors over the last year, from the seats beside your top three seats. */
 export async function loadNeighbors(userId: number, from: string): Promise<{ status: 'ready'; neighbors: Neighbor[] } | { status: 'rate-limited' | 'unavailable' }> {

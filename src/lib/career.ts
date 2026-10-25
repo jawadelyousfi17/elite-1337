@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiProjectUser } from './fortytwo-api';
 import { getRankingDataset } from './dataset';
 import type { StudentRank } from './ranking';
@@ -27,11 +28,11 @@ export function classifyCareer(rows: Pick<ApiProjectUser, 'status' | 'validated?
   return records;
 }
 
-const cached = unstable_cache(async () => {
+const cached = singleFlight(unstable_cache(async () => {
   const dataset = await getRankingDataset();
   const rows = await fortyTwoApi.projectsUsersFor(dataset.students.filter((student) => student.level >= MIN_CAREER_LEVEL).map((student) => student.id), [TRANSCENDENCE, WORK_EXPERIENCE_I, WORK_EXPERIENCE_II]);
   return { records: classifyCareer(rows), fetchedAt: new Date().toISOString() };
-}, ['1337-career-stages-v2'], { revalidate: 21_600 });
+}, ['1337-career-stages-v2'], { revalidate: 21_600 }));
 
 export async function loadCareer(): Promise<{ status: 'ready'; records: CareerRecord[]; fetchedAt: string } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   try { return { status: 'ready', ...(await cached()) }; }

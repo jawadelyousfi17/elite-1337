@@ -156,8 +156,9 @@ export class FortyTwoClient {
     const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => this.request(path, z.array(projectUserSchema), { ...base, 'page[number]': String(i + 2) })));
     if (rest.some((page) => page.total !== first.total)) throw new IncompletePopulationError('Marked projects changed during pagination');
     const all = [first.data, ...rest.map((page) => page.data)].flat();
-    // 42's total counts a few rows it never serves (about 1% here), so accept a small shortfall but never duplicates.
-    if (new Set(all.map((item) => item.id)).size !== all.length || all.length > first.total || all.length < first.total * .98) throw new IncompletePopulationError('Marked projects are incomplete');
+    // 42's total counts a few rows it never serves (about 1–3%), so accept a small shortfall but never duplicates.
+    // Small slices need a floor: 81 of 83 is normal, not a broken page.
+    if (new Set(all.map((item) => item.id)).size !== all.length || all.length > first.total || all.length < first.total - Math.max(5, first.total * .03)) throw new IncompletePopulationError('Marked projects are incomplete');
     return all;
   }
   /** Peer evaluations filled at a campus within a time window, optionally for one cursus. */
@@ -171,7 +172,7 @@ export class FortyTwoClient {
     const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => this.request(path, z.array(scaleTeamSchema), { ...base, 'page[number]': String(i + 2) })));
     const all = [first.data, ...rest.map((page) => page.data)].flat();
     // Evaluations keep arriving while we page, so accept a small drift but never duplicates.
-    if (new Set(all.map((item) => item.id)).size !== all.length || all.length < first.total * .97) throw new IncompletePopulationError('Evaluations are incomplete');
+    if (new Set(all.map((item) => item.id)).size !== all.length || all.length < first.total - Math.max(5, first.total * .03)) throw new IncompletePopulationError('Evaluations are incomplete');
     return all;
   }
   /** Enrollments in the given projects, 100 users per batch; batches run concurrently under the request pacer and are checked for completeness. */

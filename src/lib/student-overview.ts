@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { z } from 'zod';
 import { fortyTwoApi, IncompletePopulationError } from './fortytwo-api';
 
@@ -27,14 +28,14 @@ function checkedId(id: string) {
   return id;
 }
 
-export const getStudentProfile = unstable_cache(async (id: string) => {
+export const getStudentProfile = singleFlight(unstable_cache(async (id: string) => {
   return (await fortyTwoApi.request(`users/${checkedId(id)}`, profileSchema)).data;
-}, ['42-student-profile-v1'], { revalidate: 600 });
+}, ['42-student-profile-v1'], { revalidate: 600 }));
 
-const getLatestProject = unstable_cache(async (id: string) => {
+const getLatestProject = singleFlight(unstable_cache(async (id: string) => {
   const { data } = await fortyTwoApi.request(`users/${checkedId(id)}/projects_users`, z.array(projectSchema), { sort: '-updated_at', 'page[size]': '1' });
   return data[0] ?? null;
-}, ['42-latest-project-v1'], { revalidate: 600 });
+}, ['42-latest-project-v1'], { revalidate: 600 }));
 
 export function calculateLogtimeSeconds(sessions: LocationSession[], dayStart: number, now: number): number {
   const intervals = sessions.map((session) => {
@@ -60,7 +61,7 @@ export function logtimePeriods(now: Date) {
   return { todayStartIso: new Date(todayStart).toISOString(), weekStartIso: new Date(weekStart).toISOString(), monthStartIso: new Date(monthStart).toISOString(), monthEndIso: new Date(monthEnd).toISOString(), earliestStartIso: new Date(Math.min(weekStart, monthStart)).toISOString() };
 }
 
-const getLogtimeSummary = unstable_cache(async (id: string, periods: ReturnType<typeof logtimePeriods>): Promise<LogtimeSummary> => {
+const getLogtimeSummary = singleFlight(unstable_cache(async (id: string, periods: ReturnType<typeof logtimePeriods>): Promise<LogtimeSummary> => {
   const earliestStart = Date.parse(periods.earliestStartIso);
   const sessions: LocationSession[] = [];
   for (let page = 1; page <= 10; page++) {
@@ -79,7 +80,7 @@ const getLogtimeSummary = unstable_cache(async (id: string, periods: ReturnType<
     }
   }
   throw new IncompletePopulationError('Recent location sessions exceed the bounded request budget');
-}, ['42-logtime-summary-v1'], { revalidate: 300 });
+}, ['42-logtime-summary-v1'], { revalidate: 300 }));
 
 export async function loadStudentOverview(id: string, now = new Date()) {
   const periods = logtimePeriods(now);

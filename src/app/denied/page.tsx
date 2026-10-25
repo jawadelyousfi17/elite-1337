@@ -8,7 +8,7 @@ import { Nav } from '@/components/nav';
 export default async function Denied({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
   return <><Nav/><main className="shell dn">
-    <Image className="dn-cat" src="/assets/cats/kiwi-mascot.webp" alt="Kiwi the cat, napping" width={160} height={160} priority/>
+    <Image className="dn-cap-cat" src="/assets/cats/kiwi-cap-reached.png" alt="Kiwi holding a flag that says 1,200 cap reached" width={1254} height={1254} sizes="(max-width: 400px) 72vw, 280px" priority/>
     <h1>42 Intra is busy right now</h1>
     <p>We hit the 1,200 requests per hour cap of the 42 API. Kiwi is taking a nap until it resets. Please come back after this hour ends.</p>
     <Link className="dn-home" href="/">Back home</Link>

@@ -1671,10 +1671,10 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 :root body .avatar .avatar-fallback{border-radius:0!important}
 :root body .pl-winner-portrait,:root body .pl-runner-portrait{background:transparent!important}
 .dn{display:flex;flex-direction:column;align-items:center;max-width:520px;padding-top:clamp(48px,10svh,110px);padding-bottom:64px;text-align:center}
-.dn-cat{width:150px;height:150px;border-radius:50%;animation:kiwi-bob 4s ease-in-out infinite}
+.dn-cap-cat{width:min(280px,72vw);height:auto;animation:kiwi-bob 4s ease-in-out infinite}
 .dn h1{margin:26px 0 0;font-size:clamp(26px,4vw,34px);font-weight:500;letter-spacing:-.01em;color:var(--text)}
 .dn p{margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.6}
 .dn-home{display:inline-flex;align-items:center;justify-content:center;height:44px;margin-top:28px;padding:0 22px;border-radius:999px;background:var(--mint);color:#0a0a0a;font-size:14px;font-weight:500;transition:filter .15s}
 .dn-home:hover{filter:brightness(1.05)}
 .dn small{margin-top:22px;color:var(--muted);font-size:12px;opacity:.75}
-@media(prefers-reduced-motion:reduce){.dn-cat{animation:none}}
+@media(prefers-reduced-motion:reduce){.dn-cap-cat{animation:none}}

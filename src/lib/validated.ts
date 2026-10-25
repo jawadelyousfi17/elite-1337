@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { campusIds, cursusId } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiProjectUser } from './fortytwo-api';
 
@@ -70,12 +71,12 @@ export function returnRates(records: MarkedProject[], campusId?: number, now = D
 const SLICE_DAYS = 5;
 export const sliceOf = (time: number) => Math.floor(time / (SLICE_DAYS * DAY));
 
-function loadSlice(campusId: number, slice: number, final: boolean) {
+const loadSlice = singleFlight(function loadSlice(campusId: number, slice: number, final: boolean) {
   return unstable_cache(async () => {
     const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(final ? (slice + 1) * SLICE_DAYS * DAY : Date.now());
     return fortyTwoApi.markedProjects(campusId, from.toISOString(), to.toISOString());
   }, ['1337-validated-slice-v1', String(campusId), String(slice), final ? 'final' : 'open'], { revalidate: final ? 30 * 86_400 : 1800 })();
-}
+});
 
 /** Newest slices first: a retry moves an enrollment's marked_at forward, and pickMarked keeps the first copy it sees. */
 export function sliceRange(now: number) {

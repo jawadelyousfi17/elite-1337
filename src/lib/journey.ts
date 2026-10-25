@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { z } from 'zod';
 import { cursusId } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError } from './fortytwo-api';
@@ -69,7 +70,7 @@ export function summarizeJourney(journey: Journey): JourneySummary {
 
 const cursusSchema = z.object({ cursus_id: z.number().int(), begin_at: z.string().nullish() });
 
-const fetchRecords = unstable_cache(async (userId: number) => {
+const fetchRecords = singleFlight(unstable_cache(async (userId: number) => {
   const curriculum = cursusId();
   const path = `users/${userId}/projects_users`, base = { 'filter[cursus]': String(curriculum), sort: 'id', 'page[size]': '100' };
   const [first, cursus] = await Promise.all([
@@ -80,7 +81,7 @@ const fetchRecords = unstable_cache(async (userId: number) => {
   if (pages > 5) throw new IncompletePopulationError('Too many project records');
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request(path, z.array(recordSchema), { ...base, 'page[number]': String(i + 2) })));
   return { records: [first.data, ...rest.map((page) => page.data)].flat(), start: cursus.data.find((entry) => entry.cursus_id === curriculum)?.begin_at ?? null };
-}, ['1337-journey-v1'], { revalidate: 3600 });
+}, ['1337-journey-v1'], { revalidate: 3600 }));
 
 /** The student's Common Core race; `fell` is the blackhole date when their enrollment has ended. */
 export async function loadJourney(userId: number, fell: string | null): Promise<{ status: 'ready'; journey: Journey } | { status: 'empty' | 'rate-limited' | 'unavailable' }> {

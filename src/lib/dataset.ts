@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { singleFlight } from './single-flight';
 import { campusIds, cursusId, excludedUserIds } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus, type ApiCursusUser } from './fortytwo-api';
 import { commonCoreEntryYear } from './classification';
@@ -32,7 +33,7 @@ async function fetchCompleteDataset(): Promise<RankingDataset> {
   const blackholed = collectBlackholed(sources, curriculum, new Set(students.map((student) => student.id)));
   return { students, blackholed, acceptedUserIds, campuses, fetchedAt: new Date().toISOString(), complete: true };
 }
-export const getRankingDataset = unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 3600 });
+export const getRankingDataset = singleFlight(unstable_cache(fetchCompleteDataset, ['1337-complete-rankings-v9'], { revalidate: 3600 }));
 export async function loadRankingDataset(): Promise<{ status: 'ready'; data: RankingDataset } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   try { return { status: 'ready', data: await getRankingDataset() }; }
   catch (error) {
