@@ -32,11 +32,11 @@ describe('countValidated', () => {
     { id: '4', campusId: 21, at: hoursAgo(24 * 40), project: 'libft', validated: true, internship: false },
     { id: '5', campusId: 21, at: hoursAgo(5), project: 'push_swap', validated: true, internship: false },
   ];
-  it('counts the last day, week and month', () => {
-    expect(countValidated(records, undefined, now)).toEqual({ day: 2, week: 3, month: 4 });
+  it('counts the last week and month', () => {
+    expect(countValidated(records, undefined, now)).toEqual({ week: 3, month: 4 });
   });
   it('narrows to one campus', () => {
-    expect(countValidated(records, 21, now)).toEqual({ day: 1, week: 1, month: 2 });
+    expect(countValidated(records, 21, now)).toEqual({ week: 1, month: 2 });
   });
 });
 
@@ -49,11 +49,11 @@ describe('topValidated', () => {
     { id: '5', campusId: 21, at: hoursAgo(24 * 11), project: 'libft', validated: true, internship: false },
   ];
   it('ranks projects by validations in the window', () => {
-    expect(topValidated(records, 'day', undefined, 5, now)).toEqual([{ project: 'push_swap', count: 2 }, { project: 'libft', count: 1 }]);
+    expect(topValidated(records, 'week', undefined, 5, now)).toEqual([{ project: 'push_swap', count: 2 }, { project: 'libft', count: 1 }]);
     expect(topValidated(records, 'month', undefined, 1, now)).toEqual([{ project: 'libft', count: 3 }]);
   });
   it('narrows to one campus', () => {
-    expect(topValidated(records, 'day', 16, 5, now)).toEqual([{ project: 'libft', count: 1 }, { project: 'push_swap', count: 1 }]);
+    expect(topValidated(records, 'week', 16, 5, now)).toEqual([{ project: 'libft', count: 1 }, { project: 'push_swap', count: 1 }]);
   });
 });
 
@@ -65,7 +65,6 @@ describe('returnRates', () => {
   ];
   it('returns the share of graded projects that were not validated, per window', () => {
     const all = returnRates(records, undefined, now);
-    expect(all.day).toEqual({ marked: 3, returned: 1, rate: 1 / 3 });
     expect(all.week).toEqual({ marked: 4, returned: 2, rate: .5 });
     expect(all.month).toEqual({ marked: 6, returned: 3, rate: .5 });
   });
@@ -73,13 +72,13 @@ describe('returnRates', () => {
     expect(returnRates(records, 21, now).month).toEqual({ marked: 2, returned: 1, rate: .5 });
   });
   it('leaves internships out of the return rate', () => {
-    expect(returnRates([...records, mark(8, 16, 1, false, true), mark(9, 16, 1, false, true)], 16, now).day).toEqual({ marked: 2, returned: 1, rate: .5 });
+    expect(returnRates([...records, mark(8, 16, 1, false, true), mark(9, 16, 1, false, true)], 16, now).week).toEqual({ marked: 3, returned: 2, rate: 2 / 3 });
   });
   it('has no rate when nothing was graded', () => {
-    expect(returnRates(records, 55, now).day).toEqual({ marked: 0, returned: 0, rate: null });
+    expect(returnRates(records, 55, now).week).toEqual({ marked: 0, returned: 0, rate: null });
   });
   it('leaves validated counts untouched by returned projects', () => {
-    expect(countValidated(records, 16, now)).toEqual({ day: 1, week: 1, month: 2 });
+    expect(countValidated(records, 16, now)).toEqual({ week: 1, month: 2 });
   });
 });
 

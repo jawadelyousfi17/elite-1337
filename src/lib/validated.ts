@@ -6,9 +6,10 @@ import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiProjec
 
 const DAY = 86_400_000;
 export const VALIDATED_WINDOW_DAYS = 30;
-export type ValidatedWindow = 'day' | 'week' | 'month';
+/** No 24-hour window: the current slice refreshes once a day, so "last 24 hours" could be a day old. */
+export type ValidatedWindow = 'week' | 'month';
 export type ValidatedCounts = Record<ValidatedWindow, number>;
-export const WINDOW_DAYS: Record<ValidatedWindow, number> = { day: 1, week: 7, month: 30 };
+export const WINDOW_DAYS: Record<ValidatedWindow, number> = { week: 7, month: 30 };
 
 /** One finished evaluation of a Common Core project attempt: validated, or returned so the student retries. */
 export type MarkedProject = { id: string; campusId: number; at: string; project: string; validated: boolean; internship: boolean };
@@ -40,7 +41,7 @@ const inWindow = (record: MarkedProject, days: number, now: number) => { const a
 export function countValidated(records: MarkedProject[], campusId?: number, now = Date.now()): ValidatedCounts {
   const scoped = records.filter((record) => record.validated && (!campusId || record.campusId === campusId));
   const within = (window: ValidatedWindow) => scoped.filter((record) => inWindow(record, WINDOW_DAYS[window], now)).length;
-  return { day: within('day'), week: within('week'), month: within('month') };
+  return { week: within('week'), month: within('month') };
 }
 
 /** The most validated projects in a window, most first, ties by name. */
@@ -60,12 +61,12 @@ export function returnRates(records: MarkedProject[], campusId?: number, now = D
     const returned = graded.filter((record) => !record.validated).length;
     return { marked: graded.length, returned, rate: graded.length ? returned / graded.length : null };
   };
-  return { day: within('day'), week: within('week'), month: within('month') };
+  return { week: within('week'), month: within('month') };
 }
 
 /**
  * Marked projects are fetched in fixed 5-day slices per campus. A finished slice is fetched once more after it ends
- * (the "final" key) and then cached for a month; only the slice containing today refreshes every 30 minutes,
+ * (the "final" key) and then cached for a month; only the slice containing today refreshes, once a day,
  * instead of all 30 days.
  */
 const SLICE_DAYS = 5;
@@ -75,7 +76,7 @@ const loadSlice = singleFlight(function loadSlice(campusId: number, slice: numbe
   return unstable_cache(async () => {
     const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(final ? (slice + 1) * SLICE_DAYS * DAY : Date.now());
     return fortyTwoApi.markedProjects(campusId, from.toISOString(), to.toISOString());
-  }, ['1337-validated-slice-v1', String(campusId), String(slice), final ? 'final' : 'open'], { revalidate: final ? 30 * 86_400 : 1800 })();
+  }, ['1337-validated-slice-v1', String(campusId), String(slice), final ? 'final' : 'open'], { revalidate: final ? 30 * 86_400 : 86_400 })();
 });
 
 /** Newest slices first: a retry moves an enrollment's marked_at forward, and pickMarked keeps the first copy it sees. */

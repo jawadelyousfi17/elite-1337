@@ -21,7 +21,7 @@ export const metadata = { title: 'Stats' };
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const params = z.object({ campus: z.coerce.number().int().positive().optional(), month: z.string().regex(/^\d{4}-\d{2}$/).optional(), vw: z.enum(['day', 'week', 'month']).optional(), rw: z.enum(['day', 'week', 'month']).optional(), cw: z.enum(['30', '60', '90']).optional() });
+const params = z.object({ campus: z.coerce.number().int().positive().optional(), month: z.string().regex(/^\d{4}-\d{2}$/).optional(), vw: z.enum(['week', 'month']).optional().catch(undefined), rw: z.enum(['week', 'month']).optional().catch(undefined), cw: z.enum(['30', '60', '90']).optional() });
 const fmt = (value: number) => value.toLocaleString('en-US');
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
 const longMonth = (key: string) => new Date(`${key}-01T00:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' });
@@ -136,14 +136,14 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           </Card>
         </div>
 
-        <Suspense fallback={<ReturnsSkeleton/>}><ReturnsSection campuses={dataset.campuses} focus={campusId} window={query.rw ?? 'week'} hrefFor={{ day: href({ rw: 'day' }), week: href({ rw: null }), month: href({ rw: 'month' }) }}/></Suspense>
+        <Suspense fallback={<ReturnsSkeleton/>}><ReturnsSection campuses={dataset.campuses} focus={campusId} window={query.rw ?? 'week'} hrefFor={{ week: href({ rw: null }), month: href({ rw: 'month' }) }}/></Suspense>
         <Suspense fallback={<StrictCorrectorsSkeleton/>}><StrictCorrectors students={dataset.students} campusId={campusId} names={names} days={Number(query.cw ?? 30) as CorrectorWindow} hrefFor={{ 30: href({ cw: null }), 60: href({ cw: '60' }), 90: href({ cw: '90' }) }}/></Suspense>
       </div>
 
       <aside className="st-rail">
-        <Suspense fallback={<ValidatedSkeleton/>}><ValidatedWidget campusId={campusId} window={query.vw ?? 'week'} hrefFor={{ day: href({ vw: 'day' }), week: href({ vw: null }), month: href({ vw: 'month' }) }}/></Suspense>
+        <Suspense fallback={<ValidatedSkeleton/>}><ValidatedWidget campusId={campusId} window={query.vw ?? 'week'} hrefFor={{ week: href({ vw: null }), month: href({ vw: 'month' }) }}/></Suspense>
 
-        <Suspense fallback={<ValidatedCampusesSkeleton/>}><ValidatedCampusesWidget campuses={dataset.campuses} window={query.vw ?? 'week'} hrefFor={{ day: href({ vw: 'day' }), week: href({ vw: null }), month: href({ vw: 'month' }) }}/></Suspense>
+        <Suspense fallback={<ValidatedCampusesSkeleton/>}><ValidatedCampusesWidget campuses={dataset.campuses} window={query.vw ?? 'week'} hrefFor={{ week: href({ vw: null }), month: href({ vw: 'month' }) }}/></Suspense>
 
         <section className="st-card" aria-labelledby="st-calendar">
           <header>

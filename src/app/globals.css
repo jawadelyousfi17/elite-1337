@@ -957,7 +957,7 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .sc-x,.sc-y,.sc-cal-head,.sc-scale,.sc-heat thead th{font-size:12px;font-weight:500;color:#b4b4b4}
 .sc-x span{top:7px}
 /* Stats: validated projects widget */
-.st-validated-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.st-validated-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .st-validated-tiles>*{display:flex;flex-direction:column;gap:4px;padding:14px 12px;border-radius:18px;background:#202020;color:#f2f2f2;transition:background .18s}
 .st-validated-tiles a:hover{background:#2b2b2b}
 .st-validated-tiles a[aria-current]{background:#cafbd2;color:#0a0a0a}

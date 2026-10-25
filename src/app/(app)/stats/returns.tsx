@@ -9,7 +9,7 @@ import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { campusColors } from './charts';
 
-const windows: { key: ValidatedWindow; short: string; long: string }[] = [{ key: 'day', short: '24h', long: 'last 24 hours' }, { key: 'week', short: '7d', long: 'last 7 days' }, { key: 'month', short: '30d', long: 'last 30 days' }];
+const windows: { key: ValidatedWindow; short: string; long: string }[] = [{ key: 'week', short: '7d', long: 'last 7 days' }, { key: 'month', short: '30d', long: 'last 30 days' }];
 /** Below this many evaluated attempts a campus's rate is too noisy to compare. */
 const MIN_SAMPLE = 20;
 const pct = (value: number) => `${Math.round(value * 100)}%`;

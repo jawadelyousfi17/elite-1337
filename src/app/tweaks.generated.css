@@ -671,7 +671,6 @@ html[data-tw-radius] .al-badge{border-radius:999px!important}
 html[data-tw-radius] .fz-badge{border-radius:999px!important}
 html[data-tw-radius] .gh-tip{border-radius:999px!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
-html[data-tw-radius] .dn-cat{border-radius:50%!important}
 html[data-tw-radius] .dn-home{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}

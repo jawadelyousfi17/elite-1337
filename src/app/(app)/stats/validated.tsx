@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import { campusColors, Donut } from './charts';
 
 const windows: { key: ValidatedWindow; label: string; long: string; short: string }[] = [
-  { key: 'day', label: '24 hours', long: 'last 24 hours', short: '24h' },
   { key: 'week', label: '7 days', long: 'last 7 days', short: '7d' },
   { key: 'month', label: '30 days', long: 'last 30 days', short: '30d' },
 ];
