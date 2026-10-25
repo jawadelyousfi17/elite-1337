@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countValidated, pickMarked, returnRates, topValidated } from './validated';
+import { countValidated, pickMarked, returnRates, sliceOf, sliceRange, topValidated } from './validated';
 
 const now = Date.parse('2026-10-23T12:00:00Z');
 const hoursAgo = (hours: number) => new Date(now - hours * 3_600_000).toISOString();
@@ -80,5 +80,20 @@ describe('returnRates', () => {
   });
   it('leaves validated counts untouched by returned projects', () => {
     expect(countValidated(records, 16, now)).toEqual({ day: 1, week: 1, month: 2 });
+  });
+});
+
+describe('validated slices', () => {
+  it('covers the 30-day window newest first, current slice included', () => {
+    const now = Date.parse('2026-10-25T12:00:00Z'), slices = sliceRange(now);
+    expect(slices[0]).toBe(sliceOf(now));
+    expect(slices.at(-1)).toBe(sliceOf(now - 30 * 86_400_000));
+    expect(slices).toEqual([...slices].sort((a, b) => b - a));
+    expect(slices.length).toBeGreaterThanOrEqual(7);
+  });
+  it('keeps the newest copy of an enrollment seen in two slices', () => {
+    const row = (marked: string, validated: boolean) => ({ id: 1, 'validated?': validated, marked_at: marked, cursus_ids: [21], project: { id: 1, name: 'libft', slug: 'libft' }, teams: [] });
+    const records = pickMarked([{ campusId: 16, rows: [row('2026-10-24T10:00:00Z', true)] }, { campusId: 16, rows: [row('2026-10-10T10:00:00Z', false)] }], 21);
+    expect(records).toEqual([expect.objectContaining({ at: '2026-10-24T10:00:00Z', validated: true })]);
   });
 });

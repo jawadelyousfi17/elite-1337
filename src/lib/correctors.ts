@@ -38,7 +38,8 @@ export function strictCorrectors(evaluations: Evaluation[], { days = 30, min = m
 
 /**
  * Evaluations are fetched in fixed 10-day slices per campus. A finished slice never changes (a filled evaluation
- * keeps its date), so it is cached for weeks; only the slice containing today refreshes. A cold start that gets
+ * keeps its date), so after one last fetch once it ends (the open slice has its own key) it is cached for weeks; only the slice
+ * containing today refreshes. A cold start that gets
  * cut short keeps every slice it finished, and the next visit continues from there.
  */
 const SLICE_DAYS = 10;
@@ -46,9 +47,9 @@ const sliceOf = (time: number) => Math.floor(time / (SLICE_DAYS * DAY));
 
 function loadSlice(campusId: number, slice: number, current: boolean) {
   return unstable_cache(async () => {
-    const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(Math.min((slice + 1) * SLICE_DAYS * DAY, Date.now()));
+    const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(current ? Date.now() : (slice + 1) * SLICE_DAYS * DAY);
     return pickEvaluations(await fortyTwoApi.scaleTeams(campusId, from.toISOString(), to.toISOString(), cursusId()), campusId);
-  }, ['1337-evaluations-v2', String(campusId), String(slice)], { revalidate: current ? 1800 : 30 * 86_400 })();
+  }, ['1337-evaluations-v2', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 1800 : 30 * 86_400 })();
 }
 
 export const loadEvaluations = cache(async (): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {

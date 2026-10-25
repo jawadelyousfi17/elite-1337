@@ -62,14 +62,33 @@ export function returnRates(records: MarkedProject[], campusId?: number, now = D
   return { day: within('day'), week: within('week'), month: within('month') };
 }
 
-const cached = unstable_cache(async () => {
-  const to = new Date(), from = new Date(to.getTime() - VALIDATED_WINDOW_DAYS * DAY);
-  const sources = await Promise.all(campusIds().map(async (campusId) => ({ campusId, rows: await fortyTwoApi.markedProjects(campusId, from.toISOString(), to.toISOString()) })));
-  return { records: pickMarked(sources, cursusId()), fetchedAt: to.toISOString() };
-}, ['1337-validated-projects-v6'], { revalidate: 1800 });
+/**
+ * Marked projects are fetched in fixed 5-day slices per campus. A finished slice is fetched once more after it ends
+ * (the "final" key) and then cached for a month; only the slice containing today refreshes every 30 minutes,
+ * instead of all 30 days.
+ */
+const SLICE_DAYS = 5;
+export const sliceOf = (time: number) => Math.floor(time / (SLICE_DAYS * DAY));
+
+function loadSlice(campusId: number, slice: number, final: boolean) {
+  return unstable_cache(async () => {
+    const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(final ? (slice + 1) * SLICE_DAYS * DAY : Date.now());
+    return fortyTwoApi.markedProjects(campusId, from.toISOString(), to.toISOString());
+  }, ['1337-validated-slice-v1', String(campusId), String(slice), final ? 'final' : 'open'], { revalidate: final ? 30 * 86_400 : 1800 })();
+}
+
+/** Newest slices first: a retry moves an enrollment's marked_at forward, and pickMarked keeps the first copy it sees. */
+export function sliceRange(now: number) {
+  const last = sliceOf(now), first = sliceOf(now - VALIDATED_WINDOW_DAYS * DAY);
+  return Array.from({ length: last - first + 1 }, (_, index) => last - index);
+}
 
 export const loadValidated = cache(async (): Promise<{ status: 'ready'; records: MarkedProject[]; fetchedAt: string } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {
-  try { return { status: 'ready', ...(await cached()) }; }
+  try {
+    const now = Date.now(), current = sliceOf(now), slices = sliceRange(now);
+    const sources = (await Promise.all(slices.map((slice) => Promise.all(campusIds().map(async (campusId) => ({ campusId, rows: await loadSlice(campusId, slice, slice !== current) })))))).flat();
+    return { status: 'ready', records: pickMarked(sources, cursusId()), fetchedAt: new Date(now).toISOString() };
+  }
   catch (error) {
     if (error instanceof IncompletePopulationError) return { status: 'incomplete' };
     if (error instanceof RateBudgetError) return { status: 'rate-limited' };

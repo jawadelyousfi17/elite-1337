@@ -106,7 +106,9 @@ const fetchDaily = unstable_cache(async (userId: number, from: string): Promise<
   return daily;
 }, ['1337-presence-daily-v1'], { revalidate: 21_600 });
 
-const recentFrom = (from: string) => new Date(Math.max(Date.parse(from), Date.now() - SESSION_DAYS * 86_400_000)).toISOString();
+/** Day-aligned so the cache key (userId, from) stays the same for a whole day instead of changing every request. */
+const dayStart = (time: number) => Math.floor(time / 86_400_000) * 86_400_000;
+const recentFrom = (from: string) => new Date(Math.max(Date.parse(from), dayStart(Date.now() - SESSION_DAYS * 86_400_000))).toISOString();
 
 export async function loadPresence(userId: number, from: string): Promise<{ status: 'ready'; presence: Presence } | { status: 'rate-limited' | 'unavailable' }> {
   try {
@@ -165,7 +167,7 @@ const fetchSeat = unstable_cache(async (campus: number, host: string, from: stri
 /** Your most frequent seat neighbors over the last year, from the seats beside your top three seats. */
 export async function loadNeighbors(userId: number, from: string): Promise<{ status: 'ready'; neighbors: Neighbor[] } | { status: 'rate-limited' | 'unavailable' }> {
   try {
-    const since = new Date(Math.max(Date.parse(from), Date.now() - 365 * 86_400_000)).toISOString();
+    const since = new Date(Math.max(Date.parse(from), dayStart(Date.now() - 365 * 86_400_000))).toISOString();
     const mine = (await fetchSessions(userId, recentFrom(from))).filter((session) => Date.parse(session.begin) >= Date.parse(since));
     const top = computePresence(mine, since).seats.slice(0, 3).map((seat) => seat.host);
     const campus = mine.find((session) => session.campus)?.campus;
