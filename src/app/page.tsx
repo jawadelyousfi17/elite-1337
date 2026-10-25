@@ -4,7 +4,6 @@ import { AccessPlatformButton } from '@/components/access-platform-button';
 import { Credits } from '@/components/credits';
 import { LegalLinks } from '@/components/legal-page';
 import { GitHubStars } from '@/components/github-stars';
-import { LandingSupport } from '@/components/landing-support';
 import { REPO_URL } from '@/lib/github';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 
@@ -40,7 +39,7 @@ export default async function Home() {
     </section>
 
     <footer className="landing-credits">
-      <LandingSupport/><Credits/>
+      <Credits/>
     </footer>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}/>
   </main>;

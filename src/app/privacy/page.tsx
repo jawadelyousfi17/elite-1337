@@ -37,7 +37,7 @@ export default function Privacy() {
         <p>Your browser keeps a few small settings in local storage: theme, race sound on or off, whether you closed the survey, and your poll choice. They never leave your device, and clearing your browser data removes them.</p>
       </> },
       { id: 'analytics', title: 'Analytics', body: <>
-        <p>We use Umami Cloud to count visits and a few clicks (sign-in, GitHub, donate). Umami uses no cookies and keeps no personal profiles. We never send logins, names or search text to it. Search and filter values in the address bar are ignored.</p>
+        <p>We use Umami Cloud to count visits and a few clicks (sign-in and GitHub). Umami uses no cookies and keeps no personal profiles. We never send logins, names or search text to it. Search and filter values in the address bar are ignored.</p>
       </> },
       { id: 'others', title: 'Services we rely on', body: <>
         <ul>
@@ -47,7 +47,7 @@ export default function Privacy() {
           <li><strong>Web3Forms</strong>: delivery of survey answers and feedback.</li>
           <li><strong>Umami Cloud</strong>: visit counts.</li>
         </ul>
-        <p>Links to Ko-fi, WhatsApp, student offers and 42 Intra take you to those sites, which have their own privacy policies.</p>
+        <p>Links to student offers, GitHub and 42 Intra take you to those sites, which have their own privacy policies.</p>
       </> },
       { id: 'rights', title: 'Your choices', body: <>
         <p>You can remove your avatar and change your vote at any time. You can also ask us to <strong>hide you from the leaderboard and stats</strong>, or ask what we hold about you. Send {CONTACT}. We will answer as soon as we can, usually within a few days.</p>

@@ -994,6 +994,7 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .tw-trigger:hover,.tw-trigger[data-state=open]{background:#2b2b2b;transform:rotate(-8deg)}
 .tw-dot{position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--tw-accent,#cafbd2);box-shadow:0 0 0 2px #202020}
 @media(max-width:1023px){.tw-trigger{bottom:calc(max(16px,env(safe-area-inset-bottom)) + 84px);right:16px;width:46px;height:46px}}
+@keyframes support-enter{from{opacity:0;transform:translateY(5px) scale(.97)}to{opacity:1;transform:none}}
 .tw-panel{z-index:70;width:min(340px,calc(100vw - 32px));padding:16px;border:1px solid #ffffff12;border-radius:24px;background:#141414;color:#f9f9f9;font-family:var(--font-sans);box-shadow:0 30px 70px -24px #000;animation:support-enter .2s cubic-bezier(.16,1,.3,1)}
 .tw-panel header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .tw-panel header strong{font-size:17px;font-weight:600;letter-spacing:-.02em}
@@ -1295,24 +1296,6 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .of-foot{margin:18px 4px 0;font-size:12px;color:#7a7a7a}
 @media(max-width:700px){.of-grid{grid-template-columns:1fr}.of-card{padding:20px}.of-head h1{font-size:26px}}
 
-/* Canva advertisement and desktop contact popover */
-.of-ad{display:inline-block;margin-right:8px;padding:1px 6px;border:1px solid #ffffff33;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
-.of-canva .of-cta{gap:8px}
-.of-canva-mobile{display:none}
-/* Canva contact popover: a small strip sitting right on top of the button */
-.of-contact{z-index:80;display:flex;align-items:center;gap:14px;width:var(--radix-popover-trigger-width);min-width:280px;max-width:calc(100vw - 32px);padding:10px;border:1px solid #ffffff14;border-radius:18px;background:#161616;color:#f9f9f9;font-family:var(--font-sans);box-shadow:0 18px 40px -18px #000;animation:support-enter .18s cubic-bezier(.16,1,.3,1)}
-.of-contact-qr{display:block;width:112px;height:112px;flex-shrink:0;padding:6px;background:#fff;border-radius:12px}
-.of-contact-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
-.of-contact-hint{font-size:12px;color:#9a9a9a}
-.of-contact-number{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:#f2f2f2;white-space:nowrap}
-.of-contact-wa{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;margin-top:6px;border-radius:999px;background:#25d366;color:#05210f;font-size:13px;font-weight:600;transition:filter .15s}
-.of-contact-wa:hover{filter:brightness(1.06)}
-.of-contact-wa:focus-visible{outline:3px solid #cafbd2;outline-offset:3px}
-.of-contact-close{position:absolute;right:6px;top:6px;display:grid;place-items:center;width:24px;height:24px;border:0;border-radius:50%;background:transparent;color:#9a9a9a;cursor:pointer}
-.of-contact-close:hover{background:#ffffff14;color:#fff}
-.of-contact-close:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
-.of-contact-arrow{fill:#161616}
-@media(max-width:700px),(hover:none) and (pointer:coarse){.of-canva-desktop,.of-contact{display:none}.of-canva-mobile{display:flex}}
 .of-card-req{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;margin:0;padding:4px 10px;border-radius:999px;background:#ffdfb5;color:#59320e;font-size:12px;font-weight:600;white-space:nowrap}
 
 .of-card-req img{display:block;width:28px;height:28px;object-fit:contain;flex-shrink:0}

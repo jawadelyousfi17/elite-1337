@@ -24,11 +24,7 @@ export default function Terms() {
         <p>Do not scrape the site, overload it, try to get around sign-in or reach data that is not shown to you. Do not upload avatars you have no right to use, or that are offensive or misleading.</p>
         <p>We may remove content or block access to protect students or the site.</p>
       </> },
-      { id: 'offers', title: 'Offers and support', body: <>
-        <p>The Offers page links to third-party student deals (GitHub, Google, Microsoft, JetBrains and others). Their terms, prices and eligibility are set by those companies and can change at any time. Check them on their sites.</p>
-        <p>The Canva offer is arranged directly with the team over WhatsApp. It is a separate agreement between you and us, not with Canva.</p>
-        <p>Ko-fi donations are optional gifts and do not unlock anything.</p>
-      </> },
+      { id: 'offers', title: 'Offers', body: <p>The Offers page links to third-party student deals (GitHub, Google, Microsoft, JetBrains and others). Their terms, prices and eligibility are set by those companies and can change at any time. Check them on their sites.</p> },
       { id: 'survey', title: 'Polls and survey', body: <p>The cat poll and the career survey are optional. Answer honestly or not at all. Survey results may be shared as anonymous, overall numbers.</p> },
       { id: 'warranty', title: 'No guarantee', body: <>
         <p>The site is provided as it is, for free, without any guarantee that it will always be available, correct or error-free. As far as the law allows, the team is not responsible for decisions made or losses suffered because of the site.</p>

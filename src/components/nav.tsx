@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { auth, signOut } from '@/auth';
 import { GitHubStars } from '@/components/github-stars';
-import { LandingSupport } from '@/components/landing-support';
 import { NavLinks } from '@/components/nav-links';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NavRank, type ViewerRanks } from '@/components/nav-rank';
@@ -41,7 +40,7 @@ export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
       {loggedIn ? <>
         <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top"/></nav>
         <div className="nav-actions">
-        <div className="nav-tools"><ThemeToggle/><LandingSupport variant="nav"/><GitHubStars variant="nav"/></div>
+        <div className="nav-tools"><ThemeToggle/><GitHubStars variant="nav"/></div>
         <NavRank ranks={ranks} login={session?.user?.login ?? 'You'} logout={logout}/>
         </div>
       </> : <nav className="navlinks" aria-label="Main navigation"><Link href="/">Home</Link></nav>}

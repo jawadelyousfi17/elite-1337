@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import postcss from 'postcss';
 
-const source = ['../src/app/globals.css', '../src/components/landing-support.css'].map((file) => fs.readFileSync(new URL(file, import.meta.url), 'utf8')).join('\n');
+const source = ['../src/app/globals.css'].map((file) => fs.readFileSync(new URL(file, import.meta.url), 'utf8')).join('\n');
 const surface = { '#000': 'bg', '#141414': 'card', '#161616': 'card', '#0f0f0f': 'card', '#202020': 'raise', '#2b2b2b': 'hover' };
 const isChart = (selector) => /\.sc-|st-career|st-validated-top|landing|credit/.test(selector);
 const out = { surface: [], accent: [], radius: [], light: [] };

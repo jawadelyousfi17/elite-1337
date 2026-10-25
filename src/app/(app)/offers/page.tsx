@@ -1,6 +1,4 @@
-import { Fragment } from 'react';
 import Image from 'next/image';
-import { CanvaOffer } from '@/components/canva-offer';
 import { ArrowUpRight, Check } from '@/components/icons';
 import { requireStudent } from '@/lib/guard';
 import { OFFERS, OFFERS_CHECKED, type Offer } from '@/lib/offers';
@@ -22,7 +20,7 @@ export default async function OffersPage() {
       <p>Tools to build. Perks to enjoy. All in one place.</p>
     </header>
     <ul className="of-grid">
-      {OFFERS.map((offer, index) => <Fragment key={offer.id}>{index === 3 && <CanvaOffer/>}<li className={cn('of-card', offer.featured && 'is-featured')}>
+      {OFFERS.map((offer) => <li key={offer.id} className={cn('of-card', offer.featured && 'is-featured')}>
         <div className="of-top">
           <Logo offer={offer}/>
           <div className="of-top-meta"><span className="of-value">{offer.value}</span>{offer.featured && <span className="of-start">Start here</span>}</div>
@@ -33,7 +31,7 @@ export default async function OffersPage() {
         {offer.steps && <ul className="of-steps">{offer.steps.map((step) => <li key={step}><Check size={13}/>{step}</li>)}</ul>}
         {offer.note && <p className="of-note">{offer.note}</p>}
         <div className="of-actions"><a className="of-cta" href={offer.url} target="_blank" rel="noopener noreferrer" data-umami-event="offer-click" data-umami-event-offer={offer.id}>{offer.cta}<ArrowUpRight size={15} weight="bold"/></a></div>
-      </li></Fragment>)}
+      </li>)}
     </ul>
     <p className="of-foot">Checked {OFFERS_CHECKED}. Eligibility and terms vary by provider.</p>
   </main>;
