@@ -129,6 +129,8 @@ html[data-tw-surface]:not(:has(.landing)) .pl-token-reset:hover{background:var(-
 html[data-tw-surface]:not(:has(.landing)) .pl-more{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-more-trigger{background:transparent!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-more-count{background:var(--mint)!important}
+html[data-tw-surface]:not(:has(.landing)) .scroll-row-btn{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .scroll-row-btn:hover{background:#3a3a3a!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-chip{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-chip:hover{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-chip.is-lilac[data-active]{background:#f2d1fb!important}
@@ -513,6 +515,7 @@ html[data-tw-radius] .pl-token-reset{border-radius:999px!important}
 html[data-tw-radius] .pl-more{border-radius:calc(28px * var(--tw-r))!important}
 html[data-tw-radius] .pl-more-trigger{border-radius:calc(22px * var(--tw-r))!important}
 html[data-tw-radius] .pl-more-count{border-radius:999px!important}
+html[data-tw-radius] .scroll-row-btn{border-radius:50%!important}
 html[data-tw-radius] .pl-chip{border-radius:999px!important}
 html[data-tw-radius] .nav-rank-caret{border-radius:50%!important}
 html[data-tw-radius] .pl-runner-portrait{border-radius:50%!important}
@@ -867,6 +870,8 @@ html[data-tw-light]:not(:has(.landing)) .pl-more{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .pl-more-trigger{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-more-trigger:hover{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-chip-label{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .scroll-row-btn{background:#e2e2df!important;color:#141414!important;border:1px solid #0000001f!important}
+html[data-tw-light]:not(:has(.landing)) .scroll-row-btn:hover{background:#d6d6d2!important}
 html[data-tw-light]:not(:has(.landing)) .pl-chip{background:#ecece9!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-chip:hover{background:#e2e2df!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-months-icon{color:#5f5f5f!important}

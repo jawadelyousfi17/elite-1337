@@ -9,6 +9,7 @@ import { ArrowUpRight, Campus, ChevronLeft, ChevronRight, Cohort, Hourglass, Rev
 import { z } from 'zod';
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
+import { ScrollRow } from '@/components/scroll-row';
 import { requireStudent } from '@/lib/guard';
 import { campusName, loadRankingDataset, type BlackholedStudent } from '@/lib/dataset';
 import { DatasetState } from '@/components/dataset-state';
@@ -186,8 +187,9 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
 }
 
 function ChipGroup({ icon, label, tone, chips, scroll = false }: { icon: React.ReactNode; label: string; tone: string; chips: { label: string; href: string; active: boolean; tone?: string }[]; scroll?: boolean }) {
+  const items = chips.map((chip) => <Link key={chip.label} href={chip.href} className={`pl-chip is-${chip.tone ?? tone}`} data-active={chip.active || undefined} aria-current={chip.active ? 'true' : undefined}>{chip.label}</Link>);
   return <div className="pl-chip-group" role="group" aria-label={label}>
     <span className="pl-chip-label">{icon}{label}</span>
-    <div className={cn('pl-chips', scroll && 'is-scroll')}>{chips.map((chip) => <Link key={chip.label} href={chip.href} className={`pl-chip is-${chip.tone ?? tone}`} data-active={chip.active || undefined} aria-current={chip.active ? 'true' : undefined}>{chip.label}</Link>)}</div>
+    {scroll ? <ScrollRow className="pl-chips is-scroll">{items}</ScrollRow> : <div className="pl-chips">{items}</div>}
   </div>;
 }

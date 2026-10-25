@@ -438,6 +438,17 @@ body:has(.bottom-nav){padding-bottom:104px}
 .pl-chips{display:flex;flex-wrap:wrap;gap:6px}
 .pl-chips.is-scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px;mask-image:linear-gradient(90deg,transparent,#000 10px,#000 calc(100% - 24px),transparent)}
 .pl-chips.is-scroll::-webkit-scrollbar{display:none}
+.scroll-row{position:relative;min-width:0}
+.scroll-row .pl-chips.is-scroll{mask-image:none}
+.scroll-row.at-start .pl-chips.is-scroll{mask-image:linear-gradient(90deg,transparent 22px,#000 54px)}
+.scroll-row.at-end .pl-chips.is-scroll{mask-image:linear-gradient(90deg,#000 calc(100% - 54px),transparent calc(100% - 22px))}
+.scroll-row.at-start.at-end .pl-chips.is-scroll{mask-image:linear-gradient(90deg,transparent 22px,#000 54px,#000 calc(100% - 54px),transparent calc(100% - 22px))}
+.scroll-row-btn{position:absolute;top:50%;z-index:1;display:grid;place-items:center;width:28px;height:28px;padding:0;border:1px solid #ffffff1f;border-radius:50%;background:#2b2b2b;color:#f9f9f9;cursor:pointer;transform:translateY(-50%);transition:background .15s}
+.scroll-row-btn[hidden]{display:none}
+.scroll-row-btn:hover{background:#3a3a3a}
+.scroll-row-btn.is-prev{left:-6px}
+.scroll-row-btn.is-next{right:-6px}
+@media(hover:none){.scroll-row-btn{display:none}}
 .pl-chip{flex-shrink:0;display:inline-grid;place-items:center;height:38px;padding:0 15px;border-radius:999px;background:#202020;color:#d9d9d9;font-size:14px;white-space:nowrap;transition:background .18s,color .18s,transform .18s}
 .pl-chip:hover{background:#2b2b2b;color:#fff}
 .pl-chip:active{transform:scale(.96)}
