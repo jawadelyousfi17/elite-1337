@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { RankRow, type RankRowData } from '@/components/rank-row';
+import { ChevronUp } from '@/components/icons';
 
 /** Leaderboard rows that keep loading while you scroll, one 25-row page at a time, for the infinite half of the A/B test. */
 export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[]; query: string; pages: number }) {
@@ -11,6 +12,16 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
   const end = useRef<HTMLDivElement>(null);
   const busy = useRef(false);
   const done = next > pages;
+  const [far, setFar] = useState(false);
+
+  // "Back to top" appears once the list has carried the student well down the page.
+  useEffect(() => {
+    const update = () => setFar(window.scrollY > window.innerHeight * 1.5);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
+  const toTop = () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 
   const load = useCallback(async () => {
     if (busy.current || next > pages) return;
@@ -43,5 +54,6 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
       {state === 'error' && <button type="button" className="pl-more-retry" onClick={() => { setState('idle'); void load(); }}>Could not load more. Try again</button>}
       {done && pages > 1 && <span className="pl-more-end">You reached the end</span>}
     </div>
+    <button type="button" className="pl-top" data-on={far || undefined} onClick={toTop} tabIndex={far ? 0 : -1} aria-hidden={!far}><ChevronUp size={18}/>Back to top</button>
   </>;
 }
