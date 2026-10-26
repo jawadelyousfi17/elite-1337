@@ -288,10 +288,6 @@ html[data-tw-surface]:not(:has(.landing)) .sv-primary{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .sv-primary:hover{background:#ececec!important}
 html[data-tw-surface]:not(:has(.landing)) .sv-secondary{background:transparent!important}
 html[data-tw-surface]:not(:has(.landing)) .sv-secondary:hover{background:var(--tw-raise)!important}
-html[data-tw-surface]:not(:has(.landing)) .kiwi-face{background:transparent!important}
-html[data-tw-surface]:not(:has(.landing)) .kiwi-bubble{background:var(--tw-raise)!important}
-html[data-tw-surface]:not(:has(.landing)) .kiwi-close{background:transparent!important}
-html[data-tw-surface]:not(:has(.landing)) .kiwi-close:hover{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .of-card{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .of-card.is-featured{background:linear-gradient(160deg,#1f2b22,#161616 60%)!important}
 html[data-tw-surface]:not(:has(.landing)) .of-value{background:#cafbd2!important}
@@ -628,10 +624,6 @@ html[data-tw-radius] .sv-privacy{border-radius:calc(16px * var(--tw-r))!importan
 html[data-tw-radius] .sv-option{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .sv-scale-dot{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .sv-primary,html[data-tw-radius] .sv-secondary{border-radius:999px!important}
-html[data-tw-radius] .kiwi-face{border-radius:50%!important}
-html[data-tw-radius] .kiwi-face img{border-radius:50%!important}
-html[data-tw-radius] .kiwi-bubble{border-radius:18px 18px 18px 6px!important}
-html[data-tw-radius] .kiwi-close{border-radius:50%!important}
 html[data-tw-radius] .kiwi-note img{border-radius:50%!important}
 html[data-tw-radius] .of-card{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .of-value{border-radius:999px!important}
@@ -1013,9 +1005,6 @@ html[data-tw-light]:not(:has(.landing)) .sv-scale-ends{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .sv-primary{background:#141414!important;color:#fff!important}
 html[data-tw-light]:not(:has(.landing)) .sv-secondary{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .sv-secondary:hover{background:#ecece9!important;color:#141414!important}
-html[data-tw-light]:not(:has(.landing)) .kiwi-bubble{background:#ecece9!important;color:#141414!important;border:1px solid #00000014!important}
-html[data-tw-light]:not(:has(.landing)) .kiwi-close{color:#5f5f5f!important}
-html[data-tw-light]:not(:has(.landing)) .kiwi-close:hover{background:#e2e2df!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pc-loader .kiwi-note span{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .of-card{background:#ffffff!important;border:1px solid #0000000d!important}
 html[data-tw-light]:not(:has(.landing)) .of-company{color:#5f5f5f!important}
@@ -1226,7 +1215,6 @@ html:not([data-tw-light]):not(:has(.landing)) .sv-option.is-picked{background:#a
 html:not([data-tw-light]):not(:has(.landing)) .sv-scale-dot.is-picked{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .sv-dialog button:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)){--pastel-1:#cdaed8!important;--pastel-2:#dccd92!important;--pastel-3:#bdb6d6!important;--pastel-4:#a9d1d6!important;--pastel-5:#a5d6b0!important;--pastel-6:#d4a2ac!important}
-html:not([data-tw-light]):not(:has(.landing)) .kiwi-face:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .of-card.is-featured{border-color:#a7d8b155!important}
 html:not([data-tw-light]):not(:has(.landing)) .of-value{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .of-start{background:#dccd92!important}

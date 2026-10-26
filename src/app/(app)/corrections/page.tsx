@@ -15,6 +15,7 @@ import { getStudentProfile } from '@/lib/student-overview';
 import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
+import { timeAgo } from '@/lib/time';
 
 export const metadata = { title: 'Waiting for Correction' };
 
@@ -64,8 +65,7 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
     <aside className="pl-side">
       <section className="pc-head">
         <h1><Corrections size={28}/> Waiting for correction</h1>
-        <p><strong>{shown.length}</strong> {shown.length === 1 ? 'project' : 'projects'} at {campus ? campusName(dataset, campus) : 'this campus'}{projectName && <> · {projectName}</>}{q && <> matching “{q}”</>} · last {CORRECTION_WINDOW_DAYS} days</p>
-        <p>This once was a premium feature - be gateful and use it wise.</p>
+        <p><strong>{shown.length}</strong> {shown.length === 1 ? 'project' : 'projects'} at {campus ? campusName(dataset, campus) : 'this campus'}{projectName && <> · {projectName}</>}{q && <> matching “{q}”</>} · last {CORRECTION_WINDOW_DAYS} days{pending.status === 'ready' && <> · updated {timeAgo(pending.fetchedAt)}</>}</p>
       </section>
       <FilterShell action="/corrections" hidden={{ ...(campus ? { campus: String(campus) } : {}), ...(project ? { project } : {}) }} q={q} placeholder="Login, name or project" clearHref={link({ q: undefined })} activeCount={project ? 1 : 0} defaultOpen={false}>
         <div className="pl-groups">
