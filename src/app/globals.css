@@ -392,7 +392,7 @@ input{caret-color:var(--mint)}
 .navlinks{display:none}
 .nav-rank{margin-left:auto;height:52px}.nav-rank>svg{display:none}
 .nav-logout button{width:52px;height:52px;padding:0;flex-shrink:0}.nav-logout button span{display:none}
-.bottom-nav{display:flex;position:fixed;z-index:20;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));gap:4px;padding:5px;background:#141414f2;border-radius:30px;box-shadow:0 -6px 20px #000a;backdrop-filter:blur(14px)}
+.bottom-nav{display:flex;position:fixed;z-index:20;left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));gap:4px;padding:5px;background:#141414b3;border:1px solid #ffffff14;border-radius:30px;box-shadow:0 -6px 20px #0008;-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
 .bottom-nav a{flex:1;min-width:0;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:25px;color:#cfcfcf;font-size:11px}
 .bottom-nav a.is-active{background:#fff;color:#080808}
 body:has(.bottom-nav){padding-bottom:104px}
@@ -665,7 +665,7 @@ body:has(.bottom-nav){padding-bottom:104px}
 .nav-actions{display:contents}
 .nav-logout{grid-column:1;grid-row:1;justify-self:start}
 .nav-rank{grid-column:3;grid-row:1;justify-self:end}
-.bottom-nav{display:flex;position:fixed;z-index:20;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 32px));bottom:max(16px,env(safe-area-inset-bottom));gap:4px;padding:5px;background:#141414f2;border-radius:30px;box-shadow:0 -6px 20px #000a;backdrop-filter:blur(14px)}
+.bottom-nav{display:flex;position:fixed;z-index:20;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 32px));bottom:max(16px,env(safe-area-inset-bottom));gap:4px;padding:5px;background:#141414b3;border:1px solid #ffffff14;border-radius:30px;box-shadow:0 -6px 20px #0008;-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6)}
 .bottom-nav a{flex:1;min-width:0;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:25px;color:#cfcfcf;font-size:11px}
 .bottom-nav a.is-active{background:#fff;color:#080808}
 body:has(.bottom-nav){padding-bottom:104px}

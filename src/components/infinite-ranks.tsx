@@ -28,7 +28,8 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
     busy.current = true;
     setState('loading');
     try {
-      const response = await fetch(`/api/leaderboard/rows?${query}${query ? '&' : ''}page=${next}`, { cache: 'no-store' });
+      // A request that never answers shows "Try again" after 20 s instead of loading forever.
+      const response = await fetch(`/api/leaderboard/rows?${query}${query ? '&' : ''}page=${next}`, { cache: 'no-store', signal: AbortSignal.timeout(20_000) });
       if (!response.ok) throw new Error(String(response.status));
       const body = await response.json() as { rows: RankRowData[] };
       setRows((current) => { const seen = new Set(current.map((row) => row.id)); return [...current, ...body.rows.filter((row) => !seen.has(row.id))]; });

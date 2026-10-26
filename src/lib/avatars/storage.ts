@@ -1,4 +1,5 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
+import { withTimeout } from '@/lib/timeout';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const BUCKET = 'student-avatars';
@@ -47,8 +48,9 @@ export async function avatarReferences(ids: number[]): Promise<Record<number, st
   return Object.fromEntries((data as AvatarRecord[]).filter((row) => /^[a-f0-9]{32}$/.test(row.version) && row.object_path === avatarPath(row.user_id, row.version)).map((row) => [row.user_id, avatarUrl(row.user_id, row.version)]));
 }
 
+/** Uploaded avatars for these students; none (42 photos are used) if storage fails or takes over 3 s. */
 export async function avatarReferencesOrEmpty(ids: number[]): Promise<Record<number, string>> {
-  try { return await avatarReferences(ids); }
+  try { return await withTimeout(avatarReferences(ids), 3000, {}); }
   catch (error) { console.error('Avatar lookup failed:', error instanceof Error ? error.name : 'unknown'); return {}; }
 }
 

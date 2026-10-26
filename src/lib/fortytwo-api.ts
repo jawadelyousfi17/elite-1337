@@ -112,7 +112,10 @@ export class FortyTwoClient {
       if (response.status === 429 || response.status >= 500) {
         if (attempt === 4) throw new Error(`42 API unavailable (${response.status})`);
         const retry = Number(response.headers.get('retry-after'));
-        await delay(Number.isFinite(retry) && retry > 0 ? Math.min(retry * 1000, 60_000) : 1000 * 2 ** attempt);
+        // The hourly cap (or a long wait) cannot clear within one page load: fail now and show the rate-limit
+        // state, instead of sleeping until the 60 s function limit leaves the page loading forever.
+        if (response.status === 429 && (response.headers.get('x-hourly-ratelimit-remaining') === '0' || retry > 5)) throw new RateBudgetError();
+        await delay(Number.isFinite(retry) && retry > 0 ? retry * 1000 : 1000 * 2 ** attempt);
         continue;
       }
       if (!response.ok) throw new Error(`42 API request failed (${response.status})`);

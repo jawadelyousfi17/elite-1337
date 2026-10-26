@@ -30,6 +30,16 @@ export function InstantNav() {
     document.querySelector('main[data-pending]')?.removeAttribute('data-pending');
   }, [pathname, search]);
 
+  // Safety net: a navigation that fails or never lands must not leave the page dimmed and the bar running.
+  useEffect(() => {
+    if (!pending) return;
+    const timer = setTimeout(() => {
+      setPending(false);
+      document.querySelector('main[data-pending]')?.removeAttribute('data-pending');
+    }, 20_000);
+    return () => clearTimeout(timer);
+  }, [pending]);
+
   useEffect(() => {
     const start = (main: Element | null) => {
       main?.setAttribute('data-pending', '');

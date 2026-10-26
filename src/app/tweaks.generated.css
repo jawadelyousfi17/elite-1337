@@ -113,7 +113,7 @@ html[data-tw-surface]:not(:has(.landing)) .pl-avatar .avatar{background:var(--pa
 html[data-tw-surface]:not(:has(.landing)) .pl-copy strong em{background:var(--mint)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-rank{background:var(--pastel)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-round:hover{background:#232323!important}
-@media (max-width:700px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav{background:#141414f2!important}}
+@media (max-width:700px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav{background:#141414b3!important}}
 @media (max-width:700px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav a.is-active{background:#fff!important}}
 html[data-tw-surface]:not(:has(.landing)) .pl-searchbar{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-searchbar:focus-within{background:#232323!important}
@@ -175,7 +175,7 @@ html[data-tw-surface]:not(:has(.landing)) .sk-title{background:var(--tw-raise)!i
 html[data-tw-surface]:not(:has(.landing)) .sk-avatar{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .sk-kpi::before,html[data-tw-surface]:not(:has(.landing)) .sk-chart::before,html[data-tw-surface]:not(:has(.landing)) .sk-side::before,html[data-tw-surface]:not(:has(.landing)) .sk-offer::before,html[data-tw-surface]:not(:has(.landing)) .sk-stat::before{background:#232323!important}
 html[data-tw-surface]:not(:has(.landing)) .sk-kpi::after,html[data-tw-surface]:not(:has(.landing)) .sk-offer::after{background:#1e1e1e!important}
-@media (max-width:1023px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav{background:#141414f2!important}}
+@media (max-width:1023px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav{background:#141414b3!important}}
 @media (max-width:1023px){html[data-tw-surface]:not(:has(.landing)) .bottom-nav a.is-active{background:#fff!important}}
 html[data-tw-surface]:not(:has(.landing)) .creator-card{background:#0f141a!important}
 html[data-tw-surface]:not(:has(.landing)) .creator-head{background:radial-gradient(ellipse 90% 120% at 0% 0%,#1b4b7366,transparent 70%),#121a22!important}
@@ -851,7 +851,7 @@ html[data-tw-light]:not(:has(.landing)) .pl-row:hover{background:#e2e2df!importa
 html[data-tw-light]:not(:has(.landing)) .pl-copy>span{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .pl-pager{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .pl-round:hover{background:#ecece9!important}
-@media (max-width:700px){html[data-tw-light]:not(:has(.landing)) .bottom-nav{background:#fffffff2!important}}
+@media (max-width:700px){html[data-tw-light]:not(:has(.landing)) .bottom-nav{background:#ffffffb3!important;border:1px solid #00000014!important}}
 @media (max-width:700px){html[data-tw-light]:not(:has(.landing)) .bottom-nav a{color:#3d3d3d!important}}
 @media (max-width:700px){html[data-tw-light]:not(:has(.landing)) .bottom-nav a.is-active{background:#141414!important;color:#fff!important}}
 html[data-tw-light]:not(:has(.landing)) .pl-searchbar{background:#ecece9!important}
@@ -901,7 +901,7 @@ html[data-tw-light]:not(:has(.landing)) .sk-avatar{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .sk-kpi::before,html[data-tw-light]:not(:has(.landing)) .sk-chart::before,html[data-tw-light]:not(:has(.landing)) .sk-side::before,html[data-tw-light]:not(:has(.landing)) .sk-offer::before,html[data-tw-light]:not(:has(.landing)) .sk-stat::before{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .sk-kpi::after,html[data-tw-light]:not(:has(.landing)) .sk-offer::after{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .footer strong{color:#141414!important}
-@media (max-width:1023px){html[data-tw-light]:not(:has(.landing)) .bottom-nav{background:#fffffff2!important}}
+@media (max-width:1023px){html[data-tw-light]:not(:has(.landing)) .bottom-nav{background:#ffffffb3!important;border:1px solid #00000014!important}}
 @media (max-width:1023px){html[data-tw-light]:not(:has(.landing)) .bottom-nav a{color:#3d3d3d!important}}
 @media (max-width:1023px){html[data-tw-light]:not(:has(.landing)) .bottom-nav a.is-active{background:#141414!important;color:#fff!important}}
 html[data-tw-light]:not(:has(.landing)) .creator-card{background:#ffffff!important}

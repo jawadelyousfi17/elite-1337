@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { withTimeout } from './timeout';
 
 /**
  * A/B test on the leaderboard: page numbers against infinite scroll. Each student gets a fixed half from their
@@ -37,8 +38,15 @@ function ensureTable() {
   return ready;
 }
 
-/** Counts a leaderboard visit and returns the student's mode; null when the database is unavailable. */
-export async function visitRankTest(userId: number, login: string): Promise<RankTestState | null> {
+/**
+ * Counts a leaderboard visit and returns the student's mode; null (page numbers, no question) when the database
+ * is unavailable or slower than 2.5 s, such as a sleeping Neon compute waking up, so it never holds the page.
+ */
+export function visitRankTest(userId: number, login: string): Promise<RankTestState | null> {
+  return withTimeout(recordVisit(userId, login), 2500, null);
+}
+
+async function recordVisit(userId: number, login: string): Promise<RankTestState | null> {
   if (!process.env.DATABASE_URL || !Number.isSafeInteger(userId) || userId <= 0) return null;
   try {
     await ensureTable();
