@@ -4,6 +4,7 @@ import { requireStudent } from '@/lib/guard';
 import { FEEDBACK_KINDS, isFeedbackAdmin, isFeedbackKind, listFeedback, type FeedbackKind } from '@/lib/feedback';
 import { timeAgo } from '@/lib/time';
 import { cn } from '@/lib/utils';
+import { AdminTabs } from '../admin-tabs';
 
 export const metadata = { title: 'Feedback', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,7 @@ export default async function FeedbackAdminPage({ searchParams }: { searchParams
       <h1>Feedback</h1>
       <p>Reports sent from the feedback button, newest first.</p>
     </header>
+    <AdminTabs current="/admin/feedback"/>
     <nav className="fa-filters" aria-label="Filter by type">
       {([null, ...FEEDBACK_KINDS] as const).map((value) => <Link key={value ?? 'all'} href={value ? `?kind=${value}` : '?'} className={cn('fa-filter', kind === value && 'is-picked')} aria-current={kind === value ? 'page' : undefined}>
         {value ? LABELS[value] : 'All'} <span>{count(value)}</span>

@@ -393,6 +393,25 @@ html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!imp
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback{background:var(--muted-surface)!important}
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback.is-loading::after{background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%)!important}
 html[data-tw-surface]:not(:has(.landing)) .dn-home{background:var(--mint)!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-more-dots i{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-more-retry{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-more-retry:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-prompt{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-close{background:transparent!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-close:hover{background:#ffffff14!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-keep{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-keep:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-switch{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .ab-later{background:none!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-tabs{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .fa-tab.is-picked{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .ex-kpis>div{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ex-group{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ex-bar{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-switch{background:#edc5f9!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend) .is-none{background:#3a3a3a!important}
+html[data-tw-surface]:not(:has(.landing)) .ex-table-wrap{background:var(--tw-card)!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -418,6 +437,11 @@ html[data-tw-accent] .fa-filter.is-picked{background:var(--tw-accent)!important}
 html[data-tw-accent] .fa-meta a:hover{color:var(--tw-accent)!important}
 html[data-tw-accent] .fa-kind{background:var(--tw-accent)!important}
 html[data-tw-accent] .hk-contact.is-mail{background:var(--tw-accent)!important}
+html[data-tw-accent] .pl-more-dots i{background:var(--tw-accent)!important}
+html[data-tw-accent] .ab-switch{background:var(--tw-accent)!important}
+html[data-tw-accent] .fa-tab.is-picked{background:var(--tw-accent)!important}
+html[data-tw-accent] :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:var(--tw-accent)!important}
+html[data-tw-accent] .ex-table a:hover{color:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
 html[data-tw-radius] .input{border-radius:10px!important}
@@ -672,6 +696,19 @@ html[data-tw-radius] .fz-badge{border-radius:999px!important}
 html[data-tw-radius] .gh-tip{border-radius:999px!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
 html[data-tw-radius] .dn-home{border-radius:999px!important}
+html[data-tw-radius] .pl-more-dots i{border-radius:50%!important}
+html[data-tw-radius] .pl-more-retry{border-radius:999px!important}
+html[data-tw-radius] .ab-prompt{border-radius:calc(24px * var(--tw-r))!important}
+html[data-tw-radius] .ab-close{border-radius:50%!important}
+html[data-tw-radius] .ab-actions button{border-radius:999px!important}
+html[data-tw-radius] .fa-tabs{border-radius:999px!important}
+html[data-tw-radius] .fa-tab{border-radius:999px!important}
+html[data-tw-radius] .ex-kpis>div{border-radius:calc(18px * var(--tw-r))!important}
+html[data-tw-radius] .ex-group{border-radius:calc(18px * var(--tw-r))!important}
+html[data-tw-radius] .ex-bar{border-radius:999px!important}
+html[data-tw-radius] .ex-legend i{border-radius:3px!important}
+html[data-tw-radius] .ex-table-wrap{border-radius:calc(18px * var(--tw-r))!important}
+html[data-tw-radius] .ex-choice{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
@@ -1082,6 +1119,28 @@ html[data-tw-light]:not(:has(.landing)) .hk-rules{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .hk-tip{background:#141414!important;color:#fff!important}
 html[data-tw-light]:not(:has(.landing)) .gh-tip{background:#141414!important;color:#fff!important}
 html[data-tw-light]:not(:has(.landing)) .avatar .avatar-fallback.is-loading::after{background:linear-gradient(100deg,transparent 20%,#00000014 50%,transparent 80%)!important}
+html[data-tw-light]:not(:has(.landing)) .pl-more-retry{background:#ecece9!important;color:#141414!important;border:1px solid #0000001f!important}
+html[data-tw-light]:not(:has(.landing)) .pl-more-retry:hover{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .ab-prompt{background:#ffffff!important;color:#141414!important;border:1px solid #00000014!important}
+html[data-tw-light]:not(:has(.landing)) .ab-prompt p{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .ab-prompt p b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ab-close{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ab-close:hover{background:#00000014!important}
+html[data-tw-light]:not(:has(.landing)) .ab-keep{background:#ecece9!important;color:#141414!important;box-shadow:inset 0 0 0 1px #0000001f!important}
+html[data-tw-light]:not(:has(.landing)) .ab-keep:hover{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .ab-later{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ab-later:hover{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .fa-tabs{background:#ffffff!important;border:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .fa-tab{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .fa-tab:hover{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ex-kpis>div{background:#ffffff!important;border:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .ex-group{background:#ffffff!important;border:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .ex-bar{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) :is(.ex-bar,.ex-legend) .is-none{background:#d6d6d2!important}
+html[data-tw-light]:not(:has(.landing)) .ex-legend{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .ex-table-wrap{background:#ffffff!important;border:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .ex-table td{color:#141414!important;border-top:1px solid #0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .ex-table a{color:#141414!important}
 html:not([data-tw-light]):not(:has(.landing)){--primary:#a7d8b1!important;--ring:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)){--mint:#a7d8b1!important;--lilac:#c9a3d6!important;--green:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .avatar{background:#cdaed8!important}
@@ -1205,6 +1264,14 @@ html:not([data-tw-light]):not(:has(.landing)) .hk-icon{background:#d9767b!import
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact.is-mail{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-badge{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .pl-more-dots i{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .ab-switch{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .ab-note{color:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .ab-prompt button:focus-visible{outline:2px solid #a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .fa-tab.is-picked{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-switch{background:#c9a3d6!important}
+html:not([data-tw-light]):not(:has(.landing)) .ex-table a:hover{color:#a7d8b1!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */
 html[data-tw-light]:not(:has(.landing)) :is(.st-returns-lead strong,.st-correctors-score strong,.st-rbars-avg em){color:#c92a3a!important}
 html[data-tw-light]:not(:has(.landing)) .st-correctors-list li+li{border-top-color:#0000000f!important}
