@@ -1,0 +1,72 @@
+# Optional self-hosting: app + Postgres + Caddy on one machine. Production runs on Vercel; see DOCKER.md.
+# Start with: docker compose --env-file .env.docker up -d --build
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+    env_file: .env.docker
+    environment:
+      # The app's database driver speaks Neon's HTTP protocol; neon-proxy translates it for plain Postgres.
+      DATABASE_URL: postgres://elite:${POSTGRES_PASSWORD}@db.localtest.me:5432/elite
+      DATABASE_HTTP_ENDPOINT: http://db.localtest.me:4444/sql
+      AUTH_URL: ${SITE_URL}
+      AUTH_TRUST_HOST: "true"
+      NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+    volumes:
+      - next-cache:/app/.next/cache
+    depends_on:
+      neon-proxy:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: elite
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: elite
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elite -d elite"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    environment:
+      PG_CONNECTION_STRING: postgres://elite:${POSTGRES_PASSWORD}@postgres:5432/elite
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - db.localtest.me
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  next-cache:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.tmp
+.env*
+!.env.example
+!.env.docker.example
+*.png
+!public/**/*.png
+report.txt

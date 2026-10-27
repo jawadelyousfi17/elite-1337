@@ -1,4 +1,4 @@
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { sql } from './db';
 import { after } from 'next/server';
 import { z } from 'zod';
 import { siteUrl } from '@/lib/site';
@@ -20,8 +20,6 @@ export type FeedbackKind = typeof FEEDBACK_KINDS[number];
 export type FeedbackEntry = { id: number; login: string | null; kind: FeedbackKind; message: string; page: string; screen: string; createdAt: string };
 export const isFeedbackKind = (value: unknown): value is FeedbackKind => FEEDBACK_KINDS.includes(value as FeedbackKind);
 
-let client: NeonQueryFunction<false, false> | undefined;
-const sql = () => client ??= neon(process.env.DATABASE_URL!);
 
 /** Stores one report; at most HOURLY_LIMIT per student per hour, enforced in the same statement as the insert. */
 export async function saveFeedback(userId: number, login: string, input: unknown): Promise<FeedbackResult> {

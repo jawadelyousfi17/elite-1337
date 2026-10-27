@@ -1,0 +1,5 @@
+# Reverse proxy with automatic HTTPS (Let's Encrypt for a real domain, a local certificate for "localhost").
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:3000
+}

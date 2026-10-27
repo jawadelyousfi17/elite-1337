@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { auth, signOut } from '@/auth';
 import { GitHubStars } from '@/components/github-stars';
 import { NavLinks } from '@/components/nav-links';
+import { assignedNavVariant } from '@/lib/nav-test';
+import { isFeedbackAdmin } from '@/lib/feedback';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { NavRank, type ViewerRanks } from '@/components/nav-rank';
 import { campusName, loadRankingDataset } from '@/lib/dataset';
@@ -34,24 +36,26 @@ async function logout() {
 }
 
 /** The rank pill streams in on its own: a cold rankings download must never hold up the page under it. */
-async function RankedChip({ login }: { login: string }) {
-  return <NavRank ranks={await viewerRanks()} login={login} logout={logout}/>;
+async function RankedChip({ login, offers }: { login: string; offers: boolean }) {
+  return <NavRank ranks={await viewerRanks()} login={login} logout={logout} offers={offers}/>;
 }
 
 export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
   const session = loggedIn ? await auth() : null;
   const login = session?.user?.login ?? 'You';
+  // Admins always get the XP version so they can see it; the stats route leaves their clicks out of the experiment.
+  const xpTest = !!session?.user?.id && (isFeedbackAdmin(session.user.login) || assignedNavVariant(Number(session.user.id)) === 'xp');
   return <>
     <header className="shell nav">
       <Link className="brand" href="/" aria-label="Elite 1337 home"><img src="/assets/elite-1337-icy.webp" alt="Elite 1337" width={680} height={180}/></Link>
       {loggedIn ? <>
-        <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top"/></nav>
+        <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top" xpTest={xpTest}/></nav>
         <div className="nav-actions">
         <div className="nav-tools"><ThemeToggle/><GitHubStars variant="nav"/></div>
-        <Suspense fallback={<NavRank ranks={null} login={login} logout={logout}/>}><RankedChip login={login}/></Suspense>
+        <Suspense fallback={<NavRank ranks={null} login={login} logout={logout} offers={xpTest}/>}><RankedChip login={login} offers={xpTest}/></Suspense>
         </div>
       </> : <nav className="navlinks" aria-label="Main navigation"><Link href="/">Home</Link></nav>}
     </header>
-    {loggedIn && <nav className="bottom-nav" aria-label="Main navigation"><NavLinks variant="bottom"/></nav>}
+    {loggedIn && <nav className="bottom-nav" aria-label="Main navigation"><NavLinks variant="bottom" xpTest={xpTest}/></nav>}
   </>;
 }

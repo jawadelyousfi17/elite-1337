@@ -117,7 +117,7 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
     filters.bh ? { key: 'bh', label: filters.bh === 'alumni' ? 'Alumni' : filters.bh === 'frozen' ? 'Frozen' : 'Blackholed', tone: filters.bh === 'alumni' ? 'alumni' : filters.bh === 'frozen' ? 'frozen' : 'red', remove: go({ bh: undefined }) } : null,
   ].filter((token): token is NonNullable<typeof token> => !!token);
   const hidden: Record<string, string> = { campus: filters.campus ? String(filters.campus) : ALL, cohort: filters.cohort ?? ALL, ...(filters.bh ? { bh: filters.bh } : {}) };
-  return <FilterShell action="/leaderboard" hidden={hidden} q={filters.q} placeholder="Search a login or name" clearHref={go({ q: undefined })} activeCount={isDefault ? 0 : tokens.length} defaultOpen={open}>
+  return <FilterShell action="/leaderboard" track="leaderboard" hidden={hidden} q={filters.q} placeholder="Search a login or name" clearHref={go({ q: undefined })} activeCount={isDefault ? 0 : tokens.length} defaultOpen={open}>
     {(tokens.length > 0 || !isDefault) && <div className="pl-tokens" aria-label="Active filters">
       {tokens.map((token) => <Link key={token.key} href={token.remove} className={`pl-token is-${token.tone}`} aria-label={`Remove ${token.label}`}>{token.label}<X size={13}/></Link>)}
       {!isDefault && <Link href={reset} className="pl-token-reset"><RotateCcw size={14}/> Reset to my year</Link>}

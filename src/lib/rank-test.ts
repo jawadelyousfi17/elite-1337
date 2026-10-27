@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { sql } from './db';
 import { withTimeout } from './timeout';
 
 /**
@@ -17,8 +17,6 @@ export function assignedVariant(userId: number): ScrollMode {
   return parseInt(createHash('sha256').update(`rank-scroll:v1:${userId}`).digest('hex').slice(0, 8), 16) % 2 ? 'infinite' : 'pages';
 }
 
-let client: NeonQueryFunction<false, false> | undefined;
-const sql = () => client ??= neon(process.env.DATABASE_URL!);
 
 let ready: Promise<unknown> | undefined;
 /** The table is created on first use, so the experiment needs no manual migration (see neon/rank-test.sql). */
