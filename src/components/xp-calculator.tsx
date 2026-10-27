@@ -17,8 +17,7 @@ type Picked = { slug: string; mark: number };
 export function XpCalculator({ projects, level, done, skipped, peers, scope }: { projects: XpProject[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null }) {
   const other = useMemo(() => new Set(skipped), [skipped]);
   const bySlug = useMemo(() => new Map(projects.map((project) => [project.slug, project])), [projects]);
-  const firstTodo = projects.find((project) => done[project.slug] === undefined && !other.has(project.slug));
-  const [picked, setPicked] = useState<Picked[]>(firstTodo ? [{ slug: firstTodo.slug, mark: 100 }] : []);
+  const [picked, setPicked] = useState<Picked[]>([]);
   // The starting level is the student's real one from the rankings; it is not editable.
   const start = level ?? 0;
 
