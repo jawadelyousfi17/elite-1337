@@ -90,6 +90,11 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
 const cohorts = (students: { commonCoreEntryYear: string | null }[]) => [...new Set(students.map((student) => student.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
 
 function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
+  // A student who asked to be removed keeps their place on the podium, with no name, level or link.
+  if (student.anonymous) return <span className="pl-podium-item"><div className="pl-runner" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties} aria-label={`Rank ${student.rank}, anonymous student`}>
+    <div className="pl-runner-portrait"><Avatar login="?" name="?" src={null} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
+    <strong>Anonymous</strong>
+  </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
     <strong>{student.login}</strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
@@ -98,6 +103,13 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
 }
 
 function Winner({ student, src }: { student: Ranked; src?: string }) {
+  if (student.anonymous) return <span className="pl-podium-item"><div className="pl-winner" aria-label={`Rank ${student.rank}, anonymous student`}>
+    <div className="pl-winner-portrait">
+      <Avatar login="?" name="?" src={null} size={96}/>
+      <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
+    </div>
+    <h2>Anonymous</h2>
+  </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-winner-portrait">
       <Avatar login={student.login} src={src} size={96}/>

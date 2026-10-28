@@ -4,8 +4,9 @@ import { campusIds, cursusId, excludedUserIds } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus, type ApiCursusUser } from './fortytwo-api';
 import { commonCoreEntryYear } from './classification';
 import { classifyPopulation, type StudentRank } from './ranking';
+import { maskAnonymous } from './anonymous';
 
-export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreEntryYear: string | null; blackholedAt: string; photo: string | null };
+export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreEntryYear: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean };
 export type RankingDataset = { students: StudentRank[]; blackholed: BlackholedStudent[]; acceptedUserIds: number[]; campuses: ApiCampus[]; fetchedAt: string; complete: true };
 
 export function collectBlackholed(sources: { campusId: number; records: ApiCursusUser[] }[], curriculum: number, ranked: ReadonlySet<number>, now = Date.now()): BlackholedStudent[] {
@@ -52,7 +53,8 @@ async function fetchCompleteDataset(): Promise<RankingDataset> {
   const blackholed = collectBlackholed(sources, curriculum, new Set(students.map((student) => student.id)));
   // "Updated" is the oldest campus download, so the label never claims fresher data than it shows.
   const fetchedAt = loaded.map((source) => source.fetchedAt).sort()[0];
-  const data: RankingDataset = { students, blackholed, acceptedUserIds, campuses, fetchedAt, complete: true };
+  // Ranks were computed above with everyone; the removed students keep their place but lose their identity.
+  const data: RankingDataset = { students: maskAnonymous(students), blackholed: maskAnonymous(blackholed), acceptedUserIds, campuses, fetchedAt, complete: true };
   built = { stamp, data };
   return data;
 }

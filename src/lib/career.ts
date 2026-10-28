@@ -30,7 +30,7 @@ export function classifyCareer(rows: Pick<ApiProjectUser, 'status' | 'validated?
 
 const cached = singleFlight(unstable_cache(async () => {
   const dataset = await getRankingDataset();
-  const rows = await fortyTwoApi.projectsUsersFor(dataset.students.filter((student) => student.level >= MIN_CAREER_LEVEL).map((student) => student.id), [TRANSCENDENCE, WORK_EXPERIENCE_I, WORK_EXPERIENCE_II]);
+  const rows = await fortyTwoApi.projectsUsersFor(dataset.students.filter((student) => !student.anonymous && student.level >= MIN_CAREER_LEVEL).map((student) => student.id), [TRANSCENDENCE, WORK_EXPERIENCE_I, WORK_EXPERIENCE_II]);
   return { records: classifyCareer(rows), fetchedAt: new Date().toISOString() };
 }, ['1337-career-stages-v2'], { revalidate: 21_600 }));
 

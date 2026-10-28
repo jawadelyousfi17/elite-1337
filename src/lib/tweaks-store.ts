@@ -25,7 +25,7 @@ export const radii = [
 ] as const;
 
 export type Settings = { surface: string; accent: string; radius: string; lastDark?: string };
-export const DEFAULTS: Settings = { surface: 'light', accent: 'mint', radius: 'sharp' };
+export const DEFAULTS: Settings = { surface: 'light', accent: 'mint', radius: 'round' };
 // Start fresh after retiring the experimental production preferences.
 const STORAGE_KEY = 'elite-tweaks-v2';
 

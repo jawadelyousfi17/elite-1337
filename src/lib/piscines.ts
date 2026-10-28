@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { isAnonymized } from './anonymous';
 import { singleFlight } from './single-flight';
 import { campusIds } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiUserSummary } from './fortytwo-api';
@@ -18,7 +19,8 @@ const cached = singleFlight(unstable_cache(async (campus: number | null, year: s
 export async function loadPiscineCandidates(campus: number | null, year: string, month: string | null):
   Promise<{ status: 'ready'; candidates: PiscineCandidate[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   if (!/^\d{4}$/.test(year) || (campus !== null && !campusIds().includes(campus))) return { status: 'unavailable' };
-  try { return { status: 'ready', candidates: await cached(campus, year, month) }; }
+  // Filtered here, not inside the cache, so a new ANONYMIZED_LOGINS entry applies right after a deploy.
+  try { return { status: 'ready', candidates: (await cached(campus, year, month)).filter((candidate) => !isAnonymized(candidate.login)) }; }
   catch (error) {
     if (error instanceof IncompletePopulationError) return { status: 'incomplete' };
     if (error instanceof RateBudgetError) return { status: 'rate-limited' };

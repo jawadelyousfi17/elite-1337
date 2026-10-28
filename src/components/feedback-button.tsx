@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Dialog } from 'radix-ui';
 import { usePathname } from 'next/navigation';
@@ -27,6 +27,25 @@ export function FeedbackButton({ login }: { login: string }) {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
   const submitting = useRef(false);
+
+  // "New!" over the floating buttons (the Remove me pill was added): 1 s after load, until a floating button has been
+  // clicked twice (always in development), like the one on the navigation.
+  const [isNew, setIsNew] = useState(false);
+  // The same flag shows the badge on the Remove me pill and the profile menu entry, through this attribute.
+  useEffect(() => { if (isNew) document.documentElement.dataset.floatingNew = ''; else delete document.documentElement.dataset.floatingNew; return () => { delete document.documentElement.dataset.floatingNew; }; }, [isNew]);
+  useEffect(() => {
+    const KEY = 'floating-new-clicks';
+    const clicks = () => { try { return Number(localStorage.getItem(KEY) ?? 0); } catch { return 0; } };
+    if (process.env.NODE_ENV !== 'development' && clicks() >= 2) return;
+    const timer = setTimeout(() => setIsNew(true), 1000);
+    const count = (event: MouseEvent) => {
+      if (!(event.target as Element | null)?.closest('.sv-pill')) return;
+      setIsNew(false);
+      try { localStorage.setItem(KEY, String(clicks() + 1)); } catch { /* nothing to remember */ }
+    };
+    document.addEventListener('click', count);
+    return () => { clearTimeout(timer); document.removeEventListener('click', count); };
+  }, []);
 
   const change = (next: boolean) => {
     if (submitting.current) return;
@@ -57,7 +76,7 @@ export function FeedbackButton({ login }: { login: string }) {
   };
 
   return <Dialog.Root open={open} onOpenChange={change}>
-    <Dialog.Trigger className="sv-pill fb-pill" aria-label="Feedback"><Image src="/assets/feedback/chat.webp" alt="" width={28} height={28}/><span>Feedback</span></Dialog.Trigger>
+    <Dialog.Trigger className="sv-pill fb-pill" aria-label="Feedback"><Image src="/assets/feedback/chat.webp" alt="" width={28} height={28}/><span>Feedback</span>{isNew && <em className="nav-new" aria-label="New feature">New!</em>}</Dialog.Trigger>
     <Dialog.Portal>
       <Dialog.Overlay className="sv-overlay"/>
       <Dialog.Content className="sv-dialog" aria-busy={sending} aria-describedby={undefined}>

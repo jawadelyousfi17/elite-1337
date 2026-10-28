@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 /** One leaderboard row as plain data, so the server page and the infinite list render it the same way. */
 export type RankRowData = { id: number; login: string; level: number; year: string | null; campus: string; src: string | null; hacker: boolean }
-  & ({ kind: 'ranked'; rank: number; mine: boolean; alumni: boolean; frozen: boolean } | { kind: 'lost'; blackholedAt: string });
+  & ({ kind: 'ranked'; rank: number; mine: boolean; alumni: boolean; frozen: boolean; anonymous?: boolean } | { kind: 'lost'; blackholedAt: string });
 
 const pastels = ['var(--pastel-1)', 'var(--pastel-2)', 'var(--pastel-3)', 'var(--pastel-4)', 'var(--pastel-5)', 'var(--pastel-6)'];
 export const pastel = (rank: number) => pastels[(rank - 2 + pastels.length * 100) % pastels.length];
@@ -23,6 +23,12 @@ export function IntraButton({ login, podium }: { login: string; podium?: boolean
 
 export function RankRow({ row }: { row: RankRowData }) {
   const ranked = row.kind === 'ranked';
+  // A student who asked to be removed: only their place in the list, no name, level or link.
+  if (ranked && row.anonymous) return <div className="pl-row is-anonymous" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties}>
+    <span className="pl-avatar"><Avatar login="?" name="?" src={null} size={45}/></span>
+    <span className="pl-copy"><strong>Anonymous student</strong></span>
+    <span className="pl-rank" aria-label={`Rank ${row.rank}`}>{row.rank}</span>
+  </div>;
   return <div className={cn('pl-row', ranked ? row.mine && 'is-mine' : 'is-lost')} style={{ '--pastel': ranked ? pastel(row.rank) : '#3a3a3a' } as React.CSSProperties}>
     <span className="pl-avatar"><Avatar login={row.login} src={row.src} size={45}/></span>
     <span className="pl-copy">

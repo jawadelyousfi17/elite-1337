@@ -7,6 +7,7 @@ import type { StudentRank } from '@/lib/ranking';
 import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
+import { isAnonymized } from '@/lib/anonymous';
 import { campusColors } from './charts';
 
 const windows: { key: ValidatedWindow; short: string; long: string }[] = [{ key: 'week', short: '7d', long: 'last 7 days' }, { key: 'month', short: '30d', long: 'last 30 days' }];
@@ -72,7 +73,7 @@ export function ReturnsSkeleton() {
 export async function StrictCorrectors({ students, campusId, names, days, hrefFor }: { students: StudentRank[]; campusId?: number; names: Record<number, string>; days: CorrectorWindow; hrefFor: Record<CorrectorWindow, string> }) {
   const state = await loadEvaluations();
   const min = minEvaluations(days);
-  const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId }) : [];
+  const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId }).filter((item) => !isAnonymized(item.login)) : [];
   const known = students.filter((student) => list.some((item) => item.correctorId === student.id));
   const avatars = known.length ? photoReferences(known, await avatarReferencesOrEmpty(known.map((student) => student.id))) : {};
   return <section className="st-card st-correctors" aria-labelledby="st-correctors">

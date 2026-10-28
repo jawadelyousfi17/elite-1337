@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import type { OAuthConfig } from 'next-auth/providers';
 import { z } from 'zod';
+import { isAnonymized } from '@/lib/anonymous';
 
 type FortyTwoProfile = Record<string, unknown>;
 const identitySchema = z.object({ id: z.number().int().positive(), login: z.string().min(1) });
@@ -37,7 +38,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [provider], session: { strategy: 'jwt', maxAge: 60 * 60 * 24 * 7 },
   pages: { signIn: '/', error: '/denied' },
   callbacks: {
-    jwt({ token, user, account }) { if (user && account?.provider === '42') { token.fortyTwoId = account.providerAccountId; token.login = user.login; } return token; },
+    // Students who asked to be removed (ANONYMIZED_LOGINS) cannot sign in, and a session they already hold ends.
+    signIn({ user }) { return isAnonymized((user as { login?: string }).login) ? '/removed' : true; },
+    jwt({ token, user, account }) {
+      if (user && account?.provider === '42') { token.fortyTwoId = account.providerAccountId; token.login = user.login; }
+      return isAnonymized(typeof token.login === 'string' ? token.login : null) ? null : token;
+    },
     session({ session, token }) { session.user.id = String(token.fortyTwoId); session.user.login = String(token.login); return session; }
   }
 });

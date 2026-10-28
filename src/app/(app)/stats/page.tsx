@@ -67,7 +67,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
     return next.size ? `/stats?${next}` : '/stats';
   };
 
-  const pictured = [...stats.leaders.map((leader) => leader.student), ...stats.latest];
+  const latest = stats.latest.filter((student) => !student.anonymous);
+  const pictured = [...stats.leaders.map((leader) => leader.student), ...latest].filter((student) => student.id > 0);
   const avatars = photoReferences(pictured, await avatarReferencesOrEmpty([...new Set(pictured.map((student) => student.id))]));
   const delta = stats.blackholed30 - stats.previous30;
   const currentMonth = monthKey(now), month = stats.calendar.month;
@@ -126,12 +127,12 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           </Card>
           <Card title="Top of each cohort" note={scope}>
             <ol className="st-leaders">{stats.leaders.map(({ year, student, cohortSize }) => <li key={year}>
-              <Link href={profileHref(student.login)} {...external}>
+              {student.anonymous ? <div className="st-leader-anon"><span className="st-year">{year}</span><span className="st-who"><b>Anonymous</b><small>best of {fmt(cohortSize)}</small></span></div> : <Link href={profileHref(student.login)} {...external}>
                 <span className="st-year">{year}</span>
                 <Avatar login={student.login} src={avatars[student.id]} size={40}/>
                 <span className="st-who"><b>{student.login}<ArrowUpRight size={12} weight="bold" className="st-ext"/></b><small>best of {fmt(cohortSize)}</small></span>
                 <strong>{student.level.toFixed(2)}</strong>
-              </Link>
+              </Link>}
             </li>)}</ol>
           </Card>
         </div>
@@ -161,7 +162,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
 
         <section className="st-card" aria-labelledby="st-recent">
           <header><h2 id="st-recent">Recently blackholed</h2></header>
-          {stats.latest.length ? <ul className="st-feed">{stats.latest.map((student) => <li key={student.id}>
+          {latest.length ? <ul className="st-feed">{latest.map((student) => <li key={student.id}>
             <Link href={profileHref(student.login)} {...external}>
               <span className="st-feed-avatar" style={{ '--ring': campusColors[student.campusIds[0]] ?? '#555' } as CSSProperties}><Avatar login={student.login} src={avatars[student.id]} size={38}/></span>
               <span className="st-who"><small>{shortDate(student.blackholedAt)}</small><b>{student.login}<ArrowUpRight size={12} weight="bold" className="st-ext"/></b><small>Level {student.level.toFixed(2)} · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</small></span>

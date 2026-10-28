@@ -6,7 +6,7 @@ export type StudentRank = {
   id: number; login: string; displayName: string | null;
   poolYear: string | null; poolMonth: string | null; commonCoreEntryYear: string | null;
   level: number; campusIds: number[]; globalRank: number; campusRanks: Record<number, number>;
-  photo?: string | null; alumni?: boolean; frozen?: boolean;
+  photo?: string | null; alumni?: boolean; frozen?: boolean; anonymous?: boolean;
 };
 export type CampusCursusRecords = { campusId: number; records: ApiCursusUser[] };
 export type RankingFilters = { campus?: number; cohort?: string; poolYear?: string; poolMonth?: string; q?: string; alumni?: boolean; frozen?: boolean; page: number; order?: 'desc' };

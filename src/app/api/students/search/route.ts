@@ -18,9 +18,9 @@ export async function GET(request: NextRequest) {
   const lower = q.toLowerCase();
   // Exact and prefix login matches first, then typo-tolerant matches on login or name.
   const score = (login: string) => login.toLowerCase() === lower ? 0 : login.toLowerCase().startsWith(lower) ? 1 : 2;
-  const active = state.data.students.filter((student) => student.id !== Number(session.user.id) && matchesSearch(q, [student.login, student.displayName]))
+  const active = state.data.students.filter((student) => !student.anonymous && student.id !== Number(session.user.id) && matchesSearch(q, [student.login, student.displayName]))
     .map((student) => ({ id: student.id, login: student.login, name: student.displayName, level: student.level, blackholed: false, photo: student.photo }));
-  const lost = state.data.blackholed.filter((student) => matchesSearch(q, [student.login, student.displayName]))
+  const lost = state.data.blackholed.filter((student) => !student.anonymous && matchesSearch(q, [student.login, student.displayName]))
     .map((student) => ({ id: student.id, login: student.login, name: student.displayName, level: student.level, blackholed: true, photo: student.photo }));
   const top = [...active, ...lost].sort((a, b) => score(a.login) - score(b.login) || Number(a.blackholed) - Number(b.blackholed) || b.level - a.level).slice(0, 8);
   const photos = photoReferences(top);

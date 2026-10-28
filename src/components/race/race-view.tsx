@@ -18,9 +18,9 @@ type Subject = { id: number; login: string; fell?: string | null };
 /** Finds a ranked or blackholed student by login, with their blackhole date when their enrollment ended. */
 export function findStudent(dataset: RankingDataset, login: string): Subject | null {
   const wanted = login.trim().toLowerCase();
-  const active = dataset.students.find((student) => student.login.toLowerCase() === wanted);
+  const active = dataset.students.find((student) => !student.anonymous && student.login.toLowerCase() === wanted);
   if (active) return { id: active.id, login: active.login, fell: null };
-  const lost = dataset.blackholed.find((student) => student.login.toLowerCase() === wanted);
+  const lost = dataset.blackholed.find((student) => !student.anonymous && student.login.toLowerCase() === wanted);
   return lost ? { id: lost.id, login: lost.login, fell: lost.blackholedAt } : null;
 }
 

@@ -1036,8 +1036,17 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .gh-stars.is-landing{height:38px;margin:0;padding:0 14px;border-radius:999px;background:#ffffff0d;border:1px solid #ffffff1a;color:#e6eef5;font-size:13px}
 .gh-stars.is-landing:hover{background:#ffffff17;border-color:#ffffff2e}
 .gh-stars.is-landing .gh-stars-count{height:26px;padding:0 9px;font-size:12px}
+.gh-stars.is-landing{position:relative;background:#202020;border:0;box-shadow:0 0 22px #fff0b51a}
+.gh-stars.is-landing:hover{background:#2b2b2b}
+/* shiny border on the landing star button: a light arc runs around the edge */
+@property --gh-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.gh-stars.is-landing::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--gh-angle),#ffffff1f 0,#fff0b5 12%,#ffffff1f 28%,#ffffff1f 60%,#cafbd2 72%,#ffffff1f 85%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:gh-spin 4s linear infinite}
+@keyframes gh-spin{to{--gh-angle:360deg}}
+@media(prefers-reduced-motion:reduce){.gh-stars.is-landing::before{animation:none}}
 .gh-stars:focus-visible{outline:3px solid #cafbd2;outline-offset:3px}
 @media(max-width:1023px){.gh-stars.is-nav{width:46px;height:46px;padding:0;justify-content:center}.gh-stars.is-nav .gh-stars-label{display:none}.gh-stars.is-nav .gh-stars-count{position:absolute;top:-4px;right:-6px;height:18px;padding:0 5px;font-size:10px}.gh-stars.is-nav{position:relative}}
+.gh-stars.is-landing{gap:10px;padding:0 6px 0 14px}
+.gh-stars.is-landing svg{flex-shrink:0}
 .landing-top-bar{width:100%;max-width:1152px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 @media(max-width:700px){.gh-stars.is-landing{height:34px;padding:0 12px;font-size:12px}}
 .lb-skeleton-search{height:60px;margin-top:24px;border-radius:999px;background:#202020;animation:pc-pulse 1.4s ease-in-out infinite both}
@@ -1611,10 +1620,34 @@ main[data-pending]{cursor:progress}
 .fa-empty{padding:48px 0;color:var(--muted);text-align:center}
 
 /* Try hack me: desktop-only pill above Feedback (shares .fb-pill), its dialog, and the HACKER badge. */
-.hk-pill{bottom:84px}
-.tw-trigger ~ .hk-pill,.hk-pill:has(~ .tw-trigger){bottom:148px}
+/* Stacked: at rest only two layers show, Feedback in front and one thin edge behind it (Try hack me, with Hide me hidden
+   right behind that). Hovering any pill spreads all three upward. --fb is Feedback's bottom offset (higher when the dev
+   tweaks button is on screen), and every other position is computed from it so the states always line up. The ::after
+   bridges the gaps, so the cursor stays in hover while the stack opens (no flicker). */
+.hm-icon{background:#edc5f9;color:#3d1a4a}
+/* Hide me dialog: the two buttons sit together on the right instead of at opposite ends. */
+.sv-actions.hm-actions{justify-content:flex-end;gap:8px}
+.sv-actions.hm-actions .sv-primary{margin-left:0}
+@media(min-width:1024px) and (pointer:fine){
+  .fb-pill{--fb:24px}
+  .fb-pill:has(~ .tw-trigger){--fb:88px}
+  .fb-pill:not(.hk-pill):not(.hm-pill){bottom:var(--fb)}
+  .hk-pill,.hm-pill{right:23px;bottom:calc(var(--fb) - 4px);transform:scaleX(.83);transform-origin:right center;transition:bottom .28s cubic-bezier(.2,.8,.2,1),right .28s cubic-bezier(.2,.8,.2,1),transform .28s cubic-bezier(.2,.8,.2,1),background .18s}
+  .hk-pill{z-index:28}
+  .hm-pill{z-index:27}
+  .hk-pill::after,.hm-pill::after{content:'';position:absolute;left:0;right:0;top:100%;height:0}
+  .hk-pill>*,.hm-pill>*{opacity:0;transition:opacity .2s}
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hk-pill,.hk-pill:hover,.hk-pill:has(~ .hm-pill:hover){bottom:calc(var(--fb) + 56px);right:20px;transform:none}
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hm-pill,.hk-pill:hover ~ .hm-pill,.hm-pill:hover{bottom:calc(var(--fb) + 112px);right:20px;transform:none}
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hk-pill>*,.hk-pill:hover>*,.hk-pill:has(~ .hm-pill:hover)>*,.fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hm-pill>*,.hk-pill:hover ~ .hm-pill>*,.hm-pill:hover>*{opacity:1}
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hk-pill::after,.hk-pill:hover::after,.hk-pill:has(~ .hm-pill:hover)::after{height:90px}
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover ~ .hm-pill::after,.hk-pill:hover ~ .hm-pill::after,.hm-pill:hover::after{height:12px}
+}
+@media(prefers-reduced-motion:reduce){.hk-pill,.hm-pill{transition:none}}
 .hk-pill svg{color:#e5484d}
 @media(max-width:1023px),(hover:none) and (pointer:coarse){.hk-pill{display:none}}
+/* Hide me: its pill is part of the desktop stack; on phones it lives in the profile menu. */
+@media(max-width:1023px),(hover:none) and (pointer:coarse){.hm-pill{display:none}}
 .hk-icon{background:#ff8a8f;color:#4c111a}
 .hk-rules{display:flex;flex-direction:column;gap:8px;list-style:none;margin:18px 0 4px;padding:0;color:#cfcfcf;font-size:13px;line-height:1.45}
 .hk-rules li{display:flex;gap:10px}
@@ -1896,3 +1929,41 @@ html[data-tw-light]:not(:has(.landing)) .xp-rank small{color:#3d3d3d!important}
   .pc .pl-side{top:20px;max-height:calc(100svh - 40px);margin:-4px;padding:4px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
   .pc .pl-side::-webkit-scrollbar{display:none}
 }
+/* Hide me dialog: what is missing is shown after pressing Confirm, not by greying the button out. */
+.hm-error{margin:6px 0 0;color:#ff8a8f;font-size:12.5px;font-weight:500;line-height:1.4}
+.fb-field.is-invalid textarea{border-color:#ff8a8f;box-shadow:0 0 0 3px #ff8a8f33}
+.fb-reply.is-invalid{color:#ff8a8f;animation:hm-shake .35s}
+.fb-reply.is-invalid input{outline:2px solid #ff8a8f;outline-offset:2px}
+@keyframes hm-shake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+@media(prefers-reduced-motion:reduce){.fb-reply.is-invalid{animation:none}}
+html[data-tw-light]:not(:has(.landing)) .hm-error,html[data-tw-light]:not(:has(.landing)) .fb-reply.is-invalid{color:#c0283d!important}
+html[data-tw-light]:not(:has(.landing)) .fb-field.is-invalid textarea{border-color:#c0283d!important;box-shadow:0 0 0 3px #c0283d26!important}
+.hm-contact{margin:10px 0 0;color:#a3a3a3;font-size:12.5px;line-height:1.5}
+.hm-contact a{color:#d8d8d8;text-decoration:underline;text-underline-offset:2px}
+.hm-contact b{color:#d8d8d8;font-weight:600}
+html[data-tw-light]:not(:has(.landing)) .hm-contact{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) :is(.hm-contact a,.hm-contact b){color:#141414!important}
+.hm-rules{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px;padding:0;list-style:none;color:#cfcfcf;font-size:13.5px;line-height:1.5}
+.hm-rules li{display:flex;gap:10px}
+.hm-rules li>span[aria-hidden]{flex-shrink:0;font-size:14px;line-height:1.35}
+.hm-rules li>span:not([aria-hidden]){min-width:0}
+.hm-rules a{color:#f2f2f2;text-decoration:underline;text-underline-offset:2px}
+.hm-rules b{color:#f2f2f2;font-weight:600}
+html[data-tw-light]:not(:has(.landing)) .hm-rules{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) :is(.hm-rules a,.hm-rules b){color:#141414!important}
+.pl-row.is-anonymous{opacity:.85}
+.pl-row.is-anonymous .pl-copy strong{color:#b0b0b0;font-weight:500}
+.st-leader-anon{display:flex;align-items:center;gap:12px;padding:10px 12px;color:#b0b0b0}
+.dn-art{width:min(200px,60vw);height:auto}
+.dn p a,.dn p b{color:var(--text);font-weight:600}
+/* "New!" on the floating buttons: on Feedback at rest, on Remove me while the stack is open. Both follow the flag
+   FeedbackButton sets on <html>; the profile menu entry has its own inline badge. */
+.hm-pill .nav-new{display:none}
+html[data-floating-new] .hm-pill .nav-new{display:block}
+.menu-new{margin-left:2px;padding:2px 7px;border-radius:999px;background:#cafbd2;color:#0a2a12;font-size:10px;font-style:normal;font-weight:700;line-height:1.4}
+html:not([data-floating-new]) .menu-new{display:none}
+@media(min-width:1024px) and (pointer:fine){
+  .fb-pill:not(.hk-pill):not(.hm-pill):hover>.nav-new,.fb-pill:not(.hk-pill):not(.hm-pill):has(~ .hk-pill:hover)>.nav-new,.fb-pill:not(.hk-pill):not(.hm-pill):has(~ .hm-pill:hover)>.nav-new{opacity:0;transition:opacity .15s}
+}
+.dn-code{margin:22px 0 0;color:var(--muted);font-size:14px;font-weight:700;letter-spacing:.18em}
+.dn-code+h1{margin-top:6px}

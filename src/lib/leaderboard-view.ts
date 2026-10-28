@@ -52,7 +52,7 @@ export function listPage(dataset: RankingDataset, filters: Filters, ownId?: numb
   const blackholedMode = filters.bh === 'blackholed', alumniMode = filters.bh === 'alumni', frozenMode = filters.bh === 'frozen';
   const { rows, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode }, ownId);
   const inScope = (student: BlackholedStudent) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreEntryYear === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
-  const lost = blackholedMode ? dataset.blackholed.filter(inScope) : [];
+  const lost = blackholedMode ? dataset.blackholed.filter((student) => !student.anonymous && inScope(student)) : [];
   if (filters.order === 'desc') lost.reverse();
   const lostPages = Math.max(1, Math.ceil(lost.length / 25)), lostPage = Math.min(filters.page, lostPages);
   const lostRows = lost.slice((lostPage - 1) * 25, lostPage * 25);
@@ -65,15 +65,20 @@ export function listPage(dataset: RankingDataset, filters: Filters, ownId?: numb
 
 /** Photo links for the people shown: uploaded avatars first, then signed 42 Intra photos. */
 export async function avatarsFor(people: { id: number; photo?: string | null }[]) {
-  return photoReferences(people, await avatarReferencesOrEmpty([...new Set(people.map((person) => person.id))]));
+  // Anonymous students have negative ids and no photo: nothing to look up.
+  const real = people.filter((person) => person.id > 0);
+  return photoReferences(real, await avatarReferencesOrEmpty([...new Set(real.map((person) => person.id))]));
 }
 
 export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string): RankRowData[] {
   const hackers = hackerLogins();
   const campus = (ids: number[]) => ids.map((id) => campusName(dataset, id)).join(' · ');
   if (view.blackholedMode) return view.lostRows.map((student) => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: hackers.has(student.login.toLowerCase()), blackholedAt: student.blackholedAt }));
-  return view.listed.map((student) => ({
+  return view.listed.map((student) => student.anonymous ? {
+    // Nothing but the place in the list leaves the server for an anonymous student.
+    kind: 'ranked', id: student.id, login: 'Anonymous student', level: 0, year: null, campus: '', src: null, hacker: false, rank: student.rank, mine: false, alumni: false, frozen: false, anonymous: true,
+  } as RankRowData : ({
     kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
     hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen,
-  }));
+  } as RankRowData));
 }

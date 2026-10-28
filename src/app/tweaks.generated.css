@@ -376,6 +376,7 @@ html[data-tw-surface]:not(:has(.landing)) .fa-item{background:var(--tw-card)!imp
 html[data-tw-surface]:not(:has(.landing)) .fa-kind{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-bug{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .fa-kind.is-idea{background:#fff0b5!important}
+html[data-tw-surface]:not(:has(.landing)) .hm-icon{background:#edc5f9!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-icon{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-contact.is-discord{background:#5865f2!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-contact.is-mail{background:#cafbd2!important}
@@ -446,6 +447,7 @@ html[data-tw-surface]:not(:has(.landing)) .nav-new{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-up{background:#cfe0ff!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-down{background:#ffd5d8!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-same{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .menu-new{background:#cafbd2!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -484,6 +486,7 @@ html[data-tw-accent] .xp-presets button.is-on{background:var(--tw-accent)!import
 html[data-tw-accent] .xp-option-done{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-path li.is-last strong{background:var(--tw-accent)!important}
 html[data-tw-accent] .nav-new{background:var(--tw-accent)!important}
+html[data-tw-accent] .menu-new{background:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
 html[data-tw-radius] .input{border-radius:10px!important}
@@ -768,6 +771,7 @@ html[data-tw-radius] .xp-path i{border-radius:50%!important}
 html[data-tw-radius] .xp-path li.is-last strong{border-radius:999px!important}
 html[data-tw-radius] .nav-new{border-radius:999px!important}
 html[data-tw-radius] .xp-rank em{border-radius:999px!important}
+html[data-tw-radius] .menu-new{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
@@ -1237,6 +1241,14 @@ html[data-tw-light]:not(:has(.landing)) .xp-path strong{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank>b{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank em.is-same{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank small{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .hm-contact{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .hm-contact a{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .hm-contact b{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .hm-rules{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .hm-rules a{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .hm-rules b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .pl-row.is-anonymous .pl-copy strong{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .st-leader-anon{color:#3d3d3d!important}
 html:not([data-tw-light]):not(:has(.landing)){--primary:#a7d8b1!important;--ring:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)){--mint:#a7d8b1!important;--lilac:#c9a3d6!important;--green:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .avatar{background:#cdaed8!important}
@@ -1289,6 +1301,8 @@ html:not([data-tw-light]):not(:has(.landing)) .tw-dot{background:var(--tw-accent
 html:not([data-tw-light]):not(:has(.landing)) .tw-badge{background:#dccd92!important}
 html:not([data-tw-light]):not(:has(.landing)) .tw-panel button:focus-visible,html:not([data-tw-light]):not(:has(.landing)) .tw-trigger:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .gh-stars-count{background:#dccd92!important}
+html:not([data-tw-light]):not(:has(.landing)) .gh-stars.is-landing{box-shadow:0 0 22px #dccd921a!important}
+html:not([data-tw-light]):not(:has(.landing)) .gh-stars.is-landing::before{background:conic-gradient(from var(--gh-angle),#ffffff1f 0,#dccd92 12%,#ffffff1f 28%,#ffffff1f 60%,#a7d8b1 72%,#ffffff1f 85%)!important}
 html:not([data-tw-light]):not(:has(.landing)) .gh-stars:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .nav-rank-logout:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .theme-toggle:focus-visible{outline:3px solid #a7d8b1!important}
@@ -1355,6 +1369,7 @@ html:not([data-tw-light]):not(:has(.landing)) .fa-meta a:hover{color:#a7d8b1!imp
 html:not([data-tw-light]):not(:has(.landing)) .fa-kind{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .fa-kind.is-bug{background:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .fa-kind.is-idea{background:#dccd92!important}
+html:not([data-tw-light]):not(:has(.landing)) .hm-icon{background:#c9a3d6!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-icon{background:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact.is-mail{background:#a7d8b1!important}
@@ -1378,6 +1393,11 @@ html:not([data-tw-light]):not(:has(.landing)) .xp-option-done{background:#a7d8b1
 html:not([data-tw-light]):not(:has(.landing)) .xp-chip:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-path li.is-last strong{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .nav-new{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .hm-error{color:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .fb-field.is-invalid textarea{border-color:#d9767b!important;box-shadow:0 0 0 3px #d9767b33!important}
+html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid{color:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid input{outline:2px solid #d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .menu-new{background:#a7d8b1!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */
 html[data-tw-light]:not(:has(.landing)) :is(.st-returns-lead strong,.st-correctors-score strong,.st-rbars-avg em){color:#c92a3a!important}
 html[data-tw-light]:not(:has(.landing)) .st-correctors-list li+li{border-top-color:#0000000f!important}
