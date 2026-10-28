@@ -410,6 +410,7 @@ html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend) .is-none{backg
 html[data-tw-surface]:not(:has(.landing)) .ex-table-wrap{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-top{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .pl-top:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-side>.xp-hero{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-hero-arrow{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-hero-gain{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-bar{background:var(--tw-raise)!important}
@@ -434,7 +435,6 @@ html[data-tw-surface]:not(:has(.landing)) .xp-mark-thumb::before{background:radi
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button{background:#0f0f0fbf!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button:hover{background:#0f0f0fe6!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button.is-on{background:var(--xp-accent)!important}
-@media (min-width:1024px){html[data-tw-surface]:not(:has(.landing)) .xp-side>.xp-hero{background:var(--tw-card)!important}}
 html[data-tw-surface]:not(:has(.landing)) .xp-panel{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-chip{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-chip:hover{background:var(--tw-hover)!important}
@@ -748,6 +748,7 @@ html[data-tw-radius] .ex-legend i{border-radius:3px!important}
 html[data-tw-radius] .ex-table-wrap{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .ex-choice{border-radius:999px!important}
 html[data-tw-radius] .pl-top{border-radius:999px!important}
+html[data-tw-radius] .xp-side>.xp-hero{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .xp-hero-arrow{border-radius:50%!important}
 html[data-tw-radius] .xp-hero-gain{border-radius:999px!important}
 html[data-tw-radius] .xp-bar{border-radius:999px!important}
@@ -761,7 +762,6 @@ html[data-tw-radius] .xp-option{border-radius:calc(12px * var(--tw-r))!important
 html[data-tw-radius] .xp-option-done{border-radius:999px!important}
 html[data-tw-radius] .xp-mark{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .xp-mark-thumb{border-radius:4px!important}
-@media (min-width:1024px){html[data-tw-radius] .xp-side>.xp-hero{border-radius:calc(24px * var(--tw-r))!important}}
 html[data-tw-radius] .xp-panel{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .xp-chip{border-radius:999px!important}
 html[data-tw-radius] .xp-path i{border-radius:50%!important}
@@ -1199,6 +1199,7 @@ html[data-tw-light]:not(:has(.landing)) .ex-table td{color:#141414!important;bor
 html[data-tw-light]:not(:has(.landing)) .ex-table a{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-top{background:#ecece9!important;color:#141414!important;border:1px solid #0000001f!important}
 html[data-tw-light]:not(:has(.landing)) .pl-top:hover{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .xp-side>.xp-hero{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-from strong{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-arrow{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .xp-bar{background:#ecece9!important}
@@ -1225,7 +1226,6 @@ html[data-tw-light]:not(:has(.landing)) .xp-mark-hint{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark .xp-presets button{background:#ffffffbf!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark .xp-presets button:hover{background:#ffffffe6!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark .xp-remove{color:#141414!important}
-@media (min-width:1024px){html[data-tw-light]:not(:has(.landing)) .xp-side>.xp-hero{background:#ffffff!important}}
 html[data-tw-light]:not(:has(.landing)) .xp-panel{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .xp-chip{background:#ecece9!important;color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .xp-chip:hover{background:#e2e2df!important}

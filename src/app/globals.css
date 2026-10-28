@@ -1743,6 +1743,9 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 .xp{max-width:720px}
 .xp-calc{display:flex;flex-direction:column;gap:28px}
 .xp-hero{position:relative;display:flex;flex-direction:column;gap:14px}
+.xp-side>.xp-hero{padding:24px;border-radius:24px;background:#161616}
+.xp-side>.xp-hero .xp-hero-gain{top:18px;right:18px}
+.xp-side>.xp-hero:has(.xp-hero-gain){padding-top:58px}
 /* XP planning illustrations */
 .xp-empty-plan{display:flex;align-items:center;gap:16px;padding:12px 0}
 .xp-empty-plan img{flex-shrink:0;object-fit:contain}
@@ -1837,10 +1840,7 @@ html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-thumb::before{
   .xp{max-width:1200px}
   .xp-calc{display:grid;grid-template-columns:minmax(340px,420px) minmax(0,1fr);align-items:start;gap:28px 48px}
   .xp-calc>.xp-side{position:sticky;top:24px}
-  .xp-side>.xp-hero{padding:24px;border-radius:24px;background:#161616}
   .xp-calc>.xp-projects{grid-column:2;grid-row:1}
-  .xp-side>.xp-hero .xp-hero-gain{top:18px;right:18px}
-  .xp-side>.xp-hero:has(.xp-hero-gain){padding-top:58px}
 }
 /* XP calculator: the left column under the level. Phones show it after the projects. */
 .xp-side{display:flex;flex-direction:column;gap:12px}
