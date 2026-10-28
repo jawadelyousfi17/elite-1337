@@ -39,8 +39,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={generalSans.variable} data-tw-light="" data-tw-surface="light" data-tw-radius="sharp"
-      style={{ '--tw-bg': '#f3f3f1', '--tw-card': '#ffffff', '--tw-raise': '#ececea', '--tw-hover': '#e2e2df', '--tw-r': '.4' } as CSSProperties}
+    <html lang="en" className={`${generalSans.variable} dark`} data-tw-radius="round"
+      style={{ '--tw-r': '1.35' } as CSSProperties}
       suppressHydrationWarning>
       <body suppressHydrationWarning>
         {children}
