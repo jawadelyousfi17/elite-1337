@@ -1053,7 +1053,6 @@ a:hover .st-ext,a:focus-visible .st-ext{opacity:1}
 .pl.pc .pl-hero{min-height:0}
 /* Nudge the wordmark up so its visual center lines up with the nav pills */
 .nav .brand img{transform:translateY(-6px)}
-@media(max-width:700px){.gh-stars.is-nav{display:none}}
 .nav-actions{flex-wrap:nowrap}
 .nav-logout button{white-space:nowrap}
 /* Log out lives in the profile popover */
@@ -1967,3 +1966,6 @@ html:not([data-floating-new]) .menu-new{display:none}
 }
 .dn-code{margin:22px 0 0;color:var(--muted);font-size:14px;font-weight:700;letter-spacing:.18em}
 .dn-code+h1{margin-top:6px}
+/* iPad landscape: the five top links stay on one line */
+@media(min-width:1024px){.nav .navlinks{flex-wrap:nowrap;white-space:nowrap}}
+@media(min-width:1024px) and (max-width:1199px){.nav .navlinks{gap:4px}.nav .navlinks a{padding:0 14px;font-size:14px}}
