@@ -705,7 +705,7 @@ button.credit:hover,button.credit[data-state=open]{background:#ffffff10}
 @media(prefers-reduced-motion:reduce){.pl-ext{transition:opacity .18s;transform:none}}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 /* Emblem sits on the spy, centered above the headline */
-.landing-hero .landing-emblem{position:relative;z-index:1;height:132px;margin:-118px auto 14px;filter:drop-shadow(0 8px 30px #2aa7ff66) drop-shadow(0 0 2px #000)}
+.landing-hero .landing-emblem{position:relative;z-index:1;height:132px;margin:-118px auto 14px;filter:drop-shadow(0 8px 30px #ffffff26) drop-shadow(0 0 2px #000)}
 .landing-visual{width:min(100%,720px)}
 @media(max-height:820px) and (min-width:701px){.landing-hero .landing-emblem{height:108px;margin-top:-96px}.landing-visual{width:min(100%,620px)}}
 @media(max-width:700px){.landing-hero .landing-emblem{height:100px;margin-top:-80px;margin-bottom:10px}}
@@ -1675,10 +1675,8 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 .gh-stars.is-nav:focus-visible .gh-tip{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){.gh-tip{transition:none}}
 
-/* Landing: brand line inside the h1. */
-.landing-brand{display:block;margin-bottom:10px;color:#9fd8ff;font-size:13px;font-weight:600;letter-spacing:.22em;line-height:1.2;text-transform:uppercase}
+/* Landing: the spy art shrinks on short screens so the button stays in view. */
 .landing-hero .landing-visual{width:min(100%,720px,max(220px,(100svh - 430px) * 1.568))}
-@media(max-height:760px){.landing-brand{margin-bottom:6px;font-size:12px}}
 
 .landing{padding-bottom:clamp(20px,4svh,36px)}
 
