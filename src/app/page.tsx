@@ -26,7 +26,7 @@ export default async function Home() {
         <span className="landing-glow"/>
         <img src="/assets/spy.webp" alt="" width={1400} height={893} fetchPriority="high"/>
       </div>
-      <img className="landing-emblem" src="/assets/horse-emblem-mono.webp" alt="Elite 1337" width={309} height={480}/>
+      <img className="landing-emblem" src="/assets/horse-emblem-flat.webp" alt="Elite 1337" width={309} height={480}/>
       <h1 id="landing-title">See where you stand at 1337.</h1>
       <form action={async () => {
         'use server';
