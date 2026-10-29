@@ -27,4 +27,10 @@ describe('chainLevels', () => {
     expect(third.level).toBeCloseTo(xpToLevel(462 + 1102.5 + 115.5), 9);
     expect(chainLevels(3, [{ xp: 462, mark: 80, doneMark: 100 }])[0]).toEqual({ gain: 0, level: 3 });
   });
+  it('adds the coalition bonus on top of each gain', () => {
+    const [step] = chainLevels(0, [{ xp: 1000, mark: 100 }], 4);
+    expect(step.gain).toBeCloseTo(1040, 9);
+    expect(chainLevels(0, [{ xp: 1000, mark: 125, doneMark: 100 }], 4)[0].gain).toBeCloseTo(260, 9);
+    expect(chainLevels(0, [{ xp: 1000, mark: 100 }], -10)[0].gain).toBe(1000);
+  });
 });

@@ -4,24 +4,57 @@ import type { Stop } from './journey';
  * Common Core circles. A circle is done once every group in it has one passed project
  * (a group lists alternatives, e.g. so_long, FdF or fract-ol).
  */
-export const CIRCLES: string[][][] = [
+export const CORE_CIRCLES: string[][][] = [
   [['42cursus-libft']],
   [['42cursus-ft_printf'], ['42cursus-get_next_line'], ['born2beroot']],
   [['so_long', '42cursus-fdf', '42cursus-fract-ol'], ['42cursus-push_swap'], ['pipex', 'minitalk'], ['exam-rank-02']],
   [['42cursus-minishell'], ['42cursus-philosophers'], ['exam-rank-03']],
   [['netpractice'], ['cub3d', 'minirt'], ['cpp-module-00'], ['cpp-module-01'], ['cpp-module-02'], ['cpp-module-03'], ['cpp-module-04'], ['exam-rank-04']],
   [['inception'], ['ft_irc', 'webserv'], ['cpp-module-05'], ['cpp-module-06'], ['cpp-module-07'], ['cpp-module-08'], ['cpp-module-09'], ['exam-rank-05']],
-  [['ft_transcendence'], ['exam-rank-06']],
+  [['ft_transcendence'], ['42_collaborative_resume'], ['exam-rank-06']],
 ];
+
+/**
+ * The 2025 Common Core (Python track, `42next-` exams), as the Intra holy graph shows it. ft_resume's slug is
+ * `42_collaborative_resume`.
+ */
+export const NEXT_CIRCLES: string[][][] = [
+  [['42cursus-libft']],
+  [['42cursus-ft_printf'], ['42cursus-get_next_line'], ['42cursus-push_swap']],
+  [['born2beroot'], ['a-maze-ing'], ...Array.from({ length: 11 }, (_, i) => [`python-module-${String(i).padStart(2, '0')}`]), ['42next-exam-rank-02']],
+  [['call-me-maybe'], ['fly-in'], ['codexion'], ['42next-exam-rank-03']],
+  [['rag-against-the-machine'], ['netpractice'], ['pac-man'], ['42next-exam-rank-04']],
+  [['inception'], ['agent-smith'], ['the-answer-protocol'], ['42next-exam-rank-05']],
+  [['ft_transcendence'], ['42_collaborative_resume'], ['42next-exam-rank-06']],
+];
+
+export type Track = 'core' | 'next';
+export const circlesFor = (track: Track) => track === 'next' ? NEXT_CIRCLES : CORE_CIRCLES;
+
+const only = (from: string[][][], other: string[][][]) => { const skip = new Set(other.flat(2)); return new Set(from.flat(2).filter((slug) => !skip.has(slug))); };
+// Late projects that older students may also take outside the Common Core; they never decide the track.
+const ANY_TRACK = new Set(['the-answer-protocol', 'agent-smith', '42_collaborative_resume']);
+const NEXT_ONLY = new Set([...only(NEXT_CIRCLES, CORE_CIRCLES)].filter((slug) => !ANY_TRACK.has(slug))), CORE_ONLY = only(CORE_CIRCLES, NEXT_CIRCLES);
+
+/**
+ * Which Common Core a student follows: any project of the new track wins (some 2025 students also try so_long),
+ * then any old-only project; with only shared projects so far, students who entered in 2025 or later are on the new one.
+ */
+export function trackOf(slugs: Iterable<string>, start?: string | null): Track {
+  const list = [...slugs];
+  if (list.some((slug) => NEXT_ONLY.has(slug))) return 'next';
+  if (list.some((slug) => CORE_ONLY.has(slug))) return 'core';
+  return start && Date.parse(start) >= Date.UTC(2025, 0, 1) ? 'next' : 'core';
+}
 
 export type CircleDone = { circle: number; at: string; slug: string };
 
 /** Circles completed, each with the date and the project whose pass completed it; stops at the first unfinished circle. */
-export function circlesDone(stops: Stop[]): CircleDone[] {
+export function circlesDone(stops: Stop[], track = trackOf(stops.map((stop) => stop.slug))): CircleDone[] {
   const passed = new Map<string, string>();
   for (const stop of stops) if (stop.passed) passed.set(stop.slug, stop.at);
   const done: CircleDone[] = [];
-  for (const [circle, groups] of CIRCLES.entries()) {
+  for (const [circle, groups] of circlesFor(track).entries()) {
     let latest: { at: string; slug: string } | null = null;
     for (const group of groups) {
       const first = group.map((slug) => passed.has(slug) ? { slug, at: passed.get(slug)! } : null).filter((hit) => hit !== null).sort((a, b) => Date.parse(a.at) - Date.parse(b.at))[0];

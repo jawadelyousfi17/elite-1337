@@ -447,6 +447,13 @@ html[data-tw-surface]:not(:has(.landing)) .nav-new{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-up{background:#cfe0ff!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-down{background:#ffd5d8!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-rank em.is-same{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-coalition-name i{background:#5a5a5a!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-coalition-name span{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-switch{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked]{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-switch-thumb{background:#f2f2f2!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked] .xp-switch-thumb{background:#0a2a12!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-bonus-field input{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .menu-new{background:#cafbd2!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
@@ -486,6 +493,7 @@ html[data-tw-accent] .xp-presets button.is-on{background:var(--tw-accent)!import
 html[data-tw-accent] .xp-option-done{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-path li.is-last strong{background:var(--tw-accent)!important}
 html[data-tw-accent] .nav-new{background:var(--tw-accent)!important}
+html[data-tw-accent] .xp-switch[data-state=checked]{background:var(--tw-accent)!important}
 html[data-tw-accent] .menu-new{background:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
@@ -771,6 +779,11 @@ html[data-tw-radius] .xp-path i{border-radius:50%!important}
 html[data-tw-radius] .xp-path li.is-last strong{border-radius:999px!important}
 html[data-tw-radius] .nav-new{border-radius:999px!important}
 html[data-tw-radius] .xp-rank em{border-radius:999px!important}
+html[data-tw-radius] .xp-coalition-name i{border-radius:50%!important}
+html[data-tw-radius] .xp-coalition-name span{border-radius:999px!important}
+html[data-tw-radius] .xp-switch{border-radius:999px!important}
+html[data-tw-radius] .xp-switch-thumb{border-radius:50%!important}
+html[data-tw-radius] .xp-bonus-field input{border-radius:10px!important}
 html[data-tw-radius] .menu-new{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
@@ -1241,6 +1254,11 @@ html[data-tw-light]:not(:has(.landing)) .xp-path strong{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank>b{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank em.is-same{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .xp-rank small{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .xp-coalition-name b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .xp-coalition-name span{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .xp-bonus{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .xp-switch{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .xp-bonus-field input{background:#ecece9!important;color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact a{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact b{color:#3d3d3d!important}
@@ -1393,6 +1411,9 @@ html:not([data-tw-light]):not(:has(.landing)) .xp-option-done{background:#a7d8b1
 html:not([data-tw-light]):not(:has(.landing)) .xp-chip:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-path li.is-last strong{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .nav-new{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-switch[data-state=checked]{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-switch:focus-visible{outline:2px solid #a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-bonus-field input:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hm-error{color:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-field.is-invalid textarea{border-color:#d9767b!important;box-shadow:0 0 0 3px #d9767b33!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid{color:#d9767b!important}

@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { chainLevels, levelToXp, xpToLevel, type XpProject } from '@/lib/xp-math';
+import { chainLevels, levelToXp, xpToLevel, type XpCoalition, type XpProject } from '@/lib/xp-math';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ArrowDown, ArrowRight, ArrowUp, Check, Cohort, Plus, Search, X } from '@/components/icons';
 import { matchesSearch } from '@/lib/search';
 import { cn } from '@/lib/utils';
-import { Slider } from 'radix-ui';
+import { Slider, Switch } from 'radix-ui';
+import { CoalitionMark } from '@/components/coalition-marks';
 
 const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
 // Intra shows levels cut to two decimals, not rounded.
@@ -14,14 +15,18 @@ const lvl = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
 type Picked = { slug: string; mark: number };
 
 /** Levels after one or more projects, in order; projects not validated yet come first in the picker. */
-export function XpCalculator({ projects, level, done, skipped, peers, scope }: { projects: XpProject[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null }) {
+export function XpCalculator({ projects, level, done, skipped, peers, scope, coalition }: { projects: XpProject[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
   const other = useMemo(() => new Set(skipped), [skipped]);
   const bySlug = useMemo(() => new Map(projects.map((project) => [project.slug, project])), [projects]);
   const [picked, setPicked] = useState<Picked[]>([]);
   // The starting level is the student's real one from the rankings; it is not editable.
   const start = level ?? 0;
+  // The #1 coalition's bonus is on by default; 42 does not publish it, so 4.2% is an estimate the student can change.
+  const [boosted, setBoosted] = useState(coalition?.rank === 1);
+  const [percent, setPercent] = useState('4.2');
+  const bonus = boosted ? Math.min(Math.max(Number(percent) || 0, 0), 100) : 0;
 
-  const steps = useMemo(() => chainLevels(start, picked.map((item) => ({ xp: bySlug.get(item.slug)!.xp, mark: item.mark, doneMark: done[item.slug] }))), [start, picked, bySlug, done]);
+  const steps = useMemo(() => chainLevels(start, picked.map((item) => ({ xp: bySlug.get(item.slug)!.xp, mark: item.mark, doneMark: done[item.slug] })), bonus), [start, picked, bySlug, done, bonus]);
   const final = steps.at(-1)?.level ?? start;
   const update = (slug: string, mark: number) => setPicked((items) => items.map((item) => item.slug === slug ? { ...item, mark } : item));
   const add = (slug: string) => setPicked((items) => [...items, { slug, mark: done[slug] !== undefined ? 125 : 100 }]);
@@ -44,6 +49,16 @@ export function XpCalculator({ projects, level, done, skipped, peers, scope }: {
     </div>
 
     {level === null && <p className="xp-note">Your level is not in the rankings yet, so this starts from level 0.</p>}
+
+    {coalition && <section className="xp-panel xp-coalition" aria-label="Coalition">
+      <h3>Coalition</h3>
+      <p className="xp-coalition-name"><i style={coalition.color ? { background: coalition.color } : undefined} aria-hidden="true"><CoalitionMark name={coalition.name}/></i><b>{coalition.name}</b><span>#{coalition.rank} of {coalition.total}</span></p>
+      <div className="xp-bonus">
+        <Switch.Root id="xp-bonus" className="xp-switch" checked={boosted} onCheckedChange={setBoosted}><Switch.Thumb className="xp-switch-thumb"/></Switch.Root>
+        <label htmlFor="xp-bonus">Coalition bonus</label>
+        <span className="xp-bonus-field"><input type="number" inputMode="decimal" min={0} max={100} step={0.1} value={percent} disabled={!boosted} onChange={(event) => setPercent(event.target.value)} aria-label="Coalition bonus in percent"/>%</span>
+      </div>
+    </section>}
 
 
     {upNext.length > 0 && <section className="xp-panel" aria-label="Up next">

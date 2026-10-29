@@ -1767,10 +1767,6 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 .pl-top:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
 @media(max-width:760px){.pl-top{bottom:calc(max(16px,env(safe-area-inset-bottom)) + 76px)}}
 @media(prefers-reduced-motion:reduce){.pl-top{transition:none}}
-.ex-filters{margin-bottom:8px}
-.ex-sub-first{margin-top:0}
-.ex-lead{margin:-6px 0 12px;font-size:13px}
-.ex-legend .ex-ended{display:block;margin-top:4px;color:var(--muted);font-size:12px}
 /* XP calculator */
 .xp{max-width:720px}
 .xp-calc{display:flex;flex-direction:column;gap:28px}
@@ -1921,6 +1917,24 @@ html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-path li+li::before{
 .xp-rank small{display:inline-flex;align-items:center;gap:6px;flex-basis:100%;color:#c4c4c4;font-size:12.5px;font-weight:600}
 @media(prefers-reduced-motion:reduce){.xp-rank>b{animation:none}}
 html[data-tw-light]:not(:has(.landing)) .xp-rank small{color:#3d3d3d!important}
+/* XP calculator: the student's coalition and its bonus switch */
+.xp-coalition-name{display:flex;align-items:center;gap:8px;margin:0;font-size:14px}
+.xp-coalition-name i{display:inline-grid;flex:none;place-items:center;width:30px;height:30px;border-radius:50%;background:#5a5a5a;color:#fff}
+.xp-coalition-name b{color:#f2f2f2;font-weight:700}
+.xp-coalition-name span{padding:2px 8px;border-radius:999px;background:#202020;color:var(--muted);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.xp-bonus{display:flex;align-items:center;gap:10px;color:#d8d8d8;font-size:13.5px;font-weight:600}
+.xp-bonus label{cursor:pointer}
+.xp-switch{position:relative;flex:none;width:38px;height:22px;padding:0;border:0;border-radius:999px;background:#2b2b2b;cursor:pointer;transition:background .15s}
+.xp-switch[data-state=checked]{background:#cafbd2}
+.xp-switch:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
+.xp-switch-thumb{display:block;width:16px;height:16px;border-radius:50%;background:#f2f2f2;transform:translateX(3px);transition:transform .15s}
+.xp-switch[data-state=checked] .xp-switch-thumb{background:#0a2a12;transform:translateX(19px)}
+.xp-bonus-field{display:inline-flex;align-items:center;gap:8px;margin-left:auto;color:var(--muted)}
+.xp-bonus-field input{width:58px;height:32px;padding:0 8px;border:0;border-radius:10px;background:#202020;color:#f2f2f2;font:inherit;font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.xp-bonus-field input:focus-visible{outline:2px solid #cafbd2;outline-offset:1px}
+.xp-bonus-field input:disabled{opacity:.45}
+@media(prefers-reduced-motion:reduce){.xp-switch,.xp-switch-thumb{transition:none}}
+html[data-tw-light]:not(:has(.landing)) :is(.xp-coalition-name b,.xp-bonus){color:#1f1f1f!important}
 .pc-tabs{margin:0 0 16px}
 /* Corrections, wide screens: the filter column is its own scroll area (its project list is long), so it scrolls
    independently of the list on the right. The padding keeps focus outlines from being clipped. */
