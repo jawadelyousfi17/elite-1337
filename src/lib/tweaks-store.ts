@@ -26,10 +26,9 @@ export const radii = [
 
 export type Settings = { surface: string; accent: string; radius: string; lastDark?: string };
 export const DEFAULTS: Settings = { surface: 'black', accent: 'mint', radius: 'round' };
-// Start fresh after retiring the experimental production preferences.
-const STORAGE_KEY = 'elite-tweaks-v2';
-// Dark and Round became the defaults: saved settings from before still hold the old defaults, so drop those two once.
-const RADIUS_KEY = 'elite-tweaks-radius-v3';
+// Dark and Round are the defaults now: settings saved under older keys are ignored and removed, everyone starts fresh.
+const STORAGE_KEY = 'elite-tweaks-v4';
+const OLD_KEYS = ['elite-tweaks', 'elite-tweaks-v1', 'elite-tweaks-v2', 'elite-tweaks-v3', 'elite-tweaks-radius-v3'];
 
 let current: Settings = DEFAULTS;
 let loaded = false;
@@ -54,9 +53,8 @@ function load() {
   if (loaded) return;
   loaded = true;
   try {
+    for (const key of OLD_KEYS) localStorage.removeItem(key);
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<Settings> | null;
-    if (saved && !localStorage.getItem(RADIUS_KEY)) { delete saved.radius; delete saved.surface; }
-    localStorage.setItem(RADIUS_KEY, '1');
     if (saved) current = { ...DEFAULTS, ...saved };
   } catch { /* storage unavailable: keep defaults */ }
   apply(current);
