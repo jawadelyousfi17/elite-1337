@@ -4,10 +4,10 @@ import { ArrowRight, Funnel, Search, X } from '@/components/icons';
 import { CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { FilterRoot } from '@/components/filter-root';
 
-export function FilterShell({ action, hidden, q, placeholder, clearHref, activeCount, defaultOpen, track, children }: {
-  action: string; hidden: Record<string, string>; q?: string; placeholder: string; clearHref: string; activeCount: number; defaultOpen: boolean; track?: 'leaderboard'; children: ReactNode;
+export function FilterShell({ action, hidden, q, placeholder, clearHref, activeCount, defaultOpen, children }: {
+  action: string; hidden: Record<string, string>; q?: string; placeholder: string; clearHref: string; activeCount: number; defaultOpen: boolean; children: ReactNode;
 }) {
-  return <FilterRoot track={track} defaultOpen={defaultOpen} className="pl-filterbox">
+  return <FilterRoot defaultOpen={defaultOpen} className="pl-filterbox">
     <div className="pl-search-row">
       <form className="pl-searchbar" action={action} role="search">
         {Object.entries(hidden).map(([name, value]) => <input key={name} type="hidden" name={name} value={value}/>)}

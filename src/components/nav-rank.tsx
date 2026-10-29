@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { ChevronDown, Gift, LogOut, Trash } from '@/components/icons';
 import { OPEN_HIDE_ME } from '@/components/hide-me';
-import { beacon } from '@/components/nav-links';
 import { Avatar } from '@/components/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
@@ -13,8 +12,8 @@ import { Button } from '@/components/ui/button';
 export type ViewerRanks = { login: string; photo: string | null; level: number; cohort: number | null; cohortLabel: string; campus: number | null; campusLabel: string; global: number };
 
 /** Profile chip: opens on hover (mouse) or click/tap, shows ranks and holds the log-out action. */
-/** `offers`: the nav A/B test moved Offers out of the navigation for this student, so it lives in this menu instead. */
-export function NavRank({ ranks, login, logout, offers = false }: { ranks: ViewerRanks | null; login: string; logout: () => Promise<void>; offers?: boolean }) {
+/** Offers lives here: the XP calculator took its place in the navigation. */
+export function NavRank({ ranks, login, logout }: { ranks: ViewerRanks | null; login: string; logout: () => Promise<void> }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverOpened = useRef(false);
@@ -48,7 +47,7 @@ export function NavRank({ ranks, login, logout, offers = false }: { ranks: Viewe
         <dl className="grid gap-2">{rows.map(([label, value]) => <div key={label} className="flex items-baseline justify-between gap-3"><dt className="truncate text-sm text-muted-foreground">{label}</dt><dd className="nav-rank-num">{value ? `#${value}` : '—'}</dd></div>)}</dl>
       </>}
       <Button asChild className="mt-4 w-full"><Link href="/me" onClick={() => change(false)}>Open my dashboard</Link></Button>
-      {offers && <Link href="/offers" className="nav-rank-logout mt-2" onClick={() => { beacon('offers'); change(false); }}><Gift size={17} aria-hidden="true"/>Student offers</Link>}
+      <Link href="/offers" className="nav-rank-logout mt-2" onClick={() => change(false)}><Gift size={17} aria-hidden="true"/>Student offers</Link>
       <button type="button" className="nav-rank-logout mt-2" onClick={() => { change(false); window.dispatchEvent(new Event(OPEN_HIDE_ME)); }}><Trash size={17} aria-hidden="true"/>Remove my profile<em className="menu-new">New!</em></button>
       <form action={logout} className="mt-2"><button type="submit" className="nav-rank-logout"><LogOut size={17} aria-hidden="true"/>Log out</button></form>
     </PopoverContent>
