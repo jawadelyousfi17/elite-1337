@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation';
 import { auth, signIn } from '@/auth';
 import { AccessPlatformButton } from '@/components/access-platform-button';
 import { Credits } from '@/components/credits';
+import { EventBanner } from '@/components/event-banner';
 import { LegalLinks } from '@/components/legal-page';
-import { GitHubStars } from '@/components/github-stars';
 import { REPO_URL } from '@/lib/github';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 
@@ -19,13 +19,9 @@ export const metadata = { alternates: { canonical: '/' } };
 
 export default async function Home() {
   return <main className="landing">
-    <div className="landing-top-bar"><LegalLinks/><GitHubStars variant="landing"/></div>
+    <div className="landing-top-bar"><EventBanner/></div>
 
     <section className="landing-hero" aria-labelledby="landing-title">
-      <div className="landing-visual" aria-hidden="true">
-        <span className="landing-glow"/>
-        <img src="/assets/spy.webp" alt="" width={1400} height={893} fetchPriority="high"/>
-      </div>
       <img className="landing-emblem" src="/assets/horse-emblem-flat.webp" alt="Elite 1337" width={309} height={480}/>
       <h1 id="landing-title">See where you stand at 1337.</h1>
       <form action={async () => {
@@ -40,6 +36,7 @@ export default async function Home() {
 
     <footer className="landing-credits">
       <Credits/>
+      <LegalLinks/>
     </footer>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}/>
   </main>;

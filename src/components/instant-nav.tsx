@@ -49,7 +49,7 @@ export function InstantNav() {
       // Capture phase: Next's <Link> prevents the default before a bubbling listener would see the click.
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
-      if (!link || link.target || link.hasAttribute('download')) return;
+      if (!link || link.target || link.hasAttribute('download') || link.hasAttribute('data-no-pending')) return;
       const url = new URL(link.href, location.href);
       if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return;
       if (url.pathname === location.pathname) {

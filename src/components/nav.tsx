@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { auth, signOut } from '@/auth';
+import { Announcements } from '@/components/announcements';
 import { GitHubStars } from '@/components/github-stars';
 import { NavLinks } from '@/components/nav-links';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -47,7 +48,7 @@ export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
       {loggedIn ? <>
         <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top"/></nav>
         <div className="nav-actions">
-        <div className="nav-tools"><ThemeToggle/><GitHubStars variant="nav"/></div>
+        <div className="nav-tools"><Announcements/><ThemeToggle/><GitHubStars variant="nav"/></div>
         <Suspense fallback={<NavRank ranks={null} login={login} logout={logout}/>}><RankedChip login={login}/></Suspense>
         </div>
       </> : <nav className="navlinks" aria-label="Main navigation"><Link href="/">Home</Link></nav>}

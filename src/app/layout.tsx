@@ -7,6 +7,7 @@ import Script from 'next/script';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 import { UMAMI_DOMAINS, UMAMI_WEBSITE_ID } from '@/lib/analytics';
 import { VercelAnalytics } from '@/components/vercel-analytics';
+import { PageViewBeacon } from '@/components/page-view-beacon';
 
 const generalSans = localFont({
   src: [
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <Script src="https://cloud.umami.is/script.js" data-website-id={UMAMI_WEBSITE_ID} data-domains={UMAMI_DOMAINS} data-exclude-search="true" strategy="afterInteractive"/>
         <VercelAnalytics/>
+        <PageViewBeacon/>
       </body>
     </html>
   );

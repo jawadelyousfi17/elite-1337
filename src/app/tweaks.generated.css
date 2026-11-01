@@ -455,6 +455,19 @@ html[data-tw-surface]:not(:has(.landing)) .xp-switch-thumb{background:#f2f2f2!im
 html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked] .xp-switch-thumb{background:#0a2a12!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-bonus-field input{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .menu-new{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .as-online i{background:#8fd99f!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-allowed{background:#8fd99f!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-denied{background:#c58ae6!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-dropped{background:#6a6a6a!important}
+html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-error{background:#e6c35a!important}
+html[data-tw-surface]:not(:has(.landing)) .as-stack .is-none{background:#ffffff0d!important}
+html[data-tw-surface]:not(:has(.landing)) .as-page-track{background:#ffffff0d!important}
+html[data-tw-surface]:not(:has(.landing)) .as-page-track em{background:#8fd99f!important}
+html[data-tw-surface]:not(:has(.landing)) .ann-button{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ann-button:hover,html[data-tw-surface]:not(:has(.landing)) .ann.is-open .ann-button{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ann-count{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .ann-panel-inner{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ann-cta{background:#cafbd2!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -495,6 +508,8 @@ html[data-tw-accent] .xp-path li.is-last strong{background:var(--tw-accent)!impo
 html[data-tw-accent] .nav-new{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-switch[data-state=checked]{background:var(--tw-accent)!important}
 html[data-tw-accent] .menu-new{background:var(--tw-accent)!important}
+html[data-tw-accent] .ann-count{background:var(--tw-accent)!important}
+html[data-tw-accent] .ann-cta{background:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
 html[data-tw-radius] .input{border-radius:10px!important}
@@ -785,6 +800,16 @@ html[data-tw-radius] .xp-switch{border-radius:999px!important}
 html[data-tw-radius] .xp-switch-thumb{border-radius:50%!important}
 html[data-tw-radius] .xp-bonus-field input{border-radius:10px!important}
 html[data-tw-radius] .menu-new{border-radius:999px!important}
+html[data-tw-radius] .as-online i{border-radius:50%!important}
+html[data-tw-radius] .as-stack{border-radius:4px!important}
+html[data-tw-radius] .as-stack i{border-radius:2px!important}
+html[data-tw-radius] .as-legend i{border-radius:50%!important}
+html[data-tw-radius] .as-page-track{border-radius:4px!important}
+html[data-tw-radius] .as-page-track em{border-radius:4px!important}
+html[data-tw-radius] .ann-button{border-radius:999px!important}
+html[data-tw-radius] .ann-count{border-radius:999px!important}
+html[data-tw-radius] .ann-panel-inner{border-radius:calc(23px * var(--tw-r))!important}
+html[data-tw-radius] .ann-cta{border-radius:999px!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
@@ -1267,6 +1292,19 @@ html[data-tw-light]:not(:has(.landing)) .hm-rules a{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .hm-rules b{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-row.is-anonymous .pl-copy strong{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .st-leader-anon{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .as-empty{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .as-promo-head span{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .as-promo-head b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .as-legend{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .as-legend b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .as-stack .is-none{background:#0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .as-page-track{background:#0000000d!important}
+html[data-tw-light]:not(:has(.landing)) .as-page-value small{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ann-button{background:#ecece9!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ann-button:hover,html[data-tw-light]:not(:has(.landing)) .ann.is-open .ann-button{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .ann-panel-inner{background:#ffffff!important;color:#141414!important;border:1px solid #00000014!important}
+html[data-tw-light]:not(:has(.landing)) .ann-item+.ann-item{border-top:1px solid #0000000f!important}
+html[data-tw-light]:not(:has(.landing)) .ann-body p{color:#5f5f5f!important}
 html:not([data-tw-light]):not(:has(.landing)){--primary:#a7d8b1!important;--ring:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)){--mint:#a7d8b1!important;--lilac:#c9a3d6!important;--green:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .avatar{background:#cdaed8!important}
@@ -1392,6 +1430,14 @@ html:not([data-tw-light]):not(:has(.landing)) .hk-icon{background:#d9767b!import
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-contact.is-mail{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .hk-badge{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-pill{box-shadow:0 0 22px #a7d8b11a!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-pill:focus-visible{outline:3px solid #a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-chip{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-pill::before{background:conic-gradient(from var(--gh-angle),#ffffff1f 0,#dccd92 12%,#ffffff1f 28%,#ffffff1f 60%,#a7d8b1 72%,#ffffff1f 85%)!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-card-inner{box-shadow:0 24px 60px -20px #000,0 0 40px -10px #a7d8b126!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-facts svg{color:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-cta-icon{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-event-cta:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pl-more-dots i{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ab-switch{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ab-note{color:#d9767b!important}
@@ -1419,6 +1465,9 @@ html:not([data-tw-light]):not(:has(.landing)) .fb-field.is-invalid textarea{bord
 html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid{color:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid input{outline:2px solid #d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .menu-new{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .ann-button:focus-visible{outline:3px solid #a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .ann-count{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .ann-cta{background:#a7d8b1!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */
 html[data-tw-light]:not(:has(.landing)) :is(.st-returns-lead strong,.st-correctors-score strong,.st-rbars-avg em){color:#c92a3a!important}
 html[data-tw-light]:not(:has(.landing)) .st-correctors-list li+li{border-top-color:#0000000f!important}

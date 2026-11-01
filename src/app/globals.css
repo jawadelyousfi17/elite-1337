@@ -1680,6 +1680,52 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 
 .landing{padding-bottom:clamp(20px,4svh,36px)}
 
+/* Landing event pill (top bar) and the full card it opens on hover or focus. */
+.landing-top-bar{justify-content:flex-end}
+/* Landing without the spy art: black with one soft glow behind the emblem, nothing drawn, emblem in normal flow. */
+.landing{background:radial-gradient(ellipse 55% 40% at 50% 38%,#0f2a22 0%,#08140f 45%,transparent 75%),radial-gradient(ellipse 120% 80% at 50% 110%,#0b0f14 0%,transparent 60%),#000}
+.landing-hero .landing-emblem{margin:0 auto 18px;height:clamp(96px,16svh,150px)}
+.landing-credits{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;max-width:1152px}
+.landing-credits>:first-child{grid-column:2}
+.landing-credits .legal-links{grid-column:3;justify-self:end}
+@media(max-width:700px){.landing-credits{display:flex;flex-direction:column;gap:8px}}
+.landing-events{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.landing-event{position:relative;z-index:20}
+.landing-event:hover,.landing-event:focus-within{z-index:21}
+.landing-event-pill{position:relative;display:inline-flex;align-items:center;gap:12px;height:50px;padding:0 7px;border-radius:999px;background:#202020;color:#e6eef5;font-size:15px;font-weight:500;box-shadow:0 0 22px #cafbd21a;transition:background .18s}
+.landing-event-pill:hover,.landing-event:focus-within .landing-event-pill{background:#2b2b2b}
+.landing-event-pill:focus-visible{outline:3px solid #cafbd2;outline-offset:3px}
+.landing-event-label{white-space:nowrap}
+.landing-event-when{color:#8796a6}
+.landing-event-logo{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#000;box-shadow:inset 0 0 0 1px #ffffff26;overflow:hidden}
+.landing-event-logo img{width:100%;height:100%;object-fit:cover;transform:scale(1.3)}
+.landing-event-logo.is-big{width:56px;height:56px;border-radius:16px}
+.landing-event-pill,.landing-event-cta{text-decoration:none}
+.ev-ask-logo{display:block;margin-bottom:14px}
+.landing-event-chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;background:#cafbd2;color:#0a0a0a;font-size:14px;font-weight:600}
+/* shared shiny border: same running arc as the old GitHub star button */
+.landing-event-pill::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--gh-angle),#ffffff1f 0,#fff0b5 12%,#ffffff1f 28%,#ffffff1f 60%,#cafbd2 72%,#ffffff1f 85%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:gh-spin 4s linear infinite}
+.landing-event-card{position:absolute;top:100%;right:0;padding-top:10px;width:min(380px,calc(100vw - 32px));opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s cubic-bezier(.2,.8,.2,1),visibility 0s .18s}
+.landing-event:hover .landing-event-card,.landing-event:focus-within .landing-event-card{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.landing-event-card-inner{position:relative;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:#141414;border:1px solid #ffffff14;box-shadow:0 24px 60px -20px #000,0 0 40px -10px #cafbd226;text-align:left;color:#e6eef5}
+.landing-event-head{display:flex;align-items:center;gap:14px}
+.landing-event-kicker{margin:0 0 2px;color:#8796a6;font-size:12px;letter-spacing:.02em}
+.landing-event-head h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.02em}
+.landing-event-pitch{margin:0;color:#cfcfcf;font-size:14px;line-height:1.55}
+.landing-event-facts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none;font-size:13px}
+.landing-event-facts li{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:14px;background:#202020}
+.landing-event-facts svg{flex-shrink:0;color:#cafbd2}
+.landing-event-cta{display:inline-flex;align-items:center;justify-content:space-between;height:48px;padding:0 6px 0 20px;border-radius:999px;background:#fff;color:#060606;font-size:15px;font-weight:500;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.landing-event-cta-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#cafbd2;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.landing-event-cta:hover{transform:translateY(-1px)}
+.landing-event-cta:hover .landing-event-cta-icon{transform:translate(2px,-2px)}
+.landing-event-cta:focus-visible{outline:3px solid #cafbd2;outline-offset:3px}
+@media(hover:none){.landing-event-card{display:none}}
+@media(max-width:700px){.landing-event-pill{height:42px;font-size:13px;gap:9px;padding:0 5px}.landing-event-logo{width:32px;height:32px}.landing-event-chip{height:32px;padding:0 11px;font-size:12px}}
+@media(max-width:520px){.landing-events{gap:6px}.landing-event-chip svg{display:none}}
+@media(max-width:400px){.landing-event-pill{gap:7px;font-size:12px}.landing-event-chip{padding:0 9px}}
+@media(prefers-reduced-motion:reduce){.landing-event-pill::before{animation:none}.landing-event-card,.landing-event-cta,.landing-event-cta-icon{transition:none}}
+
 .avatar .avatar-fallback{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:inherit;background:var(--muted-surface);color:var(--foreground);font-weight:600;overflow:hidden}
 .avatar .avatar-fallback.is-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%);transform:translateX(-100%);animation:avatar-shimmer 1.3s ease-in-out infinite}
 @keyframes avatar-shimmer{to{transform:translateX(100%)}}
@@ -1981,3 +2027,69 @@ html:not([data-floating-new]) .menu-new{display:none}
 /* iPad landscape: the five top links stay on one line */
 @media(min-width:1024px){.nav .navlinks{flex-wrap:nowrap;white-space:nowrap}}
 @media(min-width:1024px) and (max-width:1199px){.nav .navlinks{gap:4px}.nav .navlinks a{padding:0 14px;font-size:14px}}
+
+/* Admin site stats (as-): reuses st- KPIs/cards and sc- bars; only the extras live here. */
+.as .st-top{margin-bottom:12px}
+.as-online{display:inline-flex;align-items:center;gap:6px;color:#e6eef5}
+.as-online i{width:8px;height:8px;border-radius:50%;background:#8fd99f;box-shadow:0 0 0 3px #8fd99f33;animation:as-pulse 2s ease-in-out infinite}
+@keyframes as-pulse{50%{box-shadow:0 0 0 6px #8fd99f00}}
+.as-kpis{margin-top:16px}
+.as-row{margin-top:12px}
+.as .st-card header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.as-bars{margin-top:8px}
+.sc-plot.is-sky .sc-bar{background:#8fc8e6}
+.as-empty{margin:0;padding:28px 0;color:#9a9a9a;font-size:14px;text-align:center}
+.as-promos{display:flex;flex-direction:column;gap:18px}
+.as-promo-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.as-promo-head h3{margin:0;font-size:15px;font-weight:600}
+.as-promo-head span{color:#9a9a9a;font-size:13px}
+.as-promo-head b{color:#f2f2f2;font-weight:600;font-variant-numeric:tabular-nums}
+.as-stack{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden}
+.as-stack i{min-width:4px;border-radius:2px}
+.as-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0 0;padding:0;list-style:none;font-size:13px;color:#c4c4c4}
+.as-legend li{display:inline-flex;align-items:center;gap:6px}
+.as-legend b{color:#f2f2f2;font-weight:600;font-variant-numeric:tabular-nums}
+.as-legend i{width:8px;height:8px;border-radius:50%}
+:is(.as-stack,.as-legend) .is-allowed{background:#8fd99f}
+:is(.as-stack,.as-legend) .is-denied{background:#c58ae6}
+:is(.as-stack,.as-legend) .is-dropped{background:#6a6a6a}
+:is(.as-stack,.as-legend) .is-error{background:#e6c35a}
+.as-stack .is-none{background:#ffffff0d}
+.as-pages{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.as-pages li{display:grid;grid-template-columns:minmax(0,130px) minmax(0,1fr) 92px;align-items:center;gap:12px}
+.as-page-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-page-track{position:relative;height:18px;border-radius:4px;background:#ffffff0d;overflow:hidden}
+.as-page-track em{position:absolute;inset:0 auto 0 0;border-radius:4px;background:#8fd99f}
+.as-page-value{display:flex;flex-direction:column;line-height:1.2;text-align:right}
+.as-page-value b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.as-page-value small{font-size:11px;color:#9a9a9a}
+.as-foot{margin:16px 0 40px;color:#7d8794;font-size:12px;line-height:1.5}
+@media(max-width:900px){.as-row,.as-row.is-wide-left{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.as-pages li{grid-template-columns:minmax(0,96px) minmax(0,1fr) 72px;gap:8px}}
+@media(prefers-reduced-motion:reduce){.as-online i{animation:none}}
+
+/* Navbar announcements (ann-): round button like the theme toggle, panel of open promos on hover or tap. */
+.ann{position:relative;flex-shrink:0}
+.ann-button{position:relative;display:grid;place-items:center;width:48px;height:48px;border:0;border-radius:999px;background:#202020;color:#f2f2f2;cursor:pointer;transition:background .18s}
+.ann-button:hover,.ann.is-open .ann-button{background:#2b2b2b}
+.ann-button:focus-visible{outline:3px solid #cafbd2;outline-offset:3px}
+.ann-count{position:absolute;top:-3px;right:-4px;display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#cafbd2;color:#0a0a0a;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;box-shadow:0 0 0 3px var(--background,#0a0a0a)}
+.ann-panel{position:absolute;z-index:60;top:100%;right:0;width:min(320px,calc(100vw - 32px));padding-top:10px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s,transform .18s cubic-bezier(.2,.8,.2,1),visibility 0s .18s}
+.ann.is-open .ann-panel,.ann:focus-within .ann-panel{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+@media(hover:hover){.ann:hover .ann-panel{opacity:1;visibility:visible;transform:none;transition-delay:0s}}
+.ann-panel-inner{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid #ffffff14;border-radius:23px;background:#141414;box-shadow:0 24px 60px -20px #000;color:#f2f2f2;text-align:left}
+.ann-head h2{margin:2px 6px 0;font-size:15px;font-weight:600;letter-spacing:-.02em}
+.ann-list{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.ann-item{display:flex;align-items:center;gap:10px;padding:10px 6px;transition:background .15s}
+.ann-item+.ann-item{border-top:1px solid #ffffff0f}
+.ann-body{flex:1;min-width:0}
+.ann-body h3{margin:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ann-body p{margin:1px 0 0;color:#9a9a9a;font-size:12px}
+.ann-cta{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;height:32px;padding:0 12px;border-radius:999px;background:#cafbd2;color:#0a0a0a;font-size:12px;font-weight:600;text-decoration:none;transition:filter .15s}
+.ann-cta:hover{filter:brightness(1.06)}
+.ann-cta[aria-busy=true]{cursor:wait;opacity:.8}
+.ann-spin{animation:landing-access-spin .8s linear infinite}
+@media(prefers-reduced-motion:reduce){.ann-spin{animation:none}}
+.ann-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:1023px){.ann-button{width:46px;height:46px}.ann-panel{right:auto;left:0}}
+@media(prefers-reduced-motion:reduce){.ann-panel,.ann-button{transition:none}}

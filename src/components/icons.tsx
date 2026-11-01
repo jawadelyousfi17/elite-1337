@@ -4,7 +4,7 @@ import {
   ChartLineUp, Check as PhCheck, ClockCountdown, Desktop, FolderSimple, GridFour, Lock, MagnifyingGlass, MagnifyingGlassMinus, MagnifyingGlassPlus,
   ArrowCounterClockwise, Buildings, GithubLogo, InstagramLogo, LinkedinLogo, HourglassMedium, HourglassHigh, CalendarBlank, CalendarDots, FunnelSimple,
   ChartBar, CrownSimple, ArrowsDownUp, WhatsappLogo, CreditCard as PhCreditCard, Gift as PhGift, Cloud as PhCloud, Globe as PhGlobe, Briefcase as PhBriefcase, ShieldCheck as PhShieldCheck, Snowflake as PhSnowflake, DiscordLogo, Envelope, Plus as PhPlus, Trash as PhTrash, Calculator as PhCalculator, ArrowUp as PhArrowUp, Minus as PhMinus, Info as PhInfo, Sun as PhSun, Moon as PhMoon, Star as PhStar, Coffee as PhCoffee, Heart as PhHeart, GraduationCap, Heartbeat, TrendUp as PhTrendUp, TrendDown as PhTrendDown, Ranking as PhRanking,
-  ChatTeardropText, Bug as PhBug, MapPin as PhMapPin, MapTrifold, SpeakerHigh, SpeakerSlash, Question, SignOut, SlidersHorizontal as PhSliders, Trophy as PhTrophy, User, Wallet as PhWallet, Waves as PhWaves, X as PhX,
+  ChatTeardropText, Megaphone as PhMegaphone, Users as PhUsers, Bug as PhBug, MapPin as PhMapPin, MapTrifold, SpeakerHigh, SpeakerSlash, Question, SignOut, SlidersHorizontal as PhSliders, Trophy as PhTrophy, User, Wallet as PhWallet, Waves as PhWaves, X as PhX,
 } from '@phosphor-icons/react/dist/ssr';
 import type { IconProps as PhIconProps } from '@phosphor-icons/react';
 
@@ -85,6 +85,8 @@ export const ChatText = icon(ChatTeardropText);
 export const Bug = icon(PhBug);
 export const Snowflake = icon(PhSnowflake);
 export const Discord = icon(DiscordLogo);
+export const Users = icon(PhUsers);
+export const Megaphone = icon(PhMegaphone);
 export const Mail = icon(Envelope);
 export const Plus = icon(PhPlus, 'bold');
 export const Trash = icon(PhTrash);
