@@ -1320,6 +1320,7 @@ html:not([data-tw-light]):not(:has(.landing)) .pl-bh.is-lost{color:#d4a2ac!impor
 html:not([data-tw-light]):not(:has(.landing)) .pl-chip.is-pink[data-active]{background:#d4a2ac!important}
 html:not([data-tw-light]):not(:has(.landing)) .pl-token.is-pink{background:#d4a2ac!important}
 html:not([data-tw-light]):not(:has(.landing)) .pc-project-row[data-active]{background:#a9d1d6!important}
+html:not([data-tw-light]):not(:has(.landing)) .landing-cta .landing-cta-icon{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pc-loader-bar span{background:linear-gradient(90deg,#a9d1d6,#a7d8b1,#cdaed8)!important}
 html:not([data-tw-light]):not(:has(.landing)) .creator-tags li{background:#a9d1d6!important}
 html:not([data-tw-light]):not(:has(.landing)) .creator-tags li:nth-child(2){background:#cdaed8!important}
