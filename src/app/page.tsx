@@ -18,7 +18,6 @@ const structuredData = {
 export const metadata = { alternates: { canonical: '/' } };
 
 export default async function Home() {
-  const session = await auth();
   return <main className="landing">
     <div className="landing-top-bar"><EventBanner/></div>
 
@@ -31,7 +30,7 @@ export default async function Home() {
         if (session?.user?.id) redirect('/leaderboard');
         await signIn('42', { redirectTo: '/leaderboard' });
       }}>
-        <AccessPlatformButton ready={!!session?.user?.id}/>
+        <AccessPlatformButton/>
       </form>
     </section>
 

@@ -23,8 +23,9 @@ export function FilterRoot({ defaultOpen, className, children }: { defaultOpen: 
       if (link.hasAttribute('data-active') || link.getAttribute('aria-current') === 'true') return;
       setOpen(false);
     };
-    element.addEventListener('click', onClick);
-    return () => element.removeEventListener('click', onClick);
+    // Window capture runs before InstantNav's document listener, which marks the tapped chip as picked; read it untouched.
+    window.addEventListener('click', onClick, true);
+    return () => window.removeEventListener('click', onClick, true);
   }, []);
 
   return <Collapsible ref={root} open={open} onOpenChange={setOpen} className={className}>{children}</Collapsible>;

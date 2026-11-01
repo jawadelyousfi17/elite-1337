@@ -17,7 +17,12 @@ export function ScrollRow({ className, children }: { className?: string; childre
       event.preventDefault();
       el.scrollLeft += event.deltaY;
     };
-    el.querySelector<HTMLElement>('[aria-current="true"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    // Center the chosen chip by scrolling the row only; scrollIntoView would also scroll the page when the row sits near the fold.
+    const current = el.querySelector<HTMLElement>('[aria-current="true"]');
+    if (current) {
+      const box = el.getBoundingClientRect(), chip = current.getBoundingClientRect();
+      el.scrollLeft += chip.left - box.left - (el.clientWidth - chip.width) / 2;
+    }
     update();
     el.addEventListener('scroll', update, { passive: true });
     el.addEventListener('wheel', wheel, { passive: false });
