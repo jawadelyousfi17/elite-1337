@@ -2087,7 +2087,8 @@ html:not([data-floating-new]) .menu-new{display:none}
 .ann-body p{margin:1px 0 0;color:#9a9a9a;font-size:12px}
 .ann-cta{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;height:32px;padding:0 12px;border-radius:999px;background:#cafbd2;color:#0a0a0a;font-size:12px;font-weight:600;text-decoration:none;transition:filter .15s}
 .ann-cta:hover{filter:brightness(1.06)}
-.ann-cta[aria-busy=true]{cursor:wait;opacity:.8}
+.ann-cta[aria-busy=true],.landing-event-pill[aria-busy=true],.landing-event-cta[aria-busy=true]{cursor:wait}
+.ann-cta[aria-busy=true]{opacity:.8}
 .ann-spin{animation:landing-access-spin .8s linear infinite}
 @media(prefers-reduced-motion:reduce){.ann-spin{animation:none}}
 .ann-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}

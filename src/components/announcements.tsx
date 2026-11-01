@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ArrowRight, Megaphone } from '@/components/icons';
-import { PROMOS, PromoDialog, PromoLogo, followPromo, preloadPromoAccess, promoHref, usePromoResult } from '@/components/promo-shared';
+import { PROMOS, PromoDialog, PromoLogo, followPromo, preloadPromoAccess, promoHref, usePromoBusy, usePromoResult } from '@/components/promo-shared';
 import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +13,7 @@ export function Announcements() {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const [shown, setShown] = usePromoResult();
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = usePromoBusy();
 
   // Signed-in pages already looked up the student's profile for the navbar, so checking access early costs no extra 42 request.
   useEffect(() => { const timer = setTimeout(() => void preloadPromoAccess(), 1200); return () => clearTimeout(timer); }, []);

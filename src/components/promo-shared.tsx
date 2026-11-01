@@ -75,9 +75,10 @@ export async function followPromo(promo: Promo, back: string, where: string, sho
   track('event-subscribe-click', { promo: promo.id, where });
   busy?.(true);
   const known = await preloadPromoAccess();
-  busy?.(false);
   const entry = known?.signedIn ? known.promos[promo.id] : undefined;
+  // Signed out: the busy state stays on until the browser leaves for the 42 sign-in.
   if (!entry) { window.location.assign(promoHref(promo.id, back)); return; }
+  busy?.(false);
   try { navigator.sendBeacon?.(`/api/promos/${promo.id}`); } catch { /* stats must never block the click */ }
   if (entry.outcome === 'allowed' && entry.href) {
     const tab = window.open(entry.href, '_blank');
@@ -85,6 +86,17 @@ export async function followPromo(promo: Promo, back: string, where: string, sho
     return;
   }
   show({ promo, result: entry.outcome });
+}
+
+/** Busy state for a promo button; cleared again when the browser restores this page from its back/forward cache. */
+export function usePromoBusy() {
+  const [busy, setBusy] = useState<string | null>(null);
+  useEffect(() => {
+    const restore = (event: PageTransitionEvent) => { if (event.persisted) setBusy(null); };
+    window.addEventListener('pageshow', restore);
+    return () => window.removeEventListener('pageshow', restore);
+  }, []);
+  return [busy, setBusy] as const;
 }
 
 /** The outcome dialog, plus the one the server leaves in ?promo=<id>&result=<...> after a 42 sign-in (read once, then removed). */
