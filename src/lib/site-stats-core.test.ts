@@ -24,10 +24,15 @@ describe('normalizePath', () => {
 
 describe('recordsOnHost', () => {
   it('records on production hosts only, plus explicit extras', () => {
-    expect(recordsOnHost('www.elite-1337.app', '')).toBe(true);
-    expect(recordsOnHost('localhost:3000', '')).toBe(false);
-    expect(recordsOnHost('localhost:3399', 'localhost')).toBe(true);
-    expect(recordsOnHost(null, '')).toBe(false);
+    expect(recordsOnHost('www.elite-1337.app', '', '')).toBe(true);
+    expect(recordsOnHost('localhost:3000', '', '')).toBe(false);
+    expect(recordsOnHost('localhost:3399', 'localhost', '')).toBe(true);
+    expect(recordsOnHost(null, '', '')).toBe(false);
+  });
+  it('follows the Vercel environment whatever the host header says', () => {
+    expect(recordsOnHost('elite-1337-abc.vercel.app', '', 'production')).toBe(true);
+    expect(recordsOnHost(null, '', 'production')).toBe(true);
+    expect(recordsOnHost('www.elite-1337.app', '', 'preview')).toBe(false);
   });
 });
 

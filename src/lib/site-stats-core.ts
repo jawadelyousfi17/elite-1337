@@ -12,8 +12,12 @@ export type PromoEventOutcome = typeof PROMO_OUTCOMES[number];
 
 export const parsePeriod = (value: unknown): StatsPeriod => STATS_PERIODS.includes(value as StatsPeriod) ? value as StatsPeriod : 'today';
 
-/** Only the production hosts record, like Umami, so local runs and previews never pollute the numbers. SITE_STATS_HOSTS adds hosts for testing. */
-export function recordsOnHost(host: string | null | undefined, extra = process.env.SITE_STATS_HOSTS ?? '') {
+/**
+ * Only production records, so local runs and previews never pollute the numbers. On Vercel that is the production
+ * deployment (VERCEL_ENV); elsewhere (Docker) the Umami production hosts, plus any in SITE_STATS_HOSTS.
+ */
+export function recordsOnHost(host: string | null | undefined, extra = process.env.SITE_STATS_HOSTS ?? '', vercelEnv = process.env.VERCEL_ENV) {
+  if (vercelEnv) return vercelEnv === 'production';
   if (!host) return false;
   const name = host.toLowerCase().replace(/:\d+$/, '');
   return [...UMAMI_DOMAINS.split(','), ...extra.split(',')].map((entry) => entry.trim().toLowerCase()).filter(Boolean).includes(name);
