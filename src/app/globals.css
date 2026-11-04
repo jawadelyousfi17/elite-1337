@@ -1813,6 +1813,7 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 @media(prefers-reduced-motion:reduce){.pl-top{transition:none}}
 /* XP calculator */
 .xp{max-width:720px}
+.xp-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px}
 .xp-calc{display:flex;flex-direction:column;gap:28px}
 .xp-hero{position:relative;display:flex;flex-direction:column;gap:14px}
 .xp-side>.xp-hero{padding:24px;border-radius:24px;background:#161616}

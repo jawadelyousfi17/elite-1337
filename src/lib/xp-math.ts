@@ -25,6 +25,8 @@ export function xpToLevel(xp: number) {
 export const projectGain = (projectXp: number, mark: number) => projectXp * Math.min(Math.max(mark, 0), 125) / 100;
 
 export type XpProject = { slug: string; name: string; xp: number; circle: number };
+/** A project as the calculator lists it; `tag` is the short label in the picker (C3, Mod, Exp). */
+export type XpOption = { slug: string; name: string; xp: number; tag: string };
 /** The student's coalition as the calculator shows it; `rank` is its place on the campus. */
 export type XpCoalition = { name: string; color: string | null; rank: number; total: number };
 

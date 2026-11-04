@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { chainLevels, levelToXp, xpToLevel, type XpCoalition, type XpProject } from '@/lib/xp-math';
+import { chainLevels, levelToXp, xpToLevel, type XpCoalition, type XpOption } from '@/lib/xp-math';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ArrowDown, ArrowRight, ArrowUp, Check, Cohort, Plus, Search, X } from '@/components/icons';
 import { matchesSearch } from '@/lib/search';
@@ -14,8 +14,11 @@ const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
 const lvl = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
 type Picked = { slug: string; mark: number };
 
-/** Levels after one or more projects, in order; projects not validated yet come first in the picker. */
-export function XpCalculator({ projects, level, done, skipped, peers, scope, coalition }: { projects: XpProject[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
+/**
+ * Levels after one or more projects, in order; projects not validated yet come first in the picker. `upNext` offers
+ * the next projects in list order, which only means something for the Common Core circles.
+ */
+export function XpCalculator({ projects, level, done, skipped, peers, scope, coalition, upNext: suggest = true }: { projects: XpOption[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null; upNext?: boolean }) {
   const other = useMemo(() => new Set(skipped), [skipped]);
   const bySlug = useMemo(() => new Map(projects.map((project) => [project.slug, project])), [projects]);
   const [picked, setPicked] = useState<Picked[]>([]);
@@ -31,7 +34,7 @@ export function XpCalculator({ projects, level, done, skipped, peers, scope, coa
   const update = (slug: string, mark: number) => setPicked((items) => items.map((item) => item.slug === slug ? { ...item, mark } : item));
   const add = (slug: string) => setPicked((items) => [...items, { slug, mark: done[slug] !== undefined ? 125 : 100 }]);
   const taken = new Set(picked.map((item) => item.slug));
-  const upNext = projects.filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4);
+  const upNext = suggest ? projects.filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4) : [];
 
   return <section className="xp-calc" aria-label="XP calculator">
     <div className="xp-side">
@@ -173,7 +176,7 @@ function CountUp({ value }: { value: number }) {
 }
 
 /** Searchable project list in a popover: next projects first, then validated ones to improve, then skipped alternatives. */
-function ProjectPicker({ projects, done, other, taken, onPick }: { projects: XpProject[]; done: Record<string, number>; other: Set<string>; taken: Set<string>; onPick: (slug: string) => void }) {
+function ProjectPicker({ projects, done, other, taken, onPick }: { projects: XpOption[]; done: Record<string, number>; other: Set<string>; taken: Set<string>; onPick: (slug: string) => void }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const input = useRef<HTMLInputElement>(null);
@@ -197,7 +200,7 @@ function ProjectPicker({ projects, done, other, taken, onPick }: { projects: XpP
         {!groups.length ? <p className="xp-picker-empty">No project matches “{q}”.</p> : groups.map((group) => <div key={group.label} role="group" aria-label={group.label}>
           <p className="xp-picker-label">{group.label}</p>
           {group.items.map((project) => <button key={project.slug} type="button" role="option" aria-selected={false} className="xp-option" onClick={() => pick(project.slug)}>
-            <span className="xp-option-circle">C{project.circle}</span>
+            <span className="xp-option-circle">{project.tag}</span>
             <span className="xp-option-name">{project.name}</span>
             {done[project.slug] !== undefined && <span className="xp-option-done"><Check size={12}/>{done[project.slug]}</span>}
             <span className="xp-option-xp">{fmt(project.xp)} XP</span>

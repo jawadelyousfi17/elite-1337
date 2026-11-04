@@ -100,14 +100,15 @@ export class FortyTwoClient {
     }
     throw new Error('42 token retry limit reached');
   }
-  async request<T>(path: string, schema: z.ZodType<T>, params: Record<string, string> = {}): Promise<{ data: T; total: number | null }> {
+  /** `timeoutMs` per attempt: a few heavy endpoints (the cursus project list) take longer than the default 20 s. */
+  async request<T>(path: string, schema: z.ZodType<T>, params: Record<string, string> = {}, timeoutMs = 20_000): Promise<{ data: T; total: number | null }> {
     const url = new URL(`/v2/${path.replace(/^\//, '')}`, API);
     Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
     for (let attempt = 0; attempt < 5; attempt++) {
       const token = await this.appToken();
       await this.pace.acquire();
       let response: Response;
-      try { response = await this.fetcher(url, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(20_000), cache: 'no-store' }); }
+      try { response = await this.fetcher(url, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(timeoutMs), cache: 'no-store' }); }
       catch (error) { if (attempt === 4) throw error; await delay(500 * 2 ** attempt); continue; }
       if (response.status === 429 || response.status >= 500) {
         if (attempt === 4) throw new Error(`42 API unavailable (${response.status})`);
