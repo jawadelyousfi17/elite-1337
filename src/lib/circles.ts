@@ -33,7 +33,7 @@ export const circlesFor = (track: Track) => track === 'next' ? NEXT_CIRCLES : CO
 
 const only = (from: string[][][], other: string[][][]) => { const skip = new Set(other.flat(2)); return new Set(from.flat(2).filter((slug) => !skip.has(slug))); };
 // Late projects that older students may also take outside the Common Core; they never decide the track.
-const ANY_TRACK = new Set(['the-answer-protocol', 'agent-smith', '42_collaborative_resume']);
+export const ANY_TRACK = new Set(['the-answer-protocol', 'agent-smith', '42_collaborative_resume']);
 const NEXT_ONLY = new Set([...only(NEXT_CIRCLES, CORE_CIRCLES)].filter((slug) => !ANY_TRACK.has(slug))), CORE_ONLY = only(CORE_CIRCLES, NEXT_CIRCLES);
 
 /**
