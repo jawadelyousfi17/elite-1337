@@ -416,6 +416,7 @@ html[data-tw-surface]:not(:has(.landing)) .xp-mark{background:var(--tw-card)!imp
 html[data-tw-surface]:not(:has(.landing)) .xp-mark-fill{background:var(--xp-fill)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark-thumb{background:var(--xp-accent)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark-thumb::before{background:radial-gradient(circle,#0000008c 1.2px,transparent 1.6px) 0 0/4px 4.67px!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-mark-gain{background:#0f0f0fbf!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button{background:#0f0f0fbf!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button:hover{background:#0f0f0fe6!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-mark .xp-presets button.is-on{background:var(--xp-accent)!important}
@@ -767,6 +768,7 @@ html[data-tw-radius] .xp-option{border-radius:calc(12px * var(--tw-r))!important
 html[data-tw-radius] .xp-option-done{border-radius:999px!important}
 html[data-tw-radius] .xp-mark{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .xp-mark-thumb{border-radius:4px!important}
+html[data-tw-radius] .xp-mark-gain{border-radius:999px!important}
 html[data-tw-radius] .xp-panel{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .xp-tabs button::after{border-radius:2px!important}
 html[data-tw-radius] .xp-tabs button:focus-visible{border-radius:10px!important}
@@ -1232,7 +1234,7 @@ html[data-tw-light]:not(:has(.landing)) .xp-mark-thumb:focus-visible{box-shadow:
 html[data-tw-light]:not(:has(.landing)) .xp-mark-pass{border-left:1px dashed #00000033!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-title strong{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-title small{color:#141414!important}
-html[data-tw-light]:not(:has(.landing)) .xp-mark-gain{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .xp-mark-gain{background:#ffffffbf!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-value b{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-value small{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-hint{color:#141414!important}

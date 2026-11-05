@@ -137,7 +137,7 @@ function MarkCard({ tone, name, xp, gain, doneMark, mark, onChange, onRemove }: 
     </Slider.Root>
     <span className="xp-mark-pass" style={{ left: at(100) }} aria-hidden="true"/>
     <div className="xp-mark-body">
-      <div className="xp-mark-title"><strong>{name}</strong><small>{fmt(xp)} XP{doneMark !== undefined && <> · validated at {doneMark}</>}</small><em className="xp-mark-gain" aria-label={`Gains ${fmt(gain)} XP`}>+{fmt(gain)} XP</em></div>
+      <div className="xp-mark-title"><strong>{name}</strong><small>{fmt(xp)} XP{doneMark !== undefined && <> · validated at {doneMark}</>}</small><em className="xp-mark-gain" aria-label={`Gains ${fmt(gain)} XP`}><ArrowUp size={12} weight="bold"/>+{fmt(gain)} XP</em></div>
       <div className="xp-mark-value" aria-hidden="true"><b>{mark}</b><small>{mark > 100 ? 'bonus' : mark === 100 ? 'full' : 'mark'}</small></div>
     </div>
     <div className="xp-mark-tools">

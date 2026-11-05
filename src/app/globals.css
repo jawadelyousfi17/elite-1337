@@ -1870,7 +1870,8 @@ html[data-tw-light]:not(:has(.landing)) :is(.xp-hero-to strong,.xp-hero-arrow){c
 .xp-mark-title strong{font-size:16px;font-weight:600;color:#fff}
 .xp-mark-title small{color:#e6e6e6;font-size:12.5px;font-weight:500}
 /* XP the project adds at the chosen mark, coalition bonus included */
-.xp-mark-gain{font-style:normal;font-size:13px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+.xp-mark-gain{display:inline-flex;align-items:center;align-self:flex-start;gap:4px;margin-top:5px;padding:4px 10px 4px 8px;border-radius:999px;background:#0f0f0fbf;font-style:normal;font-size:13px;font-weight:600;color:var(--xp-accent);font-variant-numeric:tabular-nums;transition:box-shadow .25s}
+.xp-mark.is-bonus .xp-mark-gain{box-shadow:0 0 0 1px var(--xp-accent),0 0 14px -2px var(--xp-accent)}
 .xp-mark-value{display:flex;flex-direction:column;align-items:flex-end;line-height:1}
 .xp-mark-value b{font-size:34px;font-weight:600;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums}
 .xp-mark-value small{margin-top:4px;color:#e6e6e6;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
@@ -1890,7 +1891,7 @@ html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-fill{backgroun
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark.is-bonus .xp-mark-fill{filter:saturate(1.35) brightness(.97)}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-thumb{background:var(--xp-ink)!important}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-pass{border-color:#00000024!important}
-html[data-tw-light][data-tw-surface]:not(:has(.landing)) :is(.xp-mark-title strong,.xp-mark-gain,.xp-mark-value b){color:#141414!important}
+html[data-tw-light][data-tw-surface]:not(:has(.landing)) :is(.xp-mark-title strong,.xp-mark-value b){color:#141414!important}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) :is(.xp-mark-title small,.xp-mark-value small,.xp-mark-hint){color:#3d3d3d!important}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-value b{text-shadow:0 1px 6px #fffc}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark.is-bonus .xp-mark-value small{color:var(--xp-ink)!important}
