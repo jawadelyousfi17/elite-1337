@@ -1,25 +1,14 @@
-import { createHash } from 'node:crypto';
 import { sql } from './db';
-import { withTimeout } from './timeout';
 
 /**
- * A/B test on the leaderboard: page numbers against infinite scroll. Each student gets a fixed half from their
- * 42 id, is asked once whether to keep it or switch, and from then on gets what they chose.
+ * Finished A/B test on the leaderboard, page numbers against infinite scroll. Infinite scroll is now the default for
+ * everyone; nothing is recorded any more and the saved answers stay readable on the admin page.
  */
 export type ScrollMode = 'pages' | 'infinite';
 export type RankTestChoice = 'keep' | 'switch';
-export type RankTestState = { variant: ScrollMode; mode: ScrollMode; answered: boolean };
-
-export const otherMode = (mode: ScrollMode): ScrollMode => mode === 'pages' ? 'infinite' : 'pages';
-
-/** Same student, same half, on every server and every visit. */
-export function assignedVariant(userId: number): ScrollMode {
-  return parseInt(createHash('sha256').update(`rank-scroll:v1:${userId}`).digest('hex').slice(0, 8), 16) % 2 ? 'infinite' : 'pages';
-}
-
 
 let ready: Promise<unknown> | undefined;
-/** The table is created on first use, so the experiment needs no manual migration (see neon/rank-test.sql). */
+/** The table is created on first use, so the results page needs no manual migration (see neon/rank-test.sql). */
 function ensureTable() {
   ready ??= sql()`
     create table if not exists rank_scroll_test (
@@ -34,47 +23,6 @@ function ensureTable() {
       answered_at timestamptz
     )`.catch((error) => { ready = undefined; throw error; });
   return ready;
-}
-
-/**
- * Counts a leaderboard visit and returns the student's mode; null (page numbers, no question) when the database
- * is unavailable or slower than 2.5 s, such as a sleeping Neon compute waking up, so it never holds the page.
- */
-export function visitRankTest(userId: number, login: string): Promise<RankTestState | null> {
-  return withTimeout(recordVisit(userId, login), 2500, null);
-}
-
-async function recordVisit(userId: number, login: string): Promise<RankTestState | null> {
-  if (!process.env.DATABASE_URL || !Number.isSafeInteger(userId) || userId <= 0) return null;
-  try {
-    await ensureTable();
-    const rows = await sql()`
-      insert into rank_scroll_test (user_id, login, variant) values (${userId}, ${login}, ${assignedVariant(userId)})
-      on conflict (user_id) do update set views = rank_scroll_test.views + 1, last_seen = now(), login = excluded.login
-      returning variant, mode, answered_at`;
-    const row = rows[0];
-    return { variant: row.variant, mode: row.mode ?? row.variant, answered: !!row.answered_at };
-  } catch (error) {
-    console.error('Rank test unavailable:', error instanceof Error ? error.name : 'unknown');
-    return null;
-  }
-}
-
-/** Saves the one answer a student gives; a second answer is ignored. Returns the mode they now get. */
-export async function answerRankTest(userId: number, choice: RankTestChoice): Promise<ScrollMode | null> {
-  if (!process.env.DATABASE_URL) return null;
-  try {
-    await ensureTable();
-    const rows = await sql()`
-      update rank_scroll_test set choice = ${choice}, answered_at = now(),
-        mode = case when ${choice} = 'keep' then variant when variant = 'pages' then 'infinite' else 'pages' end
-      where user_id = ${userId} and answered_at is null
-      returning mode`;
-    return rows[0]?.mode ?? null;
-  } catch (error) {
-    console.error('Rank test answer failed:', error instanceof Error ? error.name : 'unknown');
-    return null;
-  }
 }
 
 export type RankTestSummary = { variant: ScrollMode; seen: number; answered: number; keep: number; switched: number; avgViews: number };

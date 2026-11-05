@@ -78,7 +78,7 @@ function choose(link: HTMLAnchorElement) {
     link.classList.toggle('is-on', on);
     return;
   }
-  const group = link.parentElement?.closest('.pl-chips, .st-seg, .pl-pages, .pc-projects, [role="group"]') ?? link.parentElement;
+  const group = link.parentElement?.closest('.pl-chips, .st-seg, .pc-projects, [role="group"]') ?? link.parentElement;
   if (!group) return;
   const siblings = [...group.querySelectorAll<HTMLAnchorElement>('a[href]')];
   for (const marker of ['data-active', 'aria-current'] as const) {

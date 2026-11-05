@@ -102,12 +102,13 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
 
     <div className="xp-projects">
       <ProjectPicker projects={view === 'core' ? core : advanced} view={view} onView={setView} done={done} other={other} taken={taken} onPick={add}/>
+      {/* Newest card on top; `picked` stays in added order because the levels chain through it and the colours follow it. */}
       {picked.length > 0 && <ol className="xp-steps">{picked.map((item, index) => {
         const project = bySlug.get(item.slug)!, doneMark = done[item.slug];
         return <li key={item.slug} className="xp-step">
           <MarkCard tone={TONES[index % TONES.length]} name={project.name} gain={steps[index]?.gain ?? 0} doneMark={doneMark} mark={item.mark} onChange={(value) => update(item.slug, value)} onRemove={() => setPicked((items) => items.filter((other) => other.slug !== item.slug))}/>
         </li>;
-      })}</ol>}
+      }).reverse()}</ol>}
     </div>
   </section>;
 }
@@ -190,6 +191,7 @@ function CountUp({ value }: { value: number }) {
 /**
  * Searchable project list in a popover (full screen on phones): next projects first, then validated ones to improve,
  * then skipped alternatives. The curriculum tabs switch the list in place; `undefined` projects are still loading.
+ * Touch screens keep focus off the search box, so opening the list does not pull up the keyboard over it.
  */
 function ProjectPicker({ projects, view, onView, done, other, taken, onPick }: { projects: XpOption[] | null | undefined; view: XpView; onView: (view: XpView) => void; done: Record<string, number>; other: Set<string>; taken: Set<string>; onPick: (slug: string) => void }) {
   const [open, setOpen] = useState(false);
@@ -205,7 +207,7 @@ function ProjectPicker({ projects, view, onView, done, other, taken, onPick }: {
 
   return <Popover modal open={open} onOpenChange={(next) => { setOpen(next); if (!next) setQ(''); }}>
     <PopoverTrigger asChild><button type="button" className="xp-add"><Plus size={16}/>Add a project</button></PopoverTrigger>
-    <PopoverContent align="start" sideOffset={8} className="xp-picker" onOpenAutoFocus={(event) => { event.preventDefault(); input.current?.focus(); }}>
+    <PopoverContent align="start" sideOffset={8} className="xp-picker" onOpenAutoFocus={(event) => { event.preventDefault(); (matchMedia('(pointer: fine)').matches ? input.current : event.target as HTMLElement)?.focus(); }}>
       <div className="xp-picker-head">
       <div className="xp-picker-top">
         <div className="xp-picker-search">

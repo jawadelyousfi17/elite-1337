@@ -1,4 +1,4 @@
--- Leaderboard A/B test: page numbers against infinite scroll.
+-- Finished leaderboard A/B test: page numbers against infinite scroll. Kept for its results on the admin page.
 -- The app creates this table on first use (src/lib/rank-test.ts); this file documents it.
 create table if not exists rank_scroll_test (
   user_id bigint primary key,

@@ -18,16 +18,16 @@ import { getStudentProfile } from '@/lib/student-overview';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
-import { groupTeams } from '@/lib/correction-teams';
+import { PROJECT_SLUG, groupTeams, mergeInternshipSteps } from '@/lib/correction-teams';
 
 export const metadata = { title: 'Waiting for Correction' };
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(/^[a-z0-9-]{1,80}$/).optional(), q: z.string().trim().max(40).optional(), tab: z.enum(['validated', 'locked']).optional().catch(undefined), cohort: z.string().regex(/^\d{4}$/).optional().catch(undefined) });
+const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(PROJECT_SLUG).optional().catch(undefined), q: z.string().trim().max(40).optional(), tab: z.enum(['validated', 'locked']).optional().catch(undefined), cohort: z.string().regex(/^\d{4}$/).optional().catch(undefined) });
 /** One row in either tab: waiting projects carry their try number, validated ones their mark. */
-type Item = { id: number; userId: number; login: string; project: string; projectSlug: string; at: string; teamId: number | null; attempt?: number | null; mark?: number | null };
+type Item = { id: number; userId: number; login: string; project: string; projectSlug: string; at: string; teamId: number | null; attempt?: number | null; mark?: number | null; steps?: string[] };
 
 
 export default async function CorrectionsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -59,10 +59,10 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
   // Promo = Common Core entry year; the chips list only years that have rows in this tab.
   const cohorts = [...new Set(active.map((row) => students.get(row.userId)?.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
   // A group project pushed by a team is one entry: counts and filters work on teams, a team matches if any member does.
-  const teams = groupTeams(active);
+  const teams = groupTeams(mergeInternshipSteps(active));
   const inCohort = cohort ? teams.filter((team) => team.some((row) => students.get(row.userId)?.commonCoreEntryYear === cohort)) : teams;
   const projects = [...inCohort.reduce((counts, [row]) => counts.set(row.projectSlug, { name: row.project, count: (counts.get(row.projectSlug)?.count ?? 0) + 1 }), new Map<string, { name: string; count: number }>())].sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name));
-  const shown = inCohort.filter((team) => (!project || team[0].projectSlug === project) && (!q || team.some((row) => matchesSearch(q, [row.login, students.get(row.userId)?.displayName, row.project]))));
+  const shown = inCohort.filter((team) => (!project || team[0].projectSlug === project) && (!q || team.some((row) => matchesSearch(q, [row.login, students.get(row.userId)?.displayName, row.project, ...row.steps ?? []]))));
   const avatars = photoReferences(shown.flat().map((row) => ({ id: row.userId, photo: students.get(row.userId)?.photo })));
   const link = (change: { campus?: number; cohort?: string; project?: string; q?: string; tab?: 'validated' | 'locked' | null }) => { const query = new URLSearchParams(); const next = { campus, cohort, project, q, tab, ...change }; if (next.tab) query.set('tab', next.tab); if (next.campus) query.set('campus', String(next.campus)); if (next.cohort) query.set('cohort', next.cohort); if (next.project) query.set('project', next.project); if (next.q) query.set('q', next.q); return `/corrections?${query}`; };
   const projectName = project ? projects.find(([slug]) => slug === project)?.[1].name ?? project : null;
@@ -104,7 +104,7 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
 
     <section className="pl-list" aria-label={validatedTab ? 'Recently validated projects' : lockedTab ? 'Recently locked teams' : 'Pending corrections'}>
       {pending.status !== 'ready' ? <div className="pl-empty"><Clock3 size={26}/><h2>{pending.status === 'rate-limited' ? '42 API limit reached' : pending.status === 'incomplete' ? 'The 42 API returned an incomplete list' : lockedTab ? 'Locked teams are unavailable' : 'Pending corrections are unavailable'}</h2><p>Try again in a few minutes.</p></div>
-        : shown.length ? <CorrectionRows mode={tab ?? 'waiting'} rows={shown.map(([first, ...rest]) => ({ id: first.id, project: first.project, projectSlug: first.projectSlug, at: first.at, mark: first.mark, attempt: first.attempt, members: [first, ...rest].map((row) => { const student = students.get(row.userId)!; return { userId: row.userId, login: row.login, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreEntryYear, src: avatars[row.userId] ?? null }; }) }))}/> : <div className="pl-empty"><KiwiNote>{validatedTab ? <><h2>Nothing validated lately</h2><p>No project was validated here in the last {RECENT_VALIDATED_DAYS} days.</p></> : lockedTab ? <><h2>No new teams</h2><p>No team locked a group project here in the last {LOCKED_TEAM_DAYS} days.</p></> : <><h2>Nothing waiting for correction</h2><p>Everyone is corrected. Kiwi approves.</p></>}</KiwiNote></div>}
+        : shown.length ? <CorrectionRows mode={tab ?? 'waiting'} rows={shown.map(([first, ...rest]) => ({ id: first.id, project: first.project, projectSlug: first.projectSlug, at: first.at, mark: first.mark, attempt: first.attempt, steps: first.steps, members: [first, ...rest].map((row) => { const student = students.get(row.userId)!; return { userId: row.userId, login: row.login, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreEntryYear, src: avatars[row.userId] ?? null }; }) }))}/> : <div className="pl-empty"><KiwiNote>{validatedTab ? <><h2>Nothing validated lately</h2><p>No project was validated here in the last {RECENT_VALIDATED_DAYS} days.</p></> : lockedTab ? <><h2>No new teams</h2><p>No team locked a group project here in the last {LOCKED_TEAM_DAYS} days.</p></> : <><h2>Nothing waiting for correction</h2><p>Everyone is corrected. Kiwi approves.</p></>}</KiwiNote></div>}
     </section>
   </main>;
 }

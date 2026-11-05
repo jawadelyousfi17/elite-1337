@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { NewTabMark, appHref, newTab } from '@/components/rank-row';
 import { Avatar } from '@/components/avatar';
 import { ArrowUpRight, Check, ChevronUp, Clock3, LockKeyhole } from '@/components/icons';
+import { projectTone } from '@/lib/correction-teams';
 import { cn } from '@/lib/utils';
 
 export type CorrectionMember = { userId: number; login: string; mine: boolean; level: number; year: string | null; src: string | null };
-/** One project push: a single student, or every member of the team that pushed it. */
-export type CorrectionRowData = { id: number; members: CorrectionMember[]; project: string; projectSlug: string; at: string; mark?: number | null; attempt?: number | null };
+/** One project push: a single student, or every member of the team that pushed it. `steps`: the internship steps it stands for. */
+export type CorrectionRowData = { id: number; members: CorrectionMember[]; project: string; projectSlug: string; at: string; mark?: number | null; attempt?: number | null; steps?: string[] };
 /** The team's project page on 42 Intra (`id` is a member's projects_user id, which shows the team). */
 const teamHref = (row: CorrectionRowData) => `https://projects.intra.42.fr/projects/${encodeURIComponent(row.projectSlug)}/projects_users/${row.id}`;
 
@@ -50,13 +51,13 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
   }, []);
 
   return <>
-    <ol className="pl-rows">{rows.slice(0, shown).map((row, index) => {
+    <ol className="pl-rows">{rows.slice(0, shown).map((row) => {
       const [solo] = row.members, team = row.members.length > 1, mine = row.members.some((member) => member.mine);
       const years = [...new Set(row.members.map((member) => member.year ?? '?'))].join(', ');
       // Two logins fit a row; the rest collapse into "+N" (names on hover), with the viewer always among the named.
       const ordered = [...row.members].sort((a, b) => Number(b.mine) - Number(a.mine)), named = ordered.slice(0, ordered.length > 2 ? 2 : ordered.length), hidden = ordered.slice(named.length);
       return <li key={row.id} className="pl-item">
-      <div className={cn('pl-row', mine && 'is-mine', team && 'pc-team')} style={{ '--pastel': pastels[index % pastels.length] } as React.CSSProperties}>
+      <div className={cn('pl-row', mine && 'is-mine', team && 'pc-team')} style={{ '--pastel': pastels[projectTone(row.project, pastels.length)] } as React.CSSProperties}>
         {team ? <>
           {/* The whole card opens the team on Intra; member logins sit above it and open each student. */}
           <a className="pc-team-link" href={teamHref(row)} target="_blank" rel="noopener noreferrer" aria-label={`${row.project}: open the team on 42 Intra (opens in a new tab)`}/>
@@ -66,7 +67,7 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
           <span className="pl-avatar"><Avatar login={solo.login} src={solo.src} size={45}/></span>
           <span className="pl-copy"><strong><Link href={appHref(solo.login)} {...newTab} className="pl-row-link">{solo.login}<NewTabMark/></Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
         </>}
-        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}</>}</small></span>
+        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning title={row.steps?.join(', ')}>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}{row.steps?.length ? ` · ${row.steps.length} ${row.steps.length === 1 ? 'step' : 'steps'}` : ''}</>}</small></span>
       </div>
     </li>;
     })}</ol>

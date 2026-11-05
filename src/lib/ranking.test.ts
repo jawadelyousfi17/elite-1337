@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cursusUserSchema } from './fortytwo-api';
 import { admissionOutcome, classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession } from './classification';
-import { cohortRank, isEligible, rankStudents, selectLeaderboard, topPercent } from './ranking';
+import { cohortRank, isEligible, mergeByLevel, rankStudents, selectLeaderboard, topPercent } from './ranking';
 
 const record = (id: number, userId: number, login: string, level: number | null, options: {
   active?: boolean; endAt?: string | null; beginAt?: string | null; blackholedAt?: string | null; poolYear?: string; poolMonth?: string; staff?: boolean; kind?: string; alumni?: boolean;
@@ -95,5 +95,16 @@ describe('topPercent', () => {
     expect(topPercent(655, 1386)).toBe(48);
     expect(topPercent(1386, 1386)).toBe(100);
     expect(topPercent(3, 0)).toBe(100);
+  });
+});
+
+describe('mergeByLevel', () => {
+  const ranked = [{ id: 1, level: 9, rank: 1 }, { id: 2, level: 5, rank: 2 }], lost = [{ id: 3, level: 7 }, { id: 4, level: 5 }];
+  it('places blackholed students by level, ranked students first on a tie, without touching ranks', () => {
+    expect(mergeByLevel(ranked, lost).map((student) => student.id)).toEqual([1, 3, 2, 4]);
+    expect(mergeByLevel(ranked, lost)[2]).toEqual({ id: 2, level: 5, rank: 2 });
+  });
+  it('runs from the lowest level when reversed', () => {
+    expect(mergeByLevel([...ranked].reverse(), lost, 'desc').map((student) => student.id)).toEqual([2, 4, 3, 1]);
   });
 });

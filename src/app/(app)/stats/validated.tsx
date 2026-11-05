@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { countValidated, loadValidated, topValidated, type ValidatedWindow } from '@/lib/validated';
+import { LanguageIcon } from '@/components/language-icon';
 import { cn } from '@/lib/utils';
 import { campusColors, Donut } from './charts';
+import { ValidatedDetails } from './validated-details';
 
 const windows: { key: ValidatedWindow; label: string; long: string; short: string }[] = [
   { key: 'week', label: '7 days', long: 'last 7 days', short: '7d' },
@@ -16,17 +18,17 @@ export async function ValidatedWidget({ campusId, window, hrefFor }: { campusId?
     <p className="st-empty">{state.status === 'rate-limited' ? 'The 42 API limit is reached; back shortly.' : 'Unavailable right now. Try again in a few minutes.'}</p>
   </section>;
 
-  const counts = countValidated(state.records, campusId), top = topValidated(state.records, window, campusId);
+  const counts = countValidated(state.records, campusId), ranking = topValidated(state.records, window, campusId, Infinity), top = ranking.slice(0, 10);
   const peak = Math.max(1, ...top.map((item) => item.count));
   const active = windows.find((item) => item.key === window)!;
   return <section className="st-card st-validated" aria-labelledby="st-validated">
-    <header><h2 id="st-validated">Validated projects</h2></header>
+    <header><h2 id="st-validated">Validated projects</h2>{ranking.length > 0 && <ValidatedDetails items={ranking} period={active.long}/>}</header>
     <nav data-keep-scroll className="st-validated-tiles" aria-label="Time window">
       {windows.map((item) => <Link key={item.key} href={hrefFor[item.key]} scroll={false} aria-current={item.key === window ? 'true' : undefined}><span>{item.label}</span><strong>{fmt(counts[item.key])}</strong></Link>)}
     </nav>
     <h3 className="st-validated-sub">Most validated · {active.long}</h3>
     {top.length ? <ol className="st-validated-top">{top.map((item) => <li key={item.project}>
-      <span className="st-validated-name" title={item.project}>{item.project}</span>
+      <span className="st-validated-name" title={item.project}><LanguageIcon project={item.project}/>{item.project}</span>
       <b>{fmt(item.count)}</b>
       <i aria-hidden="true"><em style={{ width: `${item.count / peak * 100}%` }}/></i>
     </li>)}</ol> : <p className="st-empty">Nothing validated in the {active.long}.</p>}

@@ -76,7 +76,12 @@ export function selectLeaderboard(students: StudentRank[], filters: RankingFilte
   const pages = Math.max(1, Math.ceil(matches.length / 25));
   const page = Math.max(1, Math.min(filters.page, pages));
   const viewer = viewerId === undefined ? undefined : ranked.find((student) => student.id === viewerId);
-  return { rows: matches.slice((page - 1) * 25, page * 25), total: matches.length, scopeTotal: scope.length, page, pages, podium: ranked.slice(0, 3), viewerRank: viewer?.rank ?? null };
+  return { rows: matches.slice((page - 1) * 25, page * 25), matches, total: matches.length, scopeTotal: scope.length, page, pages, podium: ranked.slice(0, 3), viewerRank: viewer?.rank ?? null };
+}
+
+/** Ranked and blackholed students in one list by level; ties keep ranked students first, and nobody's rank changes. */
+export function mergeByLevel<A extends { level: number }, B extends { level: number }>(ranked: A[], blackholed: B[], order?: 'desc'): (A | B)[] {
+  return [...ranked, ...blackholed].sort((a, b) => order === 'desc' ? a.level - b.level : b.level - a.level);
 }
 
 /** "Top N%" for a rank among `total` people, rounded up so #1 of 200 reads "top 1%", never "top 0%". */

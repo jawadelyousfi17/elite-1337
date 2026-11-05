@@ -24,7 +24,7 @@ export default async function ExperimentsPage() {
   return <main className="shell of fa">
     <header className="of-head">
       <h1>Experiments</h1>
-      <p>Leaderboard A/B test: half the students get page numbers, half get infinite scroll. Each is asked once to keep it or switch.</p>
+      <p>Finished leaderboard A/B test: half the students got page numbers, half got infinite scroll. Infinite scroll is now the default for everyone.</p>
     </header>
     <AdminTabs current="/admin/experiments"/>
     <h2 className="ex-sub">Page numbers or infinite scroll</h2>
@@ -37,7 +37,7 @@ export default async function ExperimentsPage() {
       </section>
       <section className="ex-groups" aria-label="By group">{results.summary.map((row) => <Group key={row.variant} row={row}/>)}</section>
       <h2 className="ex-sub">Students</h2>
-      {!results.people.length ? <p className="fa-empty">Nobody has opened the leaderboard since the test started.</p> : <div className="ex-table-wrap"><table className="ex-table">
+      {!results.people.length ? <p className="fa-empty">Nobody opened the leaderboard during the test.</p> : <div className="ex-table-wrap"><table className="ex-table">
         <thead><tr><th>Login</th><th>Got</th><th>Answer</th><th>Visits</th><th>First visit</th><th>Answered</th></tr></thead>
         <tbody>{results.people.map((person) => <tr key={person.login}>
           <td><a href={`https://profile.intra.42.fr/users/${encodeURIComponent(person.login)}`} target="_blank" rel="noreferrer">{person.login}</a></td>
@@ -45,7 +45,7 @@ export default async function ExperimentsPage() {
           <td>{person.choice ? <span className={cn('ex-choice', `is-${person.choice}`)}>{person.choice === 'keep' ? 'Kept it' : 'Switched'}</span> : <span className="ex-muted">—</span>}</td>
           <td>{person.views}</td>
           <td title={person.firstSeen}>{timeAgo(person.firstSeen)}</td>
-          <td title={person.answeredAt ?? ''}>{person.answeredAt ? timeAgo(person.answeredAt) : <span className="ex-muted">not yet</span>}</td>
+          <td title={person.answeredAt ?? ''}>{person.answeredAt ? timeAgo(person.answeredAt) : <span className="ex-muted">never</span>}</td>
         </tr>)}</tbody>
       </table></div>}
     </>}
@@ -62,7 +62,7 @@ function Group({ row }: { row: RankTestSummary }) {
     <ul className="ex-legend">
       <li><i className="is-keep"/>Kept it <b>{row.keep}</b> <span>{pct(row.keep, row.answered)}</span></li>
       <li><i className="is-switch"/>Switched <b>{row.switched}</b> <span>{pct(row.switched, row.answered)}</span></li>
-      <li><i className="is-none"/>No answer yet <b>{row.seen - row.answered}</b></li>
+      <li><i className="is-none"/>No answer <b>{row.seen - row.answered}</b></li>
     </ul>
   </article>;
 }

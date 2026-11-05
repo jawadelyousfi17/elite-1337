@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { RankRow, type RankRowData } from '@/components/rank-row';
 import { ChevronUp } from '@/components/icons';
 
-/** Leaderboard rows that keep loading while you scroll, one 25-row page at a time, for the infinite half of the A/B test. */
+/** Leaderboard rows that keep loading while you scroll, one 25-row page at a time. */
 export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[]; query: string; pages: number }) {
   const [rows, setRows] = useState(initial);
   const [next, setNext] = useState(2);
@@ -35,7 +35,6 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
       setRows((current) => { const seen = new Set(current.map((row) => row.id)); return [...current, ...body.rows.filter((row) => !seen.has(row.id))]; });
       setNext((page) => page + 1);
       setState('idle');
-      if (next === 2) window.dispatchEvent(new Event('rank-test:engaged'));
     } catch { setState('error'); }
     finally { busy.current = false; }
   }, [next, pages, query]);
@@ -50,7 +49,7 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
 
   return <>
     <ol className="pl-rows">{rows.map((row) => <li key={row.id} className="pl-item"><RankRow row={row}/></li>)}</ol>
-    <div ref={end} className="pl-more" data-rank-end={done || undefined} aria-live="polite">
+    <div ref={end} className="pl-more" aria-live="polite">
       {state === 'loading' && <span className="pl-more-dots" aria-label="Loading more students"><i/><i/><i/></span>}
       {state === 'error' && <button type="button" className="pl-more-retry" onClick={() => { setState('idle'); void load(); }}>Could not load more. Try again</button>}
       {done && pages > 1 && <span className="pl-more-end">You reached the end</span>}

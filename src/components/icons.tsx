@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import {
   ArrowDown as PhArrowDown, ArrowLeft as PhArrowLeft, ArrowRight as PhArrowRight, ArrowUpRight as PhArrowUpRight, ArrowDownRight as PhArrowDownRight, ArrowsClockwise, CaretDown, CaretLeft, CaretRight, CaretUp,
-  ChartLineUp, Check as PhCheck, ClockCountdown, Desktop, FolderSimple, GridFour, Lock, MagnifyingGlass, MagnifyingGlassMinus, MagnifyingGlassPlus,
+  ChartLineUp, Check as PhCheck, ClockCountdown, CornersOut, FileC, FileCpp, FilePy, FileTs, Desktop, FolderSimple, GridFour, Lock, MagnifyingGlass, MagnifyingGlassMinus, MagnifyingGlassPlus,
   ArrowCounterClockwise, Buildings, GithubLogo, InstagramLogo, LinkedinLogo, HourglassMedium, HourglassHigh, CalendarBlank, CalendarDots, FunnelSimple,
   ChartBar, CrownSimple, ArrowsDownUp, WhatsappLogo, CreditCard as PhCreditCard, Gift as PhGift, Cloud as PhCloud, Globe as PhGlobe, Briefcase as PhBriefcase, ShieldCheck as PhShieldCheck, Snowflake as PhSnowflake, DiscordLogo, Envelope, Plus as PhPlus, Trash as PhTrash, Calculator as PhCalculator, ArrowUp as PhArrowUp, Minus as PhMinus, Info as PhInfo, Sun as PhSun, Moon as PhMoon, Star as PhStar, Coffee as PhCoffee, Heart as PhHeart, GraduationCap, Heartbeat, TrendUp as PhTrendUp, TrendDown as PhTrendDown, Ranking as PhRanking,
   ChatTeardropText, Megaphone as PhMegaphone, Users as PhUsers, Bug as PhBug, MapPin as PhMapPin, MapTrifold, SpeakerHigh, SpeakerSlash, Question, SignOut, SlidersHorizontal as PhSliders, Trophy as PhTrophy, User, Wallet as PhWallet, Waves as PhWaves, X as PhX,
@@ -45,6 +45,11 @@ export const UserRound = icon(User);
 export const Wallet = icon(PhWallet);
 export const Waves = icon(PhWaves);
 export const X = icon(PhX, 'bold');
+export const Expand = icon(CornersOut, 'bold');
+export const FileLangC = icon(FileC);
+export const FileLangCpp = icon(FileCpp);
+export const FileLangPy = icon(FilePy);
+export const FileLangTs = icon(FileTs);
 export const ZoomIn = icon(MagnifyingGlassPlus);
 export const ZoomOut = icon(MagnifyingGlassMinus);
 export const Campus = icon(Buildings);
