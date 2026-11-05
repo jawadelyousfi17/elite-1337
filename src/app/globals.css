@@ -705,7 +705,7 @@ button.credit:hover,button.credit[data-state=open]{background:#ffffff10}
 .creator-links a:focus-visible{outline:2px solid #9fd8ff;outline-offset:2px}
 
 /* External Intra link hint */
-.pl-ext{display:inline-grid;place-items:center;width:22px;height:22px;margin-left:2px;border-radius:50%;background:#ffffff14;color:currentColor;opacity:0;transform:translate(-4px,4px) scale(.85);transition:opacity .18s,transform .2s cubic-bezier(.2,.8,.2,1);flex-shrink:0;vertical-align:middle}
+.pl-ext{display:inline-grid;place-items:center;flex-shrink:0;width:22px;height:22px;margin-left:8px;vertical-align:middle;border-radius:50%;background:#ffffff14;color:currentColor;opacity:0;transform:translate(-4px,4px) scale(.85);transition:opacity .18s,transform .2s cubic-bezier(.2,.8,.2,1);flex-shrink:0;vertical-align:middle}
 .pl-row:hover .pl-ext,.pl-row:focus-visible .pl-ext,a:hover .pl-ext,a:focus-visible .pl-ext,.pl-runner:hover .pl-ext,.pl-runner:focus-visible .pl-ext,.pl-winner:hover .pl-ext,.pl-winner:focus-visible .pl-ext{opacity:1;transform:none}
 .pl-winner h2{display:inline-flex;align-items:center;gap:6px}
 .pl-runner strong{display:inline-flex;align-items:center;gap:4px;max-width:100%}
