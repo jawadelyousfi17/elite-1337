@@ -103,7 +103,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
       {picked.length > 0 && <ol className="xp-steps">{picked.map((item, index) => {
         const project = bySlug.get(item.slug)!, doneMark = done[item.slug];
         return <li key={item.slug} className="xp-step">
-          <MarkCard tone={TONES[index % TONES.length]} name={project.name} xp={project.xp} doneMark={doneMark} mark={item.mark} onChange={(value) => update(item.slug, value)} onRemove={() => setPicked((items) => items.filter((other) => other.slug !== item.slug))}/>
+          <MarkCard tone={TONES[index % TONES.length]} name={project.name} xp={project.xp} gain={steps[index]?.gain ?? 0} doneMark={doneMark} mark={item.mark} onChange={(value) => update(item.slug, value)} onRemove={() => setPicked((items) => items.filter((other) => other.slug !== item.slug))}/>
         </li>;
       })}</ol>}
     </div>
@@ -126,7 +126,7 @@ const at = (mark: number) => `${(mark - MIN_MARK) / (MAX_MARK - MIN_MARK) * 100}
  * The whole project card is the mark slider: drag anywhere on it and a soft fill follows from the left. A line marks
  * 100, so the bonus zone is visible. The buttons on top stay clickable; arrow keys work on the focused card.
  */
-function MarkCard({ tone, name, xp, doneMark, mark, onChange, onRemove }: { tone: typeof TONES[number]; name: string; xp: number; doneMark?: number; mark: number; onChange: (mark: number) => void; onRemove: () => void }) {
+function MarkCard({ tone, name, xp, gain, doneMark, mark, onChange, onRemove }: { tone: typeof TONES[number]; name: string; xp: number; gain: number; doneMark?: number; mark: number; onChange: (mark: number) => void; onRemove: () => void }) {
   // Buttons sit above the slider: stop their press from also moving the mark.
   const own = { onPointerDown: (event: React.PointerEvent) => event.stopPropagation() };
   const colours = { '--xp-fill': tone.dark, '--xp-fill-light': tone.light, '--xp-accent': tone.accent, '--xp-ink': tone.ink } as React.CSSProperties;
@@ -137,7 +137,7 @@ function MarkCard({ tone, name, xp, doneMark, mark, onChange, onRemove }: { tone
     </Slider.Root>
     <span className="xp-mark-pass" style={{ left: at(100) }} aria-hidden="true"/>
     <div className="xp-mark-body">
-      <div className="xp-mark-title"><strong>{name}</strong><small>{fmt(xp)} XP{doneMark !== undefined && <> · validated at {doneMark}</>}</small></div>
+      <div className="xp-mark-title"><strong>{name}</strong><small>{fmt(xp)} XP{doneMark !== undefined && <> · validated at {doneMark}</>}</small><em className="xp-mark-gain" aria-label={`Gains ${fmt(gain)} XP`}>+{fmt(gain)} XP</em></div>
       <div className="xp-mark-value" aria-hidden="true"><b>{mark}</b><small>{mark > 100 ? 'bonus' : mark === 100 ? 'full' : 'mark'}</small></div>
     </div>
     <div className="xp-mark-tools">

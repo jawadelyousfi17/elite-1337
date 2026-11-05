@@ -1232,6 +1232,7 @@ html[data-tw-light]:not(:has(.landing)) .xp-mark-thumb:focus-visible{box-shadow:
 html[data-tw-light]:not(:has(.landing)) .xp-mark-pass{border-left:1px dashed #00000033!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-title strong{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-title small{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .xp-mark-gain{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-value b{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-value small{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .xp-mark-hint{color:#141414!important}
