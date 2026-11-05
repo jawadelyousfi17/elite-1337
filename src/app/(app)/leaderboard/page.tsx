@@ -7,7 +7,7 @@ import { Campus, ChevronLeft, ChevronRight, Cohort, Hourglass, Reverse, RotateCc
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
 import { ScrollRow } from '@/components/scroll-row';
-import { RankRow, appHref, pastel } from '@/components/rank-row';
+import { NewTabMark, RankRow, appHref, newTab, pastel } from '@/components/rank-row';
 import { InfiniteRanks } from '@/components/infinite-ranks';
 import { RankTestPrompt } from '@/components/rank-test-prompt';
 import { requireStudent } from '@/lib/guard';
@@ -95,9 +95,9 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
     <div className="pl-runner-portrait"><Avatar login="?" name="?" src={null} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
     <strong>Anonymous</strong>
   </div></span>;
-  return <span className="pl-podium-item"><Link href={appHref(student.login)} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
+  return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>{student.login}</strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
   </Link></span>;
 }
@@ -110,12 +110,12 @@ function Winner({ student, src }: { student: Ranked; src?: string }) {
     </div>
     <h2>Anonymous</h2>
   </div></span>;
-  return <span className="pl-podium-item"><Link href={appHref(student.login)} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
+  return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-winner-portrait">
       <Avatar login={student.login} src={src} size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>{student.login}</h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-pill">Level {student.level.toFixed(2)}</span>
   </Link></span>;
 }

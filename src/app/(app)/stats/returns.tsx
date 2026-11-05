@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import { NewTabMark } from '@/components/rank-row';
 import { Avatar } from '@/components/avatar';
-import { ArrowUpRight, Info } from '@/components/icons';
+import { Info } from '@/components/icons';
 import { loadValidated, returnRates, type ValidatedWindow } from '@/lib/validated';
 import { CORRECTOR_WINDOWS, loadEvaluations, minEvaluations, strictCorrectors, type CorrectorWindow } from '@/lib/correctors';
 import type { StudentRank } from '@/lib/ranking';
@@ -96,7 +97,7 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
         <Link href={`https://profile.intra.42.fr/users/${encodeURIComponent(item.login)}`} target="_blank" rel="noopener noreferrer">
           <span className={cn('st-correctors-rank', index < 3 && `is-top is-top-${index + 1}`)}>{index + 1}</span>
           <Avatar login={item.login} src={avatars[item.correctorId]} size={38}/>
-          <span className="st-who"><b>{item.login}<ArrowUpRight size={12} weight="bold" className="st-ext"/></b><small>{!campusId && <><i className="st-correctors-campus" style={{ background: campusColors[item.campusId] ?? '#888' }} aria-hidden="true"/>{names[item.campusId]} · </>}returned {fmt(item.returned)} of {fmt(item.evaluations)}</small></span>
+          <span className="st-who"><b>{item.login}<NewTabMark/></b><small>{!campusId && <><i className="st-correctors-campus" style={{ background: campusColors[item.campusId] ?? '#888' }} aria-hidden="true"/>{names[item.campusId]} · </>}returned {fmt(item.returned)} of {fmt(item.evaluations)}</small></span>
           <span className="st-correctors-score">
             <strong>{pct(item.rate)}</strong>
             <i className="st-correctors-bar" aria-hidden="true"><em style={{ width: `${item.rate * 100}%` }}/></i>

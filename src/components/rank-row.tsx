@@ -3,7 +3,7 @@ import { Avatar } from '@/components/avatar';
 import { HackerBadge } from '@/components/hacker-badge';
 import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
-import { Hourglass } from '@/components/icons';
+import { ArrowUpRight, Hourglass } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 /** One leaderboard row as plain data, so the server page and the infinite list render it the same way. */
@@ -15,6 +15,13 @@ export const pastel = (rank: number) => pastels[(rank - 2 + pastels.length * 100
 const profileHref = (login: string) => `https://profile.intra.42.fr/users/${encodeURIComponent(login)}`;
 /** Where a click on a student goes: their 42 Intra profile for now (the in-app student page is switched off). */
 export const appHref = profileHref;
+/** Student links leave the site, so they open in a new tab. */
+export const newTab = { target: '_blank', rel: 'noopener noreferrer' } as const;
+
+/** The arrow that fades in on a hovered card to say the link opens in a new tab; screen readers get it as text. */
+export function NewTabMark() {
+  return <><span className="pl-ext" aria-hidden="true"><ArrowUpRight size={12} weight="bold"/></span><span className="sr-only"> (opens in a new tab)</span></>;
+}
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
 
 export function RankRow({ row }: { row: RankRowData }) {
@@ -28,7 +35,7 @@ export function RankRow({ row }: { row: RankRowData }) {
   return <div className={cn('pl-row', ranked ? row.mine && 'is-mine' : 'is-lost')} style={{ '--pastel': ranked ? pastel(row.rank) : '#3a3a3a' } as React.CSSProperties}>
     <span className="pl-avatar"><Avatar login={row.login} src={row.src} size={45}/></span>
     <span className="pl-copy">
-      <strong><Link href={appHref(row.login)} className="pl-row-link">{row.login}</Link>{ranked && row.alumni && <AlumniBadge/>}{ranked && row.frozen && <FrozenBadge/>}{row.hacker && <HackerBadge/>}{ranked && row.mine && <em>You</em>}</strong>
+      <strong><Link href={appHref(row.login)} {...newTab} className="pl-row-link">{row.login}<NewTabMark/></Link>{ranked && row.alumni && <AlumniBadge/>}{ranked && row.frozen && <FrozenBadge/>}{row.hacker && <HackerBadge/>}{ranked && row.mine && <em>You</em>}</strong>
       <span><b>Level {row.level.toFixed(2)}</b> · {row.year ?? '?'} · {row.campus}</span>
     </span>
     {ranked ? <span className="pl-rank" aria-label={`Rank ${row.rank}`}>{row.rank}</span> : <span className="pl-bh is-lost"><Hourglass size={12}/>{shortDate(row.blackholedAt)}</span>}

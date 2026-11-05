@@ -460,7 +460,6 @@ html[data-tw-surface]:not(:has(.landing)) .ann-cta{background:#cafbd2!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
-html[data-tw-accent] .st-ext{color:var(--tw-accent)!important}
 html[data-tw-accent] .st-validated-tiles a[aria-current]{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-chip.is-mint[data-active]{background:var(--tw-accent)!important}
 html[data-tw-accent] .sv-icon{background:var(--tw-accent)!important}
@@ -1312,7 +1311,6 @@ html:not([data-tw-light]):not(:has(.landing)) .sc-dot{background:#a7d8b1!importa
 html:not([data-tw-light]):not(:has(.landing)) .sc-median{border-left:1.5px solid #dccd92!important}
 html:not([data-tw-light]):not(:has(.landing)) .sc-median em{color:#dccd92!important}
 html:not([data-tw-light]):not(:has(.landing)) .sc-cell:is(:hover,:focus-visible){box-shadow:0 0 0 2px #161616,0 0 0 3px #a7d8b188!important}
-html:not([data-tw-light]):not(:has(.landing)) .st-ext{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .sc-day.is-today{box-shadow:inset 0 0 0 1.5px #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .st-feed .st-who small:first-child{color:#d4a2ac!important}
 html:not([data-tw-light]):not(:has(.landing)) .st-kpi{--tone:#a7d8b1!important}

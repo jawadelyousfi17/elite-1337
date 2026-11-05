@@ -2,9 +2,9 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { appHref } from '@/components/rank-row';
+import { NewTabMark, appHref, newTab } from '@/components/rank-row';
 import { Avatar } from '@/components/avatar';
-import { Check, ChevronUp, Clock3, LockKeyhole } from '@/components/icons';
+import { ArrowUpRight, Check, ChevronUp, Clock3, LockKeyhole } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 export type CorrectionMember = { userId: number; login: string; mine: boolean; level: number; year: string | null; src: string | null };
@@ -59,12 +59,12 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
       <div className={cn('pl-row', mine && 'is-mine', team && 'pc-team')} style={{ '--pastel': pastels[index % pastels.length] } as React.CSSProperties}>
         {team ? <>
           {/* The whole card opens the team on Intra; member logins sit above it and open each student. */}
-          <a className="pc-team-link" href={teamHref(row)} target="_blank" rel="noopener noreferrer" aria-label={`${row.project}: open the team on 42 Intra`}/>
+          <a className="pc-team-link" href={teamHref(row)} target="_blank" rel="noopener noreferrer" aria-label={`${row.project}: open the team on 42 Intra (opens in a new tab)`}/>
           <span className="pl-avatar pc-team-avatars">{row.members.slice(0, 3).map((member) => <Avatar key={member.userId} login={member.login} src={member.src} size={45}/>)}</span>
-          <span className="pl-copy"><strong className="pc-team-names">{named.map((member, at) => <Fragment key={member.userId}>{at > 0 && <span aria-hidden="true">·</span>}<Link href={appHref(member.login)} className="pc-team-login">{member.login}</Link></Fragment>)}{hidden.length > 0 && <span className="pc-team-more" title={hidden.map((member) => member.login).join(', ')}>+{hidden.length}</span>}{mine && <em>You</em>}</strong><span><b>Team of {row.members.length}</b> · {years}</span></span>
+          <span className="pl-copy"><strong className="pc-team-names">{named.map((member, at) => <Fragment key={member.userId}>{at > 0 && <span aria-hidden="true">·</span>}<Link href={appHref(member.login)} {...newTab} className="pc-team-login">{member.login}</Link></Fragment>)}{hidden.length > 0 && <span className="pc-team-more" title={hidden.map((member) => member.login).join(', ')}>+{hidden.length}</span>}{mine && <em>You</em>}<span className="pl-ext" aria-hidden="true"><ArrowUpRight size={12} weight="bold"/></span></strong><span><b>Team of {row.members.length}</b> · {years}</span></span>
         </> : <>
           <span className="pl-avatar"><Avatar login={solo.login} src={solo.src} size={45}/></span>
-          <span className="pl-copy"><strong><Link href={appHref(solo.login)} className="pl-row-link">{solo.login}</Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
+          <span className="pl-copy"><strong><Link href={appHref(solo.login)} {...newTab} className="pl-row-link">{solo.login}<NewTabMark/></Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
         </>}
         <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}</>}</small></span>
       </div>

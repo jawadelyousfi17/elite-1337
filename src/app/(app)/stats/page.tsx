@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NewTabMark } from '@/components/rank-row';
 import { Suspense } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { z } from 'zod';
@@ -129,7 +130,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
               {student.anonymous ? <div className="st-leader-anon"><span className="st-year">{year}</span><span className="st-who"><b>Anonymous</b><small>best of {fmt(cohortSize)}</small></span></div> : <Link href={profileHref(student.login)} {...external}>
                 <span className="st-year">{year}</span>
                 <Avatar login={student.login} src={avatars[student.id]} size={40}/>
-                <span className="st-who"><b>{student.login}<ArrowUpRight size={12} weight="bold" className="st-ext"/></b><small>best of {fmt(cohortSize)}</small></span>
+                <span className="st-who"><b>{student.login}<NewTabMark/></b><small>best of {fmt(cohortSize)}</small></span>
                 <strong>{student.level.toFixed(2)}</strong>
               </Link>}
             </li>)}</ol>
@@ -164,7 +165,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           {latest.length ? <ul className="st-feed">{latest.map((student) => <li key={student.id}>
             <Link href={profileHref(student.login)} {...external}>
               <span className="st-feed-avatar" style={{ '--ring': campusColors[student.campusIds[0]] ?? '#555' } as CSSProperties}><Avatar login={student.login} src={avatars[student.id]} size={38}/></span>
-              <span className="st-who"><small>{shortDate(student.blackholedAt)}</small><b>{student.login}<ArrowUpRight size={12} weight="bold" className="st-ext"/></b><small>Level {student.level.toFixed(2)} · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</small></span>
+              <span className="st-who"><small>{shortDate(student.blackholedAt)}</small><b>{student.login}<NewTabMark/></b><small>Level {student.level.toFixed(2)} · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</small></span>
             </Link>
           </li>)}</ul> : <p className="st-empty">Nobody blackholed here yet.</p>}
         </section>
