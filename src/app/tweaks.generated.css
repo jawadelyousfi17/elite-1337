@@ -486,6 +486,7 @@ html[data-tw-accent] :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:var(-
 html[data-tw-accent] .ex-table a:hover{color:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-to strong{color:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-arrow{color:var(--tw-accent)!important}
+html[data-tw-accent] .xp-hero-total b{color:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-gain{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-bar i{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-presets button.is-on{background:var(--tw-accent)!important}
@@ -1216,6 +1217,7 @@ html[data-tw-light]:not(:has(.landing)) .pl-top:hover{background:#e2e2df!importa
 html[data-tw-light]:not(:has(.landing)) .xp-side>.xp-hero{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-from strong{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-arrow{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .xp-hero-total span{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-bar{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .xp-projects h2{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .xp-presets button:not(.xp-remove){color:#3d3d3d!important;border:1px solid #0000001f!important}
@@ -1428,6 +1430,7 @@ html:not([data-tw-light]):not(:has(.landing)) .ex-table a:hover{color:#a7d8b1!im
 html:not([data-tw-light]):not(:has(.landing)) .pl-top:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-hero-to strong{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-hero-arrow{color:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-hero-total b{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-hero-gain{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-bar i{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-presets button.is-on{background:#a7d8b1!important}

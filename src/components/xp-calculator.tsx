@@ -46,6 +46,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
   // The next Common Core projects in circle order; empty once the circles are done.
   const upNext = (core ?? []).filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4);
 
+  const totalGain = steps.reduce((sum, step) => sum + step.gain, 0);
   return <section className="xp-calc" aria-label="XP calculator">
     <div className="xp-side">
     <div className="xp-hero" aria-live="polite">
@@ -57,6 +58,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
           <strong><CountUp value={final}/></strong>
         </div>
       </div>
+      {picked.length > 0 && <p className="xp-hero-total" aria-label={`Total gained ${fmt(totalGain)} XP from ${picked.length} projects`}><b>+{fmt(totalGain)} XP</b><span>from {picked.length} {picked.length === 1 ? 'project' : 'projects'}</span></p>}
       {peers && scope && <Rank peers={peers} from={start} to={final} scope={scope}/>}
       <div className="xp-bar" role="img" aria-label={`${Math.round(final % 1 * 100)}% of the way to level ${Math.floor(final) + 1}`}><i style={{ width: `${final % 1 * 100}%` }}/></div>
     </div>

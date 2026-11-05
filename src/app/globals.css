@@ -1817,6 +1817,9 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 .xp-hero-from strong{color:#8a8a8a}
 .xp-hero-to strong{color:#cafbd2}
 .xp-hero-arrow{display:grid;place-items:center;width:44px;height:44px;margin-bottom:6px;border-radius:50%;background:#202020;color:#cafbd2}
+.xp-hero-total{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:14px 0 0;font-variant-numeric:tabular-nums}
+.xp-hero-total b{font-size:20px;font-weight:600;letter-spacing:-.02em;color:#cafbd2}
+.xp-hero-total span{font-size:13px;font-weight:500;color:#9a9a9a}
 .xp-hero-gain{position:absolute;top:0;right:0;padding:5px 12px;border-radius:999px;background:#cafbd2;color:#0a2a12;font-size:15px;font-style:normal;font-weight:700;font-variant-numeric:tabular-nums;animation:xp-pop .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes xp-pop{from{opacity:0;transform:scale(.6) translateY(6px)}to{opacity:1;transform:none}}
 .xp-bar{height:10px;border-radius:999px;background:#202020;overflow:hidden}
@@ -2111,3 +2114,5 @@ html:not([data-floating-new]) .menu-new{display:none}
 .ann-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:1023px){.ann-button{width:46px;height:46px}.ann-panel{right:auto;left:0}}
 @media(prefers-reduced-motion:reduce){.ann-panel,.ann-button{transition:none}}
+html[data-tw-light]:not(:has(.landing)) .xp-hero-total b{color:#1a7a35}
+html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-gain{background:#fff!important;color:#141414!important}
