@@ -47,7 +47,7 @@ export const loadXpProjects = singleFlight(unstable_cache(async (): Promise<Reco
   return { core: await list(CORE_CIRCLES), next: await list(NEXT_CIRCLES) };
 }, ['42-project-xp-v5'], { revalidate: 30 * 86_400 }));
 
-const cursusProjectSchema = z.object({ slug: z.strinprogressg(), name: z.string(), difficulty: z.number().nullish(), exam: z.boolean().nullish(), campus: z.array(z.object({ id: z.number().int() })).default([]) });
+const cursusProjectSchema = z.object({ slug: z.string(), name: z.string(), difficulty: z.number().nullish(), exam: z.boolean().nullish(), campus: z.array(z.object({ id: z.number().int() })).default([]) });
 const PAGE = 100, MAX_PAGES = 8;
 
 /**
