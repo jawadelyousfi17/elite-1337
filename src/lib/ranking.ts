@@ -79,6 +79,12 @@ export function selectLeaderboard(students: StudentRank[], filters: RankingFilte
   return { rows: matches.slice((page - 1) * 25, page * 25), total: matches.length, scopeTotal: scope.length, page, pages, podium: ranked.slice(0, 3), viewerRank: viewer?.rank ?? null };
 }
 
+/** "Top N%" for a rank among `total` people, rounded up so #1 of 200 reads "top 1%", never "top 0%". */
+export function topPercent(rank: number, total: number): number {
+  if (total <= 0 || rank <= 0) return 100;
+  return Math.min(100, Math.max(1, Math.ceil(rank / total * 100)));
+}
+
 export function cohortRank(students: StudentRank[], student: StudentRank, campusId?: number): number | null {
   if (!student.commonCoreEntryYear) return null;
   return rankWithinScope(students, student, campusId);

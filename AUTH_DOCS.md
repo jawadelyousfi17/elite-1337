@@ -72,8 +72,6 @@ Pages also call `requireStudent()` themselves to get the user.
 | Route | Check |
 |---|---|
 | `/api/clusters` | Session required (401). The user must also have a verified 1337 campus membership, looked up with the app token (403 if not, 503 if it can't be checked). |
-| `/api/avatars` (upload/delete) | Session required. The owner always comes from `session.user.id`, never from the request. A same-`Origin` check blocks cross-site requests (403). |
-| `/api/avatars/:userId` | Session required, plus a valid HMAC signature in the URL. |
 | `/api/photos/:userId` | Session required, plus a valid HMAC signature (`AUTH_SECRET`) over the user ID and CDN path. |
 
 **Signed-in is not the same as ranked.** Any 42 account can sign in. Appearing in the rankings is decided separately by the eligibility rules in `src/lib/classification.ts`. A signed-in staff member or alumnus can browse the site but won't be ranked, and `/me` says so.

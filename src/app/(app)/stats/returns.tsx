@@ -4,7 +4,6 @@ import { ArrowUpRight, Info } from '@/components/icons';
 import { loadValidated, returnRates, type ValidatedWindow } from '@/lib/validated';
 import { CORRECTOR_WINDOWS, loadEvaluations, minEvaluations, strictCorrectors, type CorrectorWindow } from '@/lib/correctors';
 import type { StudentRank } from '@/lib/ranking';
-import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { isAnonymized } from '@/lib/anonymous';
@@ -75,7 +74,7 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
   const min = minEvaluations(days);
   const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId }).filter((item) => !isAnonymized(item.login)) : [];
   const known = students.filter((student) => list.some((item) => item.correctorId === student.id));
-  const avatars = known.length ? photoReferences(known, await avatarReferencesOrEmpty(known.map((student) => student.id))) : {};
+  const avatars = known.length ? photoReferences(known) : {};
   return <section className="st-card st-correctors" aria-labelledby="st-correctors">
     <header>
       <h2 id="st-correctors">Strictest correctors</h2>

@@ -22,19 +22,14 @@ export default function Privacy() {
       </> },
       { id: 'stored', title: 'What we store', body: <>
         <ul>
-          <li><strong>Uploaded avatar</strong> (optional): if you upload one, a cropped 256×256 WebP is kept in private storage (Supabase), linked to your 42 user id. Removing it deletes it.</li>
-          <li><strong>Cat poll vote</strong> (optional): your 42 user id and the cat you picked, so you can change your vote.</li>
+          <li><strong>Feedback</strong> (optional): what you send through the feedback dialog, described below.</li>
         </ul>
-        <p>Nothing else is stored about you on our side.</p>
-      </> },
-      { id: 'survey', title: 'Career survey', body: <>
-        <p>The career survey is optional. Only the answers you pick (work status, salary range, place, sector, satisfaction) are sent, through Web3Forms, as an email to the team. They are sent <strong>without your login, name or 42 id</strong> and are used only for anonymous, overall statistics.</p>
       </> },
       { id: 'feedback', title: 'Bug reports and feedback', body: <>
-        <p>When you send feedback, your message, its type (bug, idea or other), the page you were on and your screen size are sent through Web3Forms as an email to the team. Your login is added <strong>only if you tick the box</strong>, so we can reply on 42 Intra. Please do not put passwords or private information in the message.</p>
+        <p>When you send feedback, your message, its type (bug, idea or other), the page you were on and your screen size are saved in our database for the team, and a copy is posted to the team&apos;s private Discord channel. Your login is added <strong>only if you tick the box</strong>, so we can reply on 42 Intra. Please do not put passwords or private information in the message.</p>
       </> },
       { id: 'device', title: 'Stored on your device', body: <>
-        <p>Your browser keeps a few small settings in local storage: theme, race sound on or off, whether you closed the survey, and your poll choice. They never leave your device, and clearing your browser data removes them.</p>
+        <p>Your browser keeps a few small settings in local storage: theme and race sound on or off. They never leave your device, and clearing your browser data removes them.</p>
       </> },
       { id: 'analytics', title: 'Analytics', body: <>
         <p>We use Umami Cloud to count visits and a few clicks (sign-in and GitHub). Umami uses no cookies and keeps no personal profiles. We never send logins, names or search text to it. Search and filter values in the address bar are ignored.</p>
@@ -43,14 +38,14 @@ export default function Privacy() {
         <ul>
           <li><strong>42 Intra</strong>: sign-in and all student data.</li>
           <li><strong>Vercel</strong>: hosting. Like any web host, it keeps short technical logs, such as IP addresses and errors.</li>
-          <li><strong>Supabase</strong>: avatar and vote storage.</li>
-          <li><strong>Web3Forms</strong>: delivery of survey answers and feedback.</li>
+          <li><strong>Neon</strong>: the database that keeps feedback.</li>
+          <li><strong>Discord</strong>: team notifications for new feedback.</li>
           <li><strong>Umami Cloud</strong>: visit counts.</li>
         </ul>
         <p>Links to student offers, GitHub and 42 Intra take you to those sites, which have their own privacy policies.</p>
       </> },
       { id: 'rights', title: 'Your choices', body: <>
-        <p>You can remove your avatar and change your vote at any time. You can also ask us to <strong>hide you from the leaderboard and stats</strong>, or ask what we hold about you. Send {CONTACT}. We will answer as soon as we can, usually within a few days.</p>
+        <p>You can ask us to <strong>hide you from the leaderboard and stats</strong>, or ask what we hold about you. Send {CONTACT}. We will answer as soon as we can, usually within a few days.</p>
         <p>In Morocco, personal data is protected by Law 09-08, and you can also contact the CNDP.</p>
       </> },
       { id: 'changes', title: 'Changes', body: <p>If this policy changes, the date at the top changes too. Important changes will be announced on the site.</p> },

@@ -7,7 +7,7 @@ import { Campus, ChevronLeft, ChevronRight, Cohort, Hourglass, Reverse, RotateCc
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
 import { ScrollRow } from '@/components/scroll-row';
-import { IntraButton, RankRow, appHref, pastel } from '@/components/rank-row';
+import { RankRow, appHref, pastel } from '@/components/rank-row';
 import { InfiniteRanks } from '@/components/infinite-ranks';
 import { RankTestPrompt } from '@/components/rank-test-prompt';
 import { requireStudent } from '@/lib/guard';
@@ -99,7 +99,7 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
     <strong>{student.login}</strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
-  </Link><IntraButton login={student.login} podium/></span>;
+  </Link></span>;
 }
 
 function Winner({ student, src }: { student: Ranked; src?: string }) {
@@ -117,7 +117,7 @@ function Winner({ student, src }: { student: Ranked; src?: string }) {
     </div>
     <h2>{student.login}</h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
     <span className="pl-pill">Level {student.level.toFixed(2)}</span>
-  </Link><IntraButton login={student.login} podium/></span>;
+  </Link></span>;
 }
 
 function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { filters: Filters; campuses: { id: number; name: string }[]; cohorts: string[]; open: boolean; reset: string; isDefault: boolean }) {

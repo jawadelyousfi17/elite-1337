@@ -5,7 +5,7 @@ import { Avatar as AvatarRoot, AvatarFallback, AvatarImage } from '@/components/
 import { cn } from '@/lib/utils';
 
 export function safeAvatarSrc(src?: string | null) {
-  return src?.startsWith('/api/avatars/') || src?.startsWith('/api/photos/') ? src : null;
+  return src?.startsWith('/api/photos/') ? src : null;
 }
 
 export function Avatar({ login, name, src, size = 40, className }: { login: string; name?: string | null; src?: string | null; size?: number; className?: string }) {

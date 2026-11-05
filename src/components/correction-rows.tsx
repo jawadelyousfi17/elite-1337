@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { IntraButton, appHref } from '@/components/rank-row';
+import { appHref } from '@/components/rank-row';
 import { Avatar } from '@/components/avatar';
-import { Check, ChevronUp, Clock3 } from '@/components/icons';
+import { Check, ChevronUp, Clock3, LockKeyhole } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
-export type CorrectionRowData = { id: number; userId: number; login: string; mine: boolean; level: number; year: string | null; project: string; at: string; src: string | null; mark?: number | null; attempt?: number | null };
+export type CorrectionMember = { userId: number; login: string; mine: boolean; level: number; year: string | null; src: string | null };
+/** One project push: a single student, or every member of the team that pushed it. */
+export type CorrectionRowData = { id: number; members: CorrectionMember[]; project: string; projectSlug: string; at: string; mark?: number | null; attempt?: number | null };
+/** The team's project page on 42 Intra (`id` is a member's projects_user id, which shows the team). */
+const teamHref = (row: CorrectionRowData) => `https://projects.intra.42.fr/projects/${encodeURIComponent(row.projectSlug)}/projects_users/${row.id}`;
 
 const STEP = 25;
 const pastels = ['var(--pastel-1)', 'var(--pastel-2)', 'var(--pastel-3)', 'var(--pastel-4)', 'var(--pastel-5)', 'var(--pastel-6)'];
@@ -21,10 +25,10 @@ function ago(iso: string, now = Date.now()) {
 }
 
 /**
- * Waiting or recently validated projects, 25 at a time: more appear as the end of the list comes into view. Like the
+ * Waiting, recently validated or freshly locked team projects, 25 at a time: more appear as the end of the list comes into view. Like the
  * leaderboard, a click opens the student in the app and the hover button opens 42 Intra.
  */
-export function CorrectionRows({ rows, validated }: { rows: CorrectionRowData[]; validated: boolean }) {
+export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode: 'waiting' | 'validated' | 'locked' }) {
   const [shown, setShown] = useState(STEP);
   const [far, setFar] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -46,14 +50,26 @@ export function CorrectionRows({ rows, validated }: { rows: CorrectionRowData[];
   }, []);
 
   return <>
-    <ol className="pl-rows">{rows.slice(0, shown).map((row, index) => <li key={row.id} className="pl-item">
-      <div className={cn('pl-row', row.mine && 'is-mine')} style={{ '--pastel': pastels[index % pastels.length] } as React.CSSProperties}>
-        <span className="pl-avatar"><Avatar login={row.login} src={row.src} size={45}/></span>
-        <span className="pl-copy"><strong><Link href={appHref(row.login)} className="pl-row-link">{row.login}</Link>{row.mine && <em>You</em>}</strong><span><b>Level {row.level.toFixed(2)}</b> · {row.year ?? '?'}</span></span>
-        <IntraButton login={row.login}/>
-        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning>{validated ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}</>}</small></span>
+    <ol className="pl-rows">{rows.slice(0, shown).map((row, index) => {
+      const [solo] = row.members, team = row.members.length > 1, mine = row.members.some((member) => member.mine);
+      const years = [...new Set(row.members.map((member) => member.year ?? '?'))].join(', ');
+      // Two logins fit a row; the rest collapse into "+N" (names on hover), with the viewer always among the named.
+      const ordered = [...row.members].sort((a, b) => Number(b.mine) - Number(a.mine)), named = ordered.slice(0, ordered.length > 2 ? 2 : ordered.length), hidden = ordered.slice(named.length);
+      return <li key={row.id} className="pl-item">
+      <div className={cn('pl-row', mine && 'is-mine', team && 'pc-team')} style={{ '--pastel': pastels[index % pastels.length] } as React.CSSProperties}>
+        {team ? <>
+          {/* The whole card opens the team on Intra; member logins sit above it and open each student. */}
+          <a className="pc-team-link" href={teamHref(row)} target="_blank" rel="noopener noreferrer" aria-label={`${row.project}: open the team on 42 Intra`}/>
+          <span className="pl-avatar pc-team-avatars">{row.members.slice(0, 3).map((member) => <Avatar key={member.userId} login={member.login} src={member.src} size={45}/>)}</span>
+          <span className="pl-copy"><strong className="pc-team-names">{named.map((member, at) => <Fragment key={member.userId}>{at > 0 && <span aria-hidden="true">·</span>}<Link href={appHref(member.login)} className="pc-team-login">{member.login}</Link></Fragment>)}{hidden.length > 0 && <span className="pc-team-more" title={hidden.map((member) => member.login).join(', ')}>+{hidden.length}</span>}{mine && <em>You</em>}</strong><span><b>Team of {row.members.length}</b> · {years}</span></span>
+        </> : <>
+          <span className="pl-avatar"><Avatar login={solo.login} src={solo.src} size={45}/></span>
+          <span className="pl-copy"><strong><Link href={appHref(solo.login)} className="pl-row-link">{solo.login}</Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
+        </>}
+        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}</>}</small></span>
       </div>
-    </li>)}</ol>
+    </li>;
+    })}</ol>
     <div ref={end} className="pl-more">{done && rows.length > STEP && <span className="pl-more-end">You reached the end</span>}</div>
     <button type="button" className="pl-top" data-on={far || undefined} onClick={() => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })} tabIndex={far ? 0 : -1} aria-hidden={!far}><ChevronUp size={18}/>Back to top</button>
   </>;

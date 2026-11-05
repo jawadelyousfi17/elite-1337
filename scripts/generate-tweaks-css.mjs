@@ -217,8 +217,6 @@ html[data-tw-light] .legal-other{background:#141414!important;color:#fff!importa
 html[data-tw-light] .legal-links a{color:#5f5f5f!important}
 html[data-tw-light] .legal-links a:hover{color:#141414!important}
 @media(max-width:860px){html[data-tw-light] .legal-toc li a{background:#fff!important}}
-html[data-tw-light] .pl-intra{border-color:#00000024!important;color:#2a2a2a!important;background:transparent!important}
-html[data-tw-light] .pl-intra:hover{background:#0000000d!important;border-color:#00000040!important;color:#000!important}
 html[data-tw-light] :is(.sk-kpi,.sk-chart,.sk-side,.sk-offer,.sk-stat)::before,html[data-tw-light] :is(.sk-kpi,.sk-offer)::after{background:#ecece9!important}
 html[data-tw-light] .fb-pill svg{color:#3f6b4c!important}
 html[data-tw-light] .fb-field textarea{background:#f4f4f2!important;color:#141414!important;border-color:#0000001a!important}

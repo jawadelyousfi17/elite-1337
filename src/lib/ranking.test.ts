@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cursusUserSchema } from './fortytwo-api';
 import { admissionOutcome, classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession } from './classification';
-import { cohortRank, isEligible, rankStudents, selectLeaderboard } from './ranking';
+import { cohortRank, isEligible, rankStudents, selectLeaderboard, topPercent } from './ranking';
 
 const record = (id: number, userId: number, login: string, level: number | null, options: {
   active?: boolean; endAt?: string | null; beginAt?: string | null; blackholedAt?: string | null; poolYear?: string; poolMonth?: string; staff?: boolean; kind?: string; alumni?: boolean;
@@ -86,5 +86,14 @@ describe('selectLeaderboard order', () => {
     expect(reversed.podium.map((student) => student.rank)).toEqual(normal.podium.map((student) => student.rank));
     expect(selectLeaderboard(students, { page: 2, order: 'desc' }).rows.at(-1)).toMatchObject({ rank: 1 });
     expect(reversed.total).toBe(normal.total);
+  });
+});
+
+describe('topPercent', () => {
+  it('rounds up and stays between 1 and 100', () => {
+    expect(topPercent(1, 200)).toBe(1);
+    expect(topPercent(655, 1386)).toBe(48);
+    expect(topPercent(1386, 1386)).toBe(100);
+    expect(topPercent(3, 0)).toBe(100);
   });
 });

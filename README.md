@@ -1,6 +1,6 @@
 # Elite 1337
 
-A Next.js leaderboard for people with 42 Intra accounts. It uses 42 OAuth and live 42 API data to rank students at configured 1337 campuses. Optional Supabase Storage and one mapping table support student-uploaded avatars. This is an independent community project.
+A Next.js leaderboard for people with 42 Intra accounts. It uses 42 OAuth and live 42 API data to rank students at configured 1337 campuses. This is an independent community project.
 
 ## Local setup
 
@@ -48,26 +48,9 @@ The shared server-side 42 client spaces requests at least 600 ms apart and caps 
 
 Next.js Data Cache retains successful complete ranking and Piscine datasets for one hour. Failed or partial refreshes are not cached as complete data. Cache freshness is displayed on the leaderboard. Serverless instances do not share the in-memory request pacer, and cache behavior depends on deployment infrastructure; this MVP cannot guarantee a global application-wide request limit or durable rankings without shared infrastructure. Heavy concurrent cold starts can hit the 42 limit. The UI shows a rate-limit or incomplete-data state in that case. If traffic grows, move the API pacer and complete snapshots to shared persistent infrastructure.
 
-## Student-uploaded avatars (V3.1)
+## Student photos
 
 By default, each student shows their 42 Intra photo. The 42 API returns `user.image` URLs on `cdn.intra.42.fr`, which answer HTTP 403 to a browser without an Intra session. The server keeps only the validated `small` (175 × 175) CDN path in the cached datasets. Pages emit HMAC-signed `/api/photos/:userId` references. That route requires the 42 session, then downloads the photo with the application token, checks its image bytes, and returns it with `private, max-age=86400, immutable` caching (the CDN path changes when a student changes their photo). CDN downloads are not 42 API calls and do not use the API request budget. If the CDN refuses a photo, the avatar falls back to initials. As of 2026-10-22, token-authenticated CDN reads succeeded consistently; an earlier test on 2026-10-19 saw repeated 403s, so watch for regressions.
-
-An uploaded avatar replaces the 42 photo. A signed-in 42 student can upload, preview, replace, or remove their own avatar on `/me`. The app accepts JPEG, PNG, or WebP files up to 4 MB, checks the bytes and dimensions, strips metadata, crops to 256 × 256, and stores an optimized WebP in private Supabase Storage. It does not accept image URLs for upload.
-
-The server stores objects as `42-user-id/random-version.webp` in the private `student-avatars` bucket. The `student_avatars` table maps immutable 42 user IDs to the current version and object path. Upload and delete routes derive the owner from the existing Auth.js 42 session; the browser never receives a Supabase key. All signed-in Elite 1337 users may see uploaded avatars through `/api/avatars/:userId`. The route requires the 42 session and a one-hour server-signed version reference. A page looks up to 25 avatar mappings with one table query, then the browser requests only images that exist. Each image read checks the current database version before downloading bytes, so an old Storage cache entry cannot be served after replacement or deletion. Browser image responses use `private, no-store` to avoid serving a removed image from browser cache; Supabase retains the optimized object cache. Replacement uses a new path and URL. The Cluster Explorer still exposes no student identities.
-
-To configure a new Supabase project:
-
-1. Create a Supabase project and open its **SQL Editor**. Run [`supabase/avatars.sql`](supabase/avatars.sql). This creates the **private** `student-avatars` bucket, limits stored objects to 1 MB WebP, and creates the `student_avatars` table with RLS enabled and no browser policies. Do not make the bucket public.
-2. In Supabase **Project Settings → API**, copy the project URL and server-side service-role key. Put them in `.env.local` as `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Never use a `NEXT_PUBLIC_` name for the key or paste it in chat. Existing `AUTH_SECRET` must remain configured.
-3. Set the same two variables as **private** Vercel environment variables for the intended deployment environment, then redeploy. The 42 OAuth callback and existing authentication setup remain the same.
-4. Sign in locally with 42, upload a photo from `/me`, and check `/me`, `/leaderboard`, `/piscines`, and a student profile. Replace and remove the image; check a fresh browser session signed in only to Elite 1337. Repeat this walkthrough in production before reporting that the feature works there.
-
-If Supabase is not configured, avatar surfaces show 42 photos (or initials) and `/me` explains that avatar storage is unavailable. Storage errors also fall back to initials rather than blocking rankings. A failed object cleanup can leave a private orphan object; remove it from the bucket during maintenance. Future authorized imports may reuse the `user_id` mapping and immutable version paths, but no importer is implemented. Any future importer must first establish redistribution permission and a reliable authorized image source, then use idempotent, rate-limited, resumable jobs.
-
-## Career survey submissions
-
-The career survey sends selected answers directly from the browser to [Web3Forms](https://docs.web3forms.com/getting-started/api-reference). It sends no name, login, or 42 account details. The configured public access key is included by default; optionally override it with `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` and rebuild. Web3Forms delivers submissions to the email associated with that key. The thank-you step appears only after a successful response; failed requests preserve answers for retry. Students who select “Not working” submit only their employment status.
 
 ## Verify
 

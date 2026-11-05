@@ -32,5 +32,3 @@ docker compose --env-file .env.docker logs -f app
 - Update: `git pull && docker compose --env-file .env.docker up -d --build`.
 - Back up the database: `docker compose --env-file .env.docker exec postgres pg_dump -U elite elite > backup.sql`.
 - Remove everything, including data: `docker compose --env-file .env.docker down -v`.
-
-Uploaded avatars still need Supabase (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`); without them, 42 photos are shown.

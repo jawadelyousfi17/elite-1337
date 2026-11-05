@@ -23,7 +23,7 @@ export const campusLocationSchema = z.object({
 export const projectUserSchema = z.object({
   id: z.number().int(), status: z.string(), updated_at: z.string(), created_at: z.string().nullish(),
   cursus_ids: z.array(z.number().int()).default([]), occurrence: z.number().int().nullish(),
-  'validated?': z.boolean().nullish(), marked_at: z.string().nullish(),
+  'validated?': z.boolean().nullish(), marked_at: z.string().nullish(), current_team_id: z.number().int().nullish(),
   // Each attempt is a team; a finished team's closed_at is when its evaluation ended.
   teams: z.array(z.object({ id: z.number().int(), status: z.string().nullish(), 'validated?': z.boolean().nullish(), closed_at: z.string().nullish() })).default([]),
   project: z.object({ id: z.number().int(), name: z.string(), slug: z.string() }),

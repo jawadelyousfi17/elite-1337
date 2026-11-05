@@ -3,7 +3,7 @@ import { KiwiNote } from '@/components/kiwi-guide';
 import { Suspense } from 'react';
 import { CorrectionsLoading } from './corrections-loading';
 import { z } from 'zod';
-import { Campus, Check, Clock3, Cohort, Corrections } from '@/components/icons';
+import { Campus, Check, Clock3, Cohort, Corrections, Users } from '@/components/icons';
 import { ScrollRow } from '@/components/scroll-row';
 import { CorrectionRows } from '@/components/correction-rows';
 import { FilterShell } from '@/components/filter-shell';
@@ -13,20 +13,21 @@ import { requireStudent } from '@/lib/guard';
 import { campusName, loadRankingDataset } from '@/lib/dataset';
 import { CORRECTION_WINDOW_DAYS, loadPendingCorrections } from '@/lib/corrections';
 import { RECENT_VALIDATED_DAYS, loadRecentValidated } from '@/lib/recent-validated';
+import { LOCKED_TEAM_DAYS, loadLockedTeams } from '@/lib/locked-teams';
 import { getStudentProfile } from '@/lib/student-overview';
-import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
+import { groupTeams } from '@/lib/correction-teams';
 
 export const metadata = { title: 'Waiting for Correction' };
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(/^[a-z0-9-]{1,80}$/).optional(), q: z.string().trim().max(40).optional(), tab: z.enum(['validated']).optional().catch(undefined), cohort: z.string().regex(/^\d{4}$/).optional().catch(undefined) });
+const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(/^[a-z0-9-]{1,80}$/).optional(), q: z.string().trim().max(40).optional(), tab: z.enum(['validated', 'locked']).optional().catch(undefined), cohort: z.string().regex(/^\d{4}$/).optional().catch(undefined) });
 /** One row in either tab: waiting projects carry their try number, validated ones their mark. */
-type Item = { id: number; userId: number; login: string; project: string; projectSlug: string; at: string; attempt?: number | null; mark?: number | null };
+type Item = { id: number; userId: number; login: string; project: string; projectSlug: string; at: string; teamId: number | null; attempt?: number | null; mark?: number | null };
 
 
 export default async function CorrectionsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -47,33 +48,37 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
   const campus = raw.success && raw.data.campus && valid.has(raw.data.campus) ? raw.data.campus : defaultCampus;
   const project = raw.success ? raw.data.project : undefined;
   const q = raw.success && raw.data.q ? raw.data.q : undefined;
-  const validatedTab = raw.success && raw.data.tab === 'validated';
+  const tab = raw.success ? raw.data.tab ?? null : null, validatedTab = tab === 'validated', lockedTab = tab === 'locked';
   const cohort = raw.success ? raw.data.cohort : undefined;
   const pending = !campus ? { status: 'unavailable' as const } : validatedTab
     ? await loadRecentValidated(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row })) } : state)
+    : lockedTab ? await loadLockedTeams(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row })) } : state)
     : await loadPendingCorrections(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row, at: row.updatedAt })) } : state);
   const students = new Map(dataset.students.map((student) => [student.id, student]));
   const active = pending.status === 'ready' ? pending.rows.filter((row) => students.has(row.userId)).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)) : [];
   // Promo = Common Core entry year; the chips list only years that have rows in this tab.
   const cohorts = [...new Set(active.map((row) => students.get(row.userId)?.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
-  const inCohort = cohort ? active.filter((row) => students.get(row.userId)?.commonCoreEntryYear === cohort) : active;
-  const projects = [...inCohort.reduce((counts, row) => counts.set(row.projectSlug, { name: row.project, count: (counts.get(row.projectSlug)?.count ?? 0) + 1 }), new Map<string, { name: string; count: number }>())].sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name));
-  const shown = inCohort.filter((row) => (!project || row.projectSlug === project) && (!q || matchesSearch(q, [row.login, students.get(row.userId)?.displayName, row.project])));
-  const avatars = photoReferences(shown.map((row) => ({ id: row.userId, photo: students.get(row.userId)?.photo })), await avatarReferencesOrEmpty([...new Set(shown.map((row) => row.userId))]));
-  const link = (change: { campus?: number; cohort?: string; project?: string; q?: string; tab?: 'validated' | null }) => { const query = new URLSearchParams(); const next = { campus, cohort, project, q, tab: validatedTab ? 'validated' : null, ...change }; if (next.tab) query.set('tab', next.tab); if (next.campus) query.set('campus', String(next.campus)); if (next.cohort) query.set('cohort', next.cohort); if (next.project) query.set('project', next.project); if (next.q) query.set('q', next.q); return `/corrections?${query}`; };
+  // A group project pushed by a team is one entry: counts and filters work on teams, a team matches if any member does.
+  const teams = groupTeams(active);
+  const inCohort = cohort ? teams.filter((team) => team.some((row) => students.get(row.userId)?.commonCoreEntryYear === cohort)) : teams;
+  const projects = [...inCohort.reduce((counts, [row]) => counts.set(row.projectSlug, { name: row.project, count: (counts.get(row.projectSlug)?.count ?? 0) + 1 }), new Map<string, { name: string; count: number }>())].sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name));
+  const shown = inCohort.filter((team) => (!project || team[0].projectSlug === project) && (!q || team.some((row) => matchesSearch(q, [row.login, students.get(row.userId)?.displayName, row.project]))));
+  const avatars = photoReferences(shown.flat().map((row) => ({ id: row.userId, photo: students.get(row.userId)?.photo })));
+  const link = (change: { campus?: number; cohort?: string; project?: string; q?: string; tab?: 'validated' | 'locked' | null }) => { const query = new URLSearchParams(); const next = { campus, cohort, project, q, tab, ...change }; if (next.tab) query.set('tab', next.tab); if (next.campus) query.set('campus', String(next.campus)); if (next.cohort) query.set('cohort', next.cohort); if (next.project) query.set('project', next.project); if (next.q) query.set('q', next.q); return `/corrections?${query}`; };
   const projectName = project ? projects.find(([slug]) => slug === project)?.[1].name ?? project : null;
 
   return <main className="shell pl pc">
     <aside className="pl-side">
       <section className="pc-head">
         <nav className="fa-tabs pc-tabs" aria-label="Corrections view">
-          <Link href={link({ tab: null, project: undefined })} className={cn('fa-tab', !validatedTab && 'is-picked')} aria-current={!validatedTab ? 'page' : undefined}>Waiting</Link>
+          <Link href={link({ tab: null, project: undefined })} className={cn('fa-tab', !tab && 'is-picked')} aria-current={!tab ? 'page' : undefined}>Waiting</Link>
           <Link href={link({ tab: 'validated', project: undefined })} className={cn('fa-tab', validatedTab && 'is-picked')} aria-current={validatedTab ? 'page' : undefined}>Recently validated</Link>
+          <Link href={link({ tab: 'locked', project: undefined })} className={cn('fa-tab', lockedTab && 'is-picked')} aria-current={lockedTab ? 'page' : undefined}>Locked teams</Link>
         </nav>
-        <h1>{validatedTab ? <><Check size={28}/> Recently validated</> : <><Corrections size={28}/> Waiting for correction</>}</h1>
-        <p><strong>{shown.length}</strong> {shown.length === 1 ? 'project' : 'projects'}{validatedTab && ' validated'} at {campus ? campusName(dataset, campus) : 'this campus'}{cohort && <> · promo {cohort}</>}{projectName && <> · {projectName}</>}{q && <> matching “{q}”</>} · last {validatedTab ? RECENT_VALIDATED_DAYS : CORRECTION_WINDOW_DAYS} days{pending.status === 'ready' && <> · updated {timeAgo(pending.fetchedAt)}</>}</p>
+        <h1>{validatedTab ? <><Check size={28}/> Recently validated</> : lockedTab ? <><Users size={28}/> Locked teams</> : <><Corrections size={28}/> Waiting for correction</>}</h1>
+        <p><strong>{shown.length}</strong> {lockedTab ? (shown.length === 1 ? 'team' : 'teams') : shown.length === 1 ? 'project' : 'projects'}{validatedTab && ' validated'}{lockedTab && ' locked'} at {campus ? campusName(dataset, campus) : 'this campus'}{cohort && <> · promo {cohort}</>}{projectName && <> · {projectName}</>}{q && <> matching “{q}”</>} · last {validatedTab ? RECENT_VALIDATED_DAYS : lockedTab ? LOCKED_TEAM_DAYS : CORRECTION_WINDOW_DAYS} days{pending.status === 'ready' && <> · updated {timeAgo(pending.fetchedAt)}</>}</p>
       </section>
-      <FilterShell action="/corrections" hidden={{ ...(validatedTab ? { tab: 'validated' } : {}), ...(campus ? { campus: String(campus) } : {}), ...(cohort ? { cohort } : {}), ...(project ? { project } : {}) }} q={q} placeholder="Login, name or project" clearHref={link({ q: undefined })} activeCount={(project ? 1 : 0) + (cohort ? 1 : 0)} defaultOpen={false}>
+      <FilterShell action="/corrections" hidden={{ ...(tab ? { tab } : {}), ...(campus ? { campus: String(campus) } : {}), ...(cohort ? { cohort } : {}), ...(project ? { project } : {}) }} q={q} placeholder="Login, name or project" clearHref={link({ q: undefined })} activeCount={(project ? 1 : 0) + (cohort ? 1 : 0)} defaultOpen={false}>
         <div className="pl-groups">
           <div className="pl-chip-group" role="group" aria-label="Campus">
             <span className="pl-chip-label"><Campus size={17}/>Campus</span>
@@ -89,7 +94,7 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
           {projects.length > 0 && <div className="pl-chip-group" role="group" aria-label="Project">
             <span className="pl-chip-label"><Corrections size={17}/>Project{projectName && <Link className="pc-clear" href={link({ project: undefined })}>Clear</Link>}</span>
             <div className="pc-projects">
-              <Link href={link({ project: undefined })} className="pc-project-row" data-active={!project || undefined}><span>All projects</span><b>{active.length}</b></Link>
+              <Link href={link({ project: undefined })} className="pc-project-row" data-active={!project || undefined}><span>All projects</span><b>{teams.length}</b></Link>
               {projects.map(([slug, info]) => <Link key={slug} href={link({ project: slug })} className="pc-project-row" data-active={project === slug || undefined} title={info.name}><span>{info.name}</span><b>{info.count}</b></Link>)}
             </div>
           </div>}
@@ -97,9 +102,9 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
       </FilterShell>
     </aside>
 
-    <section className="pl-list" aria-label={validatedTab ? 'Recently validated projects' : 'Pending corrections'}>
-      {pending.status !== 'ready' ? <div className="pl-empty"><Clock3 size={26}/><h2>{pending.status === 'rate-limited' ? '42 API limit reached' : pending.status === 'incomplete' ? 'The 42 API returned an incomplete list' : 'Pending corrections are unavailable'}</h2><p>Try again in a few minutes.</p></div>
-        : shown.length ? <CorrectionRows validated={validatedTab} rows={shown.map((row) => { const student = students.get(row.userId)!; return { id: row.id, userId: row.userId, login: row.login, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreEntryYear, project: row.project, at: row.at, src: avatars[row.userId] ?? null, mark: row.mark, attempt: row.attempt }; })}/> : <div className="pl-empty"><KiwiNote>{validatedTab ? <><h2>Nothing validated lately</h2><p>No project was validated here in the last {RECENT_VALIDATED_DAYS} days.</p></> : <><h2>Nothing waiting for correction</h2><p>Everyone is corrected. Kiwi approves.</p></>}</KiwiNote></div>}
+    <section className="pl-list" aria-label={validatedTab ? 'Recently validated projects' : lockedTab ? 'Recently locked teams' : 'Pending corrections'}>
+      {pending.status !== 'ready' ? <div className="pl-empty"><Clock3 size={26}/><h2>{pending.status === 'rate-limited' ? '42 API limit reached' : pending.status === 'incomplete' ? 'The 42 API returned an incomplete list' : lockedTab ? 'Locked teams are unavailable' : 'Pending corrections are unavailable'}</h2><p>Try again in a few minutes.</p></div>
+        : shown.length ? <CorrectionRows mode={tab ?? 'waiting'} rows={shown.map(([first, ...rest]) => ({ id: first.id, project: first.project, projectSlug: first.projectSlug, at: first.at, mark: first.mark, attempt: first.attempt, members: [first, ...rest].map((row) => { const student = students.get(row.userId)!; return { userId: row.userId, login: row.login, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreEntryYear, src: avatars[row.userId] ?? null }; }) }))}/> : <div className="pl-empty"><KiwiNote>{validatedTab ? <><h2>Nothing validated lately</h2><p>No project was validated here in the last {RECENT_VALIDATED_DAYS} days.</p></> : lockedTab ? <><h2>No new teams</h2><p>No team locked a group project here in the last {LOCKED_TEAM_DAYS} days.</p></> : <><h2>Nothing waiting for correction</h2><p>Everyone is corrected. Kiwi approves.</p></>}</KiwiNote></div>}
     </section>
   </main>;
 }

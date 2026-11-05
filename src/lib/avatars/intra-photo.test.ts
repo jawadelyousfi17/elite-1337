@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cursusUserSchema } from '../fortytwo-api';
-import { intraPhotoPath, intraPhotoUrl, photoContentType, photoReferences, validPhotoSignature } from './intra-photo';
+import { checkedUserId, intraPhotoPath, intraPhotoUrl, photoContentType, photoReferences, validPhotoSignature } from './intra-photo';
 
 const small = '/users/c10658bc667e3e1f6e21cac83d956028/small_tester.jpg';
 const image = { link: 'https://cdn.intra.42.fr/users/68081dc9aaae5bf6dd3721196607f67c/tester.jpg', versions: { small: `https://cdn.intra.42.fr${small}` } };
@@ -30,11 +30,14 @@ describe('42 Intra photo references', () => {
     expect(validPhotoSignature(7, '/users/c10658bc667e3e1f6e21cac83d956028/small_other.jpg', signature)).toBe(false);
     expect(intraPhotoUrl(7, null)).toBeNull();
   });
-  it('prefers an uploaded avatar over the 42 photo', () => {
-    const references = photoReferences([{ id: 7, photo: small }, { id: 8, photo: small }, { id: 9, photo: null }], { 8: '/api/avatars/8?v=x' });
+  it('links signed 42 photos and skips students without one', () => {
+    const references = photoReferences([{ id: 7, photo: small }, { id: 9, photo: null }]);
     expect(references[7]).toMatch(/^\/api\/photos\/7\?/);
-    expect(references[8]).toBe('/api/avatars/8?v=x');
     expect(references[9]).toBeUndefined();
+  });
+  it('accepts only plain positive user ids', () => {
+    expect(checkedUserId('42')).toBe(42);
+    for (const bad of ['0', '-1', '4.2', '042', 'abc', '1234567890123']) expect(checkedUserId(bad)).toBeNull();
   });
   it('recognizes image bytes and rejects HTML', () => {
     expect(photoContentType(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]))).toBe('image/jpeg');

@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/auth';
-import { checkedUserId } from '@/lib/avatars/storage';
-import { photoContentType, validPhotoSignature } from '@/lib/avatars/intra-photo';
+import { checkedUserId, photoContentType, validPhotoSignature } from '@/lib/avatars/intra-photo';
 import { fortyTwoApi } from '@/lib/fortytwo-api';
 
 export const dynamic = 'force-dynamic';

@@ -39,10 +39,10 @@ export function validPhotoSignature(userId: number, path: string, supplied: stri
 }
 
 // Uploaded avatars take priority over 42 Intra photos.
-export function photoReferences(people: { id: number; photo?: string | null }[], uploaded: Record<number, string> = {}): Record<number, string> {
+export function photoReferences(people: { id: number; photo?: string | null }[]): Record<number, string> {
   const references: Record<number, string> = {};
   for (const person of people) {
-    const src = uploaded[person.id] ?? intraPhotoUrl(person.id, person.photo);
+    const src = intraPhotoUrl(person.id, person.photo);
     if (src) references[person.id] = src;
   }
   return references;
@@ -55,4 +55,11 @@ export function photoContentType(bytes: Uint8Array): string | null {
   if (ascii(0, 4) === 'GIF8') return 'image/gif';
   if (ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') return 'image/webp';
   return null;
+}
+
+/** A 42 user id from a URL segment, or null: route params are never trusted as numbers. */
+export function checkedUserId(value: string): number | null {
+  if (!/^[1-9]\d{0,11}$/.test(value)) return null;
+  const id = Number(value);
+  return Number.isSafeInteger(id) ? id : null;
 }

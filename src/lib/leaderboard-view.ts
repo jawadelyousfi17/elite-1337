@@ -3,7 +3,6 @@ import { campusName, type BlackholedStudent, type RankingDataset } from './datas
 import { selectLeaderboard, type StudentRank } from './ranking';
 import { matchesSearch } from './search';
 import { hackerLogins } from './hackers';
-import { avatarReferencesOrEmpty } from './avatars/storage';
 import { photoReferences } from './avatars/intra-photo';
 import type { RankRowData } from '@/components/rank-row';
 
@@ -63,11 +62,11 @@ export function listPage(dataset: RankingDataset, filters: Filters, ownId?: numb
   return { blackholedMode, alumniMode, frozenMode, total: blackholedMode ? lost.length : rankedTotal, page, pages, podium, showWinner, listed, lostRows };
 }
 
-/** Photo links for the people shown: uploaded avatars first, then signed 42 Intra photos. */
-export async function avatarsFor(people: { id: number; photo?: string | null }[]) {
+/** Signed 42 Intra photo links for the people shown. */
+export function avatarsFor(people: { id: number; photo?: string | null }[]) {
   // Anonymous students have negative ids and no photo: nothing to look up.
   const real = people.filter((person) => person.id > 0);
-  return photoReferences(real, await avatarReferencesOrEmpty([...new Set(real.map((person) => person.id))]));
+  return photoReferences(real);
 }
 
 export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string): RankRowData[] {

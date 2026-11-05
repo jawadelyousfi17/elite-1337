@@ -10,7 +10,6 @@ import { campusName, loadRankingDataset } from '@/lib/dataset';
 import { cohortRank } from '@/lib/ranking';
 import { getStudentProfile } from '@/lib/student-overview';
 import { intraPhotoUrl } from '@/lib/avatars/intra-photo';
-import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 
 async function viewerRanks(): Promise<ViewerRanks | null> {
   const session = await auth();
@@ -21,9 +20,8 @@ async function viewerRanks(): Promise<ViewerRanks | null> {
   const own = dataset.students.find((student) => String(student.id) === session.user.id);
   if (!own) return null;
   const campus = profile?.campus_users.find((entry) => entry.is_primary && own.campusIds.includes(entry.campus_id))?.campus_id ?? own.campusIds[0];
-  const uploaded = await avatarReferencesOrEmpty([own.id]);
   return {
-    login: own.login, photo: uploaded[own.id] ?? intraPhotoUrl(own.id, own.photo), level: own.level,
+    login: own.login, photo: intraPhotoUrl(own.id, own.photo), level: own.level,
     cohort: cohortRank(dataset.students, own, campus), cohortLabel: own.commonCoreEntryYear ? `Cohort ${own.commonCoreEntryYear}` : 'Cohort',
     campus: campus ? own.campusRanks[campus] ?? null : null, campusLabel: campus ? campusName(dataset, campus) : 'Campus', global: own.globalRank,
   };

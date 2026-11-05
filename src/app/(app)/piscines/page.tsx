@@ -10,7 +10,6 @@ import { admissionOutcome } from '@/lib/classification';
 import { loadPiscineCandidates } from '@/lib/piscines';
 import { getStudentProfile } from '@/lib/student-overview';
 import { Button } from '@/components/ui/button';
-import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 
 export const metadata = { title: 'Piscine Explorer' };
@@ -37,7 +36,7 @@ export default async function Piscines({ searchParams }: { searchParams: Promise
   const accepted = new Set(dataset.acceptedUserIds), current = new Set(dataset.students.map((student) => student.id));
   const candidates = state.status === 'ready' ? state.candidates.filter((candidate) => (!filters.outcome || filters.outcome === admissionOutcome(accepted.has(candidate.id))) && (!filters.q || candidate.login.toLowerCase().includes(filters.q.toLowerCase()))) : [];
   const pages = Math.max(1, Math.ceil(candidates.length / 25)), page = Math.min(filters.page, pages), rows = candidates.slice((page - 1) * 25, page * 25);
-  const avatars = photoReferences(rows.map((candidate) => ({ id: candidate.id, photo: candidate.image })), await avatarReferencesOrEmpty(rows.map((candidate) => candidate.id)));
+  const avatars = photoReferences(rows.map((candidate) => ({ id: candidate.id, photo: candidate.image })));
   const url = (requested: number) => { const query = new URLSearchParams(); for (const key of ['campus','year','month','outcome','q'] as const) if (filters[key]) query.set(key, String(filters[key])); query.set('page', String(requested)); return `/piscines?${query}`; };
   const intra = (login: string) => `https://profile.intra.42.fr/users/${encodeURIComponent(login)}`;
   return <main className="shell leaderboard-page piscine-page">

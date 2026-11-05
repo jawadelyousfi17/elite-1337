@@ -7,6 +7,7 @@ import { isHacker } from '@/lib/hackers';
 import { loadJourney, summarizeJourney, type Journey } from '@/lib/journey';
 import { circlesDone } from '@/lib/circles';
 import { loadPresence } from '@/lib/presence';
+import { CorrectorCard } from '@/components/student-profile';
 import type { RankingDataset } from '@/lib/dataset';
 import { JourneyRace } from './journey-race';
 import { PresenceLoading, PresenceView } from './presence-view';
@@ -26,15 +27,16 @@ export function findStudent(dataset: RankingDataset, login: string): Subject | n
 
 function Stats({ journey }: { journey: Journey }) {
   const summary = summarizeJourney(journey);
+  const done = circlesDone(journey.stops.filter((stop) => !stop.pending)).length;
   const stats = [
-    { label: 'Circles finished', value: (() => { const done = circlesDone(journey.stops.filter((stop) => !stop.pending)); return done.length ? `${done.length} of 7` : 'None yet'; })() },
+    { label: 'Circles finished', value: done ? `${done} of 7` : 'None yet' },
     { label: 'Days in Common Core', value: summary.days.toLocaleString('en-US') },
     { label: 'Projects passed', value: String(summary.passed) },
     { label: 'Crashes', value: String(summary.retries) },
     { label: 'Longest break', value: `${summary.longestBreak} days` },
     ...(summary.toughest ? [{ label: 'Toughest', value: `${summary.toughest.project} · ${summary.toughest.tries} tries` }] : []),
   ];
-  return <dl className="race-stats">{stats.map((stat) => <div key={stat.label}><dt>{stat.label}</dt><dd>{stat.value}</dd></div>)}</dl>;
+  return <dl className="race-stats">{stats.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd title={value}>{value}</dd></div>)}</dl>;
 }
 
 /** Logtime charts; only for the signed-in student's own page. */
@@ -72,6 +74,7 @@ export async function RaceView({ subject, self, title, path, vs, dataset }: { su
     {versus && opponent && <p className="race-versus-note"><span>{subject.login} vs {opponent.login}</span>Both start on their own first Common Core day.<Link href={path} aria-label="Stop racing"><X size={14}/></Link></p>}
     <JourneyRace runners={runners} label={versus && opponent ? `${subject.login} against ${opponent.login}` : `${subject.login}'s Common Core race`}/>
     <Stats journey={mine.journey}/>
+    <div className="race-corrector"><Suspense fallback={null}><CorrectorCard userId={subject.id} login={subject.login} self={self}/></Suspense></div>
     {self && <Suspense fallback={<PresenceLoading/>}><Presence userId={subject.id} from={mine.journey.start}/></Suspense>}
   </>;
 }

@@ -7,7 +7,7 @@ Guide for AI agents and people contributing to Elite 1337: rankings and Common C
 - Next.js 15 App Router, React 19, TypeScript (strict), Zod 4.
 - Auth.js v5 with the 42 provider. The session holds `user.id` (42 id) and `user.login`.
 - 42 Intra API through one client: `src/lib/fortytwo-api.ts`.
-- Neon Postgres (feedback, experiments), Supabase Storage (uploaded avatars).
+- Neon Postgres (feedback, experiments).
 - Hosted on Vercel, region `cdg1`. Tests: Vitest. Optional self-hosting with Docker: see `DOCKER.md`.
 
 ## Commands
@@ -60,9 +60,9 @@ The app shares **1,200 requests per hour and 2 per second** for every visitor. R
 - The student id always comes from the session (`auth()`), never from a form, URL or request body.
 - All database access goes through `sql()` from `src/lib/db.ts` (one Neon HTTP client; Docker points it at a local proxy). Use the tagged template (`` sql()`... ${value}` ``) only. Never build SQL strings.
 - Limit writes per student inside the same statement (see `saveFeedback`, `saveFilterSession`).
-- Side features fail soft: if `DATABASE_URL`, Supabase or 42 is unavailable, the page still renders without that part.
+- Side features fail soft: if `DATABASE_URL`, Discord or 42 is unavailable, the page still renders without that part.
 - Privacy: don't build public lists that name or shame students (unfilled evaluations, missing feedback, logtime of others). A student's own logtime is shown only to them.
-- Photos go through the signed proxies (`intraPhotoUrl`, uploaded avatars), never raw 42 CDN links.
+- Photos go through the signed proxy (`intraPhotoUrl`), never raw 42 CDN links.
 
 ## UI and CSS
 
@@ -88,7 +88,7 @@ The app shares **1,200 requests per hour and 2 per second** for every visitor. R
 - Unit tests cover logic (`npx vitest run`). For UI or caching changes, run a production build (`npx next build && npx next start -p 3399`) in a **copy** of the repo with its own `.next`. Two Next servers sharing one `.next` folder corrupt each other.
 - Measure 42 cost by logging inside `fortyTwoApi.request` in that copy. Report both cold and warm numbers.
 - Never write test rows into Neon under a real student's id. Use fake ids (`9000000xx`) and delete them afterwards.
-- Don't hammer third-party services (Web3Forms, Discord, 42) with repeated test requests.
+- Don't hammer third-party services (Discord, 42) with repeated test requests.
 
 ## Git
 

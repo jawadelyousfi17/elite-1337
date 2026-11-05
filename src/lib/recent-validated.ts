@@ -6,7 +6,7 @@ import { fortyTwoApi, IncompletePopulationError, projectUserSchema, RateBudgetEr
 
 export const RECENT_VALIDATED_DAYS = 14;
 const LIMIT = 1000, PAGE = 100, MAX_PAGES = 8;
-export type RecentValidation = { id: number; userId: number; login: string; project: string; projectSlug: string; mark: number | null; at: string; campusId: number };
+export type RecentValidation = { id: number; userId: number; login: string; project: string; projectSlug: string; mark: number | null; at: string; campusId: number; teamId: number | null };
 
 // parent_id marks sub-steps ("Work Experience I - Peer Video"); only whole projects are listed.
 const rowSchema = projectUserSchema.extend({ final_mark: z.number().nullish(), project: z.object({ id: z.number().int(), name: z.string(), slug: z.string(), parent_id: z.number().int().nullish() }) });
@@ -15,7 +15,7 @@ type Row = z.infer<typeof rowSchema>;
 /** Validated Common Core projects, newest first. 42 does not sort by marked_at reliably, so the list is sorted here. */
 export function pickRecentValidated(rows: Row[], campusId: number, curriculum: number, limit = LIMIT): RecentValidation[] {
   return rows.filter((row) => row['validated?'] && row.marked_at && row.cursus_ids.includes(curriculum) && !row.project.parent_id)
-    .map((row) => ({ id: row.id, userId: row.user.id, login: row.user.login, project: row.project.name, projectSlug: row.project.slug, mark: row.final_mark ?? null, at: row.marked_at!, campusId }))
+    .map((row) => ({ id: row.id, userId: row.user.id, login: row.user.login, project: row.project.name, projectSlug: row.project.slug, mark: row.final_mark ?? null, at: row.marked_at!, campusId, teamId: row.current_team_id ?? null }))
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, limit);
 }
 
@@ -30,7 +30,7 @@ const cached = singleFlight(unstable_cache(async (campus: number) => {
   const pages = Math.min(MAX_PAGES, Math.ceil((first.total ?? first.data.length) / PAGE));
   const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => fortyTwoApi.request('projects_users', z.array(rowSchema), { ...base, 'page[number]': String(i + 2) })));
   return { fetchedAt: to.toISOString(), rows: pickRecentValidated([first.data, ...rest.map((page) => page.data)].flat(), campus, cursusId()) };
-}, ['1337-recent-validated-v3'], { revalidate: 600 }));
+}, ['1337-recent-validated-v4'], { revalidate: 600 }));
 
 export async function loadRecentValidated(campus: number): Promise<{ status: 'ready'; rows: RecentValidation[]; fetchedAt: string } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> {
   if (!campusIds().includes(campus)) return { status: 'unavailable' };

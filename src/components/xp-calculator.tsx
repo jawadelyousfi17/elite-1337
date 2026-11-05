@@ -8,6 +8,7 @@ import { matchesSearch } from '@/lib/search';
 import { cn } from '@/lib/utils';
 import { Slider, Switch } from 'radix-ui';
 import { CoalitionMark } from '@/components/coalition-marks';
+import { XpViewTabs, type XpView } from '@/components/xp-view-tabs';
 
 const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
 // Intra shows levels cut to two decimals, not rounded.
@@ -15,12 +16,20 @@ const lvl = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
 type Picked = { slug: string; mark: number };
 
 /**
- * Levels after one or more projects, in order; projects not validated yet come first in the picker. `upNext` offers
- * the next projects in list order, which only means something for the Common Core circles.
+ * Levels after one or more projects, in order; projects not validated yet come first in the picker. Both lists live
+ * in the page: the Common Core one arrives with it, the slow Advanced one streams in after, so switching between them
+ * never reloads the page or clears the plan. `null` means a list is unavailable right now.
  */
-export function XpCalculator({ projects, level, done, skipped, peers, scope, coalition, upNext: suggest = true }: { projects: XpOption[]; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null; upNext?: boolean }) {
+export function XpCalculator({ core, advanced: advancedList, view: initialView, level, done, skipped, peers, scope, coalition }: { core: XpOption[] | null; advanced: Promise<XpOption[] | null>; view: XpView; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
   const other = useMemo(() => new Set(skipped), [skipped]);
-  const bySlug = useMemo(() => new Map(projects.map((project) => [project.slug, project])), [projects]);
+  const [view, setView] = useState(initialView);
+  const [advanced, setAdvanced] = useState<XpOption[] | null | undefined>(undefined);
+  useEffect(() => {
+    let live = true;
+    advancedList.then((list) => { if (live) setAdvanced(list); }, () => { if (live) setAdvanced(null); });
+    return () => { live = false; };
+  }, [advancedList]);
+  const bySlug = useMemo(() => new Map([...core ?? [], ...advanced ?? []].map((project) => [project.slug, project])), [core, advanced]);
   const [picked, setPicked] = useState<Picked[]>([]);
   // The starting level is the student's real one from the rankings; it is not editable.
   const start = level ?? 0;
@@ -34,7 +43,8 @@ export function XpCalculator({ projects, level, done, skipped, peers, scope, coa
   const update = (slug: string, mark: number) => setPicked((items) => items.map((item) => item.slug === slug ? { ...item, mark } : item));
   const add = (slug: string) => setPicked((items) => [...items, { slug, mark: done[slug] !== undefined ? 125 : 100 }]);
   const taken = new Set(picked.map((item) => item.slug));
-  const upNext = suggest ? projects.filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4) : [];
+  // The next Common Core projects in circle order; empty once the circles are done.
+  const upNext = (core ?? []).filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4);
 
   return <section className="xp-calc" aria-label="XP calculator">
     <div className="xp-side">
@@ -89,7 +99,7 @@ export function XpCalculator({ projects, level, done, skipped, peers, scope, coa
     </div>
 
     <div className="xp-projects">
-      <ProjectPicker projects={projects} done={done} other={other} taken={taken} onPick={add}/>
+      <ProjectPicker projects={view === 'core' ? core : advanced} view={view} onView={setView} done={done} other={other} taken={taken} onPick={add}/>
       {picked.length > 0 && <ol className="xp-steps">{picked.map((item, index) => {
         const project = bySlug.get(item.slug)!, doneMark = done[item.slug];
         return <li key={item.slug} className="xp-step">
@@ -175,12 +185,15 @@ function CountUp({ value }: { value: number }) {
   return <>{lvl(shown)}</>;
 }
 
-/** Searchable project list in a popover: next projects first, then validated ones to improve, then skipped alternatives. */
-function ProjectPicker({ projects, done, other, taken, onPick }: { projects: XpOption[]; done: Record<string, number>; other: Set<string>; taken: Set<string>; onPick: (slug: string) => void }) {
+/**
+ * Searchable project list in a popover (full screen on phones): next projects first, then validated ones to improve,
+ * then skipped alternatives. The curriculum tabs switch the list in place; `undefined` projects are still loading.
+ */
+function ProjectPicker({ projects, view, onView, done, other, taken, onPick }: { projects: XpOption[] | null | undefined; view: XpView; onView: (view: XpView) => void; done: Record<string, number>; other: Set<string>; taken: Set<string>; onPick: (slug: string) => void }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const input = useRef<HTMLInputElement>(null);
-  const shown = projects.filter((project) => !taken.has(project.slug) && (!q || matchesSearch(q, [project.name, project.slug])));
+  const shown = (projects ?? []).filter((project) => !taken.has(project.slug) && (!q || matchesSearch(q, [project.name, project.slug])));
   const groups = [
     { label: 'Not validated yet', items: shown.filter((project) => done[project.slug] === undefined && !other.has(project.slug)) },
     { label: 'Validated · improve your mark', items: shown.filter((project) => done[project.slug] !== undefined) },
@@ -188,16 +201,24 @@ function ProjectPicker({ projects, done, other, taken, onPick }: { projects: XpO
   ].filter((group) => group.items.length);
   const pick = (slug: string) => { onPick(slug); setOpen(false); setQ(''); };
 
-  return <Popover open={open} onOpenChange={(next) => { setOpen(next); if (!next) setQ(''); }}>
+  return <Popover modal open={open} onOpenChange={(next) => { setOpen(next); if (!next) setQ(''); }}>
     <PopoverTrigger asChild><button type="button" className="xp-add"><Plus size={16}/>Add a project</button></PopoverTrigger>
     <PopoverContent align="start" sideOffset={8} className="xp-picker" onOpenAutoFocus={(event) => { event.preventDefault(); input.current?.focus(); }}>
-      <div className="xp-picker-search">
-        <Search size={16}/>
-        <input ref={input} value={q} onChange={(event) => setQ(event.target.value)} placeholder="Search a project" aria-label="Search a project"
-          onKeyDown={(event) => { if (event.key === 'Enter' && groups[0]?.items[0]) { event.preventDefault(); pick(groups[0].items[0].slug); } }}/>
+      <div className="xp-picker-head">
+      <div className="xp-picker-top">
+        <div className="xp-picker-search">
+          <Search size={16}/>
+          <input ref={input} value={q} onChange={(event) => setQ(event.target.value)} placeholder="Search a project" aria-label="Search a project"
+            onKeyDown={(event) => { if (event.key === 'Enter' && groups[0]?.items[0]) { event.preventDefault(); pick(groups[0].items[0].slug); } }}/>
+        </div>
+        <button type="button" className="xp-picker-close" onClick={() => { setOpen(false); setQ(''); }} aria-label="Close"><X size={18}/></button>
+      </div>
+      <XpViewTabs view={view} onChange={onView}/>
       </div>
       <div className="xp-picker-list" role="listbox" aria-label="Projects">
-        {!groups.length ? <p className="xp-picker-empty">No project matches “{q}”.</p> : groups.map((group) => <div key={group.label} role="group" aria-label={group.label}>
+        {projects === undefined ? <p className="xp-picker-empty is-loading">Loading the Advanced projects…</p>
+          : projects === null ? <p className="xp-picker-empty">These projects are unavailable right now. Try again in a minute.</p>
+          : !groups.length ? <p className="xp-picker-empty">{q ? <>No project matches “{q}”.</> : 'No project left to add.'}</p> : groups.map((group) => <div key={group.label} role="group" aria-label={group.label}>
           <p className="xp-picker-label">{group.label}</p>
           {group.items.map((project) => <button key={project.slug} type="button" role="option" aria-selected={false} className="xp-option" onClick={() => pick(project.slug)}>
             <span className="xp-option-circle">{project.tag}</span>

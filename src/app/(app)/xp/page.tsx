@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { requireStudent } from '@/lib/guard';
 import { campusName, loadRankingDataset } from '@/lib/dataset';
 import { loadAdvancedProjects, loadXpProjects } from '@/lib/xp';
@@ -8,13 +7,14 @@ import { loadJourney } from '@/lib/journey';
 import { circlesDone, circlesFor, trackOf } from '@/lib/circles';
 import { loadOwnCoalition } from '@/lib/coalitions';
 import { withTimeout } from '@/lib/timeout';
+import { cookies } from 'next/headers';
+import { XP_VIEW_COOKIE, type XpView } from '@/components/xp-view-tabs';
 
 export const metadata = { title: 'XP Calculator', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const VIEWS = [{ key: 'core', label: 'Common Core' }, { key: 'advanced', label: 'Advanced' }] as const;
-type View = typeof VIEWS[number]['key'];
+const isView = (value: unknown): value is XpView => value === 'core' || value === 'advanced';
 
 /** The level a student reaches after validating projects with a given mark, and the rank that level would give. */
 export default async function XpPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -29,10 +29,14 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   const track = journey.status === 'ready' ? trackOf(stops.map((stop) => stop.slug), journey.journey.start) : 'core';
   // Students who finished every circle open on the Advanced list; either view stays one click away.
   const finished = circlesDone(stops, track).length === circlesFor(track).length;
-  const view: View = asked === 'core' || asked === 'advanced' ? asked : finished ? 'advanced' : 'core';
-  // Project XP loads alongside the rankings. A cold Advanced list takes about 30 s: past 50 s, show the
-  // "unavailable" note instead of hitting the 60 s function limit.
-  const [state, coreProjects, catalog] = await Promise.all([rankings, view === 'core' ? loadXpProjects().catch(() => null) : null, view === 'advanced' ? withTimeout(loadAdvancedProjects(), 50_000, null).catch(() => null) : null]);
+  // A tab picked in the project picker is saved as the student's default and wins over the guess.
+  const saved = (await cookies()).get(XP_VIEW_COOKIE)?.value;
+  const view: XpView = isView(asked) ? asked : isView(saved) ? saved : finished ? 'advanced' : 'core';
+  // Common Core XP loads alongside the rankings (cached for 30 days). The Advanced list starts now but is not awaited:
+  // a cold one takes about 30 s, so it streams into the picker later, and past 50 s it shows as unavailable instead
+  // of hitting the 60 s function limit.
+  const catalog = withTimeout(loadAdvancedProjects(), 50_000, null).catch(() => null);
+  const [state, coreProjects] = await Promise.all([rankings, loadXpProjects().catch(() => null)]);
 
   const own = state.status === 'ready' ? state.data.students.find((student) => String(student.id) === user.id) : undefined;
   const level = own?.level ?? null;
@@ -43,27 +47,17 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   const standing = own && campus ? await withTimeout(loadOwnCoalition(own.id, campus), 3000, null) : null;
   const coalition = standing && { name: standing.name, color: standing.color, rank: standing.rank, total: standing.total };
   const scope = state.status === 'ready' && own && campus ? `${own.commonCoreEntryYear ? `Cohort ${own.commonCoreEntryYear}` : 'Cohort'} · ${campusName(state.data, campus)}` : null;
-  const shared = { level, done, peers, scope, coalition };
-
-  let calculator: React.ReactNode;
-  if (view === 'core') {
-    // Alternatives the student skipped: FdF once so_long is validated, webserv once ft_irc is.
-    const skipped = circlesFor(track).flat().filter((group) => group.some((slug) => done[slug] !== undefined)).flat().filter((slug) => done[slug] === undefined);
-    calculator = coreProjects && <XpCalculator key="core" {...shared} skipped={skipped} projects={coreProjects[track].filter((project) => project.xp > 0).map((project) => ({ ...project, tag: `C${project.circle}` }))}/>;
-  } else {
-    const records = new Set(stops.map((stop) => stop.slug));
-    // Only what the student's campus offers: Tétouan and Rabat have apprenticeships Khouribga does not.
-    const projects = catalog && advancedOptions(catalog, (slug) => records.has(slug), own?.campusIds ?? null);
-    calculator = projects && <XpCalculator key="advanced" {...shared} skipped={[]} projects={projects} upNext={false}/>;
-  }
+  // Alternatives the student skipped: FdF once so_long is validated, webserv once ft_irc is.
+  const skipped = circlesFor(track).flat().filter((group) => group.some((slug) => done[slug] !== undefined)).flat().filter((slug) => done[slug] === undefined);
+  const core = coreProjects && coreProjects[track].filter((project) => project.xp > 0).map((project) => ({ ...project, tag: `C${project.circle}` }));
+  const records = new Set(stops.map((stop) => stop.slug));
+  // Only what the student's campus offers: Tétouan and Rabat have apprenticeships Khouribga does not.
+  const advanced = catalog.then((list) => list && advancedOptions(list, (slug) => records.has(slug), own?.campusIds ?? null));
 
   return <main className="shell xp">
     <header className="of-head xp-head">
       <h1>XP calculator</h1>
-      <nav data-keep-scroll className="st-period" aria-label="Curriculum">
-        {VIEWS.map((item) => <Link key={item.key} href={`/xp?view=${item.key}`} scroll={false} aria-current={item.key === view ? 'page' : undefined}>{item.label}</Link>)}
-      </nav>
     </header>
-    {calculator ?? <p className="fa-empty">Project XP is unavailable right now. Try again in a minute.</p>}
+    <XpCalculator core={core} advanced={advanced} view={view} level={level} done={done} skipped={skipped} peers={peers} scope={scope} coalition={coalition}/>
   </main>;
 }

@@ -8,7 +8,6 @@ import { DatasetState } from '@/components/dataset-state';
 import { requireStudent } from '@/lib/guard';
 import { campusName, loadRankingDataset } from '@/lib/dataset';
 import { computeStats, monthKey, shiftMonth } from '@/lib/stats';
-import { avatarReferencesOrEmpty } from '@/lib/avatars/storage';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { CareerSection, CareerSkeleton } from './career';
@@ -69,7 +68,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
 
   const latest = stats.latest.filter((student) => !student.anonymous);
   const pictured = [...stats.leaders.map((leader) => leader.student), ...latest].filter((student) => student.id > 0);
-  const avatars = photoReferences(pictured, await avatarReferencesOrEmpty([...new Set(pictured.map((student) => student.id))]));
+  const avatars = photoReferences(pictured);
   const delta = stats.blackholed30 - stats.previous30;
   const currentMonth = monthKey(now), month = stats.calendar.month;
   const scope = campusId ? names[campusId] : 'All campuses';
