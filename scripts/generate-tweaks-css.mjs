@@ -48,7 +48,9 @@ postcss.parse(source).walkRules((rule) => {
     if (isBackground && value === '#cafbd2') out.accent.push({ media, selectors, decl: 'background:var(--tw-accent)!important' });
     if (decl.prop === 'color' && value === '#cafbd2') out.accent.push({ media, selectors, decl: 'color:var(--tw-accent)!important' });
     const radius = /^(\d+)px$/.exec(value);
-    if (decl.prop === 'border-radius') out.radius.push({ media, selectors, decl: radius && +radius[1] >= 12 && +radius[1] <= 40 ? `border-radius:calc(${radius[1]}px * var(--tw-r))!important` : `border-radius:${decl.value}!important` });
+    // Pills follow --tw-pill (a real radius on Sharp and Soft, a full pill otherwise); 5-40px corners follow the scale; 2-4px details stay.
+    const pill = decl.prop === 'border-radius' && radius && +radius[1] >= 99;
+    if (decl.prop === 'border-radius') out.radius.push({ media, selectors, decl: pill ? 'border-radius:var(--tw-pill,999px)!important' : radius && +radius[1] >= 5 && +radius[1] <= 40 ? `border-radius:calc(${radius[1]}px * var(--tw-r))!important` : `border-radius:${decl.value}!important` });
   });
 });
 
@@ -79,6 +81,7 @@ html[data-tw-accent]{--mint:var(--tw-accent);--primary:var(--tw-accent)}
 ${emit('data-tw-surface', out.surface)}
 ${emit('data-tw-accent', out.accent)}
 ${emit('data-tw-radius', out.radius)}
+html[data-tw-radius] :is([data-slot=button],[data-slot=badge]).rounded-full{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-light]{color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light] body{color:#141414}
 html[data-tw-light] .nav .brand img{filter:brightness(0);opacity:.88}

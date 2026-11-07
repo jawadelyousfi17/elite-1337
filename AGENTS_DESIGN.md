@@ -71,7 +71,7 @@ Look here before writing new markup or CSS.
 ## Page patterns
 
 - **Leaderboard:** podium for the top three, then rows (`RankRow`) with rank on the right; filters by campus, cohort, status (including All) and search. Anonymized students show as "Anonymous student" with only their place.
-- **Stats and Corrections:** one panel per topic; corrections are grouped by team, with tabs for waiting, validated and locked teams, scoped to the selected campus.
+- **Stats and Corrections:** one panel per topic; corrections are grouped by team, with tabs Waiting, Validated, Failed and Locked (short labels, no "Recently"), a day switch under the count line, scoped to the selected campus.
 - **XP calculator:** a hero card (level now → level after, rank, total XP gained), an "Up next" list, a level path, and one mark card per project showing only the changing "+N XP". Coalition bonus is a switch with a percentage.
 - **Student cards** open in a new tab with a hover arrow; profile photos come from the signed proxy.
 - **Landing, 404 and removed pages:** dark, one clear action each, with the Kiwi or horse art.

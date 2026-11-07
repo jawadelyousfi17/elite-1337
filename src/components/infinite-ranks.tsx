@@ -16,7 +16,7 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
 
   // "Back to top" appears once the list has carried the student well down the page.
   useEffect(() => {
-    const update = () => setFar(window.scrollY > window.innerHeight * 1.5);
+    const update = () => setFar(window.scrollY > 320);
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);

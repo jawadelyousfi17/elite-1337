@@ -12,6 +12,7 @@ import { computeStats, monthKey, shiftMonth } from '@/lib/stats';
 import { photoReferences } from '@/lib/avatars/intra-photo';
 import { cn } from '@/lib/utils';
 import { CareerSection, CareerSkeleton } from './career';
+import { DifficultySection, DifficultySkeleton } from './difficulty';
 import { ReturnsSection, ReturnsSkeleton, StrictCorrectors, StrictCorrectorsSkeleton } from './returns';
 import type { CorrectorWindow } from '@/lib/correctors';
 import { ValidatedCampusesSkeleton, ValidatedCampusesWidget, ValidatedSkeleton, ValidatedWidget } from './validated';
@@ -21,7 +22,7 @@ export const metadata = { title: 'Stats' };
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const params = z.object({ campus: z.coerce.number().int().positive().optional(), month: z.string().regex(/^\d{4}-\d{2}$/).optional(), vw: z.enum(['week', 'month']).optional().catch(undefined), rw: z.enum(['week', 'month']).optional().catch(undefined), cw: z.enum(['30', '60', '90']).optional() });
+const params = z.object({ campus: z.coerce.number().int().positive().optional(), month: z.string().regex(/^\d{4}-\d{2}$/).optional(), vw: z.enum(['week', 'month']).optional().catch(undefined), rw: z.enum(['week', 'month']).optional().catch(undefined), dw: z.enum(['week', 'month']).optional().catch(undefined), cw: z.enum(['30', '60', '90']).optional() });
 const fmt = (value: number) => value.toLocaleString('en-US');
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
 const longMonth = (key: string) => new Date(`${key}-01T00:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' });
@@ -53,7 +54,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
   const now = Date.now();
   const stats = computeStats(dataset, { campusId, month: query.month, now });
   const names = Object.fromEntries(dataset.campuses.map((campus) => [campus.id, campus.name]));
-  const href = (change: { campus?: number | null; month?: string | null; vw?: string | null; rw?: string | null; cw?: string | null }) => {
+  const href = (change: { campus?: number | null; month?: string | null; vw?: string | null; rw?: string | null; dw?: string | null; cw?: string | null }) => {
     const next = new URLSearchParams();
     const campus = change.campus === undefined ? campusId : change.campus, month = change.month === undefined ? query.month : change.month;
     if (campus) next.set('campus', String(campus));
@@ -62,6 +63,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
     if (vw) next.set('vw', vw);
     const rw = change.rw === undefined ? query.rw : change.rw;
     if (rw) next.set('rw', rw);
+    const dw = change.dw === undefined ? query.dw : change.dw;
+    if (dw) next.set('dw', dw);
     const cw = change.cw === undefined ? query.cw : change.cw;
     if (cw) next.set('cw', cw);
     return next.size ? `/stats?${next}` : '/stats';
@@ -108,6 +111,8 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           <Card title="Blackholes per week" note="Last 26 weeks"><WeeklyArea weeks={stats.weekly}/></Card>
           <Card title="Monthly trend" note="Last 7 months"><MonthBars months={stats.monthly} campuses={!campusId ? dataset.campuses : undefined}/></Card>
         </div>
+
+        <Suspense fallback={<DifficultySkeleton/>}><DifficultySection campusId={campusId} campuses={dataset.campuses} scope={scope} window={query.dw ?? 'week'} hrefFor={{ week: href({ dw: null }), month: href({ dw: 'month' }) }}/></Suspense>
 
         <div className="st-row">
           <Card title="Who's still in" note="By cohort and campus"><SurvivalHeatmap {...stats.matrix} names={names} focus={campusId}/></Card>

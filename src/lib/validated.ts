@@ -12,7 +12,7 @@ export type ValidatedCounts = Record<ValidatedWindow, number>;
 export const WINDOW_DAYS: Record<ValidatedWindow, number> = { week: 7, month: 30 };
 
 /** One finished evaluation of a Common Core project attempt: validated, or returned so the student retries. */
-export type MarkedProject = { id: string; campusId: number; at: string; project: string; validated: boolean; internship: boolean };
+export type MarkedProject = { id: string; campusId: number; at: string; project: string; validated: boolean; internship: boolean; team?: number };
 
 /** Work Experience (internship) steps are graded by companies, not peers, so they stay out of the return rate. */
 const isInternship = (slug: string) => slug.startsWith('work-experience');
@@ -23,15 +23,20 @@ const isInternship = (slug: string) => slug.startsWith('work-experience');
  * company evaluations are graded long after their team closed. Earlier attempts use their own closed_at.
  * Enrollments listed at two campuses are kept once.
  */
-export function pickMarked(sources: { campusId: number; rows: Pick<ApiProjectUser, 'id' | 'validated?' | 'marked_at' | 'cursus_ids' | 'project' | 'teams'>[] }[], curriculum: number): MarkedProject[] {
-  const seen = new Set<number>(), out: MarkedProject[] = [];
+export function pickMarked(sources: { campusId: number; rows: (Pick<ApiProjectUser, 'id' | 'validated?' | 'marked_at' | 'cursus_ids' | 'project' | 'teams'> & { current_team_id?: number | null })[] }[], curriculum: number): MarkedProject[] {
+  const seen = new Set<number>(), teamsSeen = new Set<number>(), out: MarkedProject[] = [];
+  // A group project has one row per member but is one attempt: later rows of the same team are skipped.
+  const add = (record: MarkedProject) => {
+    if (record.team !== undefined) { if (teamsSeen.has(record.team)) return; teamsSeen.add(record.team); }
+    out.push(record);
+  };
   for (const { campusId, rows } of sources) for (const row of rows) {
     if (!row.cursus_ids.includes(curriculum) || seen.has(row.id)) continue;
     seen.add(row.id);
     const earlier = row.teams.filter((team) => team.status === 'finished' && team.closed_at && typeof team['validated?'] === 'boolean').sort((a, b) => a.id - b.id).slice(0, -1);
     const internship = isInternship(row.project.slug);
-    for (const team of earlier) out.push({ id: `${row.id}:${team.id}`, campusId, at: team.closed_at!, project: row.project.name, validated: team['validated?']!, internship });
-    if (row.marked_at && typeof row['validated?'] === 'boolean') out.push({ id: String(row.id), campusId, at: row.marked_at, project: row.project.name, validated: row['validated?'], internship });
+    for (const team of earlier) add({ id: `${row.id}:${team.id}`, campusId, at: team.closed_at!, project: row.project.name, validated: team['validated?']!, internship, team: team.id });
+    if (row.marked_at && typeof row['validated?'] === 'boolean') add({ id: String(row.id), campusId, at: row.marked_at, project: row.project.name, validated: row['validated?'], internship, team: row.current_team_id ?? undefined });
   }
   return out;
 }
@@ -62,6 +67,27 @@ export function returnRates(records: MarkedProject[], campusId?: number, now = D
     return { marked: graded.length, returned, rate: graded.length ? returned / graded.length : null };
   };
   return { week: within('week'), month: within('month') };
+}
+
+type Tally = { attempts: number; returned: number };
+/** `byCampus` holds every campus with attempts on the project, so its returns split fully across campuses. */
+export type ProjectDifficulty = { project: string; attempts: number; returned: number; rate: number; byCampus: Record<number, Tally> };
+
+/** Projects ranked by how often an evaluated attempt was returned, hardest first; projects with too few attempts are left out as noise. */
+export function projectDifficulty(records: MarkedProject[], window: ValidatedWindow, campusId?: number, min = 10, limit = 8, now = Date.now()): ProjectDifficulty[] {
+  const totals = new Map<string, Tally & { campuses: Map<number, Tally> }>();
+  for (const record of records) {
+    if (record.internship || (campusId && record.campusId !== campusId) || !inWindow(record, WINDOW_DAYS[window], now)) continue;
+    const total = totals.get(record.project) ?? { attempts: 0, returned: 0, campuses: new Map<number, Tally>() };
+    const campus = total.campuses.get(record.campusId) ?? { attempts: 0, returned: 0 };
+    total.attempts++; campus.attempts++;
+    if (!record.validated) { total.returned++; campus.returned++; }
+    total.campuses.set(record.campusId, campus);
+    totals.set(record.project, total);
+  }
+  return [...totals].filter(([, total]) => total.attempts >= min).map(([project, total]) => ({
+    project, attempts: total.attempts, returned: total.returned, rate: total.returned / total.attempts, byCampus: Object.fromEntries(total.campuses),
+  })).sort((a, b) => b.rate - a.rate || b.attempts - a.attempts || a.project.localeCompare(b.project)).slice(0, limit);
 }
 
 /**

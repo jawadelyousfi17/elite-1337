@@ -4,18 +4,19 @@ import { ArrowRight, Funnel, Search, X } from '@/components/icons';
 import { CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { FilterRoot } from '@/components/filter-root';
 
-export function FilterShell({ action, hidden, q, placeholder, clearHref, activeCount, defaultOpen, children }: {
-  action: string; hidden: Record<string, string>; q?: string; placeholder: string; clearHref: string; activeCount: number; defaultOpen: boolean; children: ReactNode;
+/** `field`: a custom search box (for example one with suggestions) used in place of the plain form. */
+export function FilterShell({ action, hidden, q, placeholder, clearHref, activeCount, defaultOpen, field, children }: {
+  action: string; hidden: Record<string, string>; q?: string; placeholder: string; clearHref: string; activeCount: number; defaultOpen: boolean; field?: ReactNode; children: ReactNode;
 }) {
   return <FilterRoot defaultOpen={defaultOpen} className="pl-filterbox">
     <div className="pl-search-row">
-      <form className="pl-searchbar" action={action} role="search">
+      {field ?? <form className="pl-searchbar" action={action} role="search">
         {Object.entries(hidden).map(([name, value]) => <input key={name} type="hidden" name={name} value={value}/>)}
         <Search size={20} className="pl-searchbar-icon"/>
         <input name="q" placeholder={placeholder} defaultValue={q ?? ''} maxLength={40} aria-label={placeholder} autoComplete="off"/>
         {q && <Link className="pl-searchbar-clear" href={clearHref} aria-label="Clear search"><X size={16}/></Link>}
         <button type="submit" className="pl-searchbar-go" aria-label="Search"><ArrowRight size={20} weight="bold"/></button>
-      </form>
+      </form>}
       <CollapsibleTrigger className="pl-filter-btn" aria-label={`Filters${activeCount ? `, ${activeCount} active` : ''}`}>
         <Funnel size={22}/>{activeCount > 0 && <span className="pl-filter-badge">{activeCount}</span>}
       </CollapsibleTrigger>

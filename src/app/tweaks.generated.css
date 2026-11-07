@@ -258,6 +258,9 @@ html[data-tw-surface]:not(:has(.landing)) .st-period a[aria-current]{background:
 html[data-tw-surface]:not(:has(.landing)) .st-info:is(:hover,:focus-visible){background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .st-info-tip{background:#f9f9f9!important}
 html[data-tw-surface]:not(:has(.landing)) .st-info-tip span::before{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .st-hb-plot{background:linear-gradient(#ffffff1c,#ffffff1c) left/1px 100% no-repeat,linear-gradient(#ffffff10,#ffffff10) center/1px 100% no-repeat,linear-gradient(#ffffff10,#ffffff10) right/1px 100% no-repeat!important}
+html[data-tw-surface]:not(:has(.landing)) .st-hb-bar{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .st-hb.is-campus .st-hb-bar{background:transparent!important}
 html[data-tw-surface]:not(:has(.landing)) .st-rbars-legend i{background:repeating-linear-gradient(135deg,#ff8a8f80 0 5px,#ff8a8f40 5px 10px)!important}
 html[data-tw-surface]:not(:has(.landing)) .sv-pill{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .sv-overlay{background:#000000a6!important}
@@ -384,8 +387,8 @@ html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-
 html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-switch{background:#edc5f9!important}
 html[data-tw-surface]:not(:has(.landing)) :is(.ex-bar,.ex-legend) .is-none{background:#3a3a3a!important}
 html[data-tw-surface]:not(:has(.landing)) .ex-table-wrap{background:var(--tw-card)!important}
-html[data-tw-surface]:not(:has(.landing)) .pl-top{background:var(--tw-raise)!important}
-html[data-tw-surface]:not(:has(.landing)) .pl-top:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-top{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-top:hover{background:#b9f5c4!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-side>.xp-hero{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-hero-arrow{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-hero-gain{background:#cafbd2!important}
@@ -436,6 +439,8 @@ html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked]{backgro
 html[data-tw-surface]:not(:has(.landing)) .xp-switch-thumb{background:#f2f2f2!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked] .xp-switch-thumb{background:#0a2a12!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-bonus-field input{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .pc-suggest{background:#1a1a1a!important}
+html[data-tw-surface]:not(:has(.landing)) .pc-suggest-row[data-active]{background:var(--tw-hover)!important}
 html[data-tw-surface]:not(:has(.landing)) .menu-new{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .as-online i{background:#8fd99f!important}
 html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-allowed{background:#8fd99f!important}
@@ -476,6 +481,7 @@ html[data-tw-accent] .pl-more-dots i{background:var(--tw-accent)!important}
 html[data-tw-accent] .fa-tab.is-picked{background:var(--tw-accent)!important}
 html[data-tw-accent] :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:var(--tw-accent)!important}
 html[data-tw-accent] .ex-table a:hover{color:var(--tw-accent)!important}
+html[data-tw-accent] .pl-top{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-to strong{color:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-arrow{color:var(--tw-accent)!important}
 html[data-tw-accent] .xp-hero-total b{color:var(--tw-accent)!important}
@@ -492,106 +498,106 @@ html[data-tw-accent] .ann-count{background:var(--tw-accent)!important}
 html[data-tw-accent] .ann-cta{background:var(--tw-accent)!important}
 html[data-tw-accent] .xp-viewing b{color:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
-html[data-tw-radius] .btn{border-radius:10px!important}
-html[data-tw-radius] .input{border-radius:10px!important}
-html[data-tw-radius] .avatar{border-radius:11px!important}
-html[data-tw-radius] .chip{border-radius:999px!important}
-html[data-tw-radius] .preview-line{border-radius:5px!important}
+html[data-tw-radius] .btn{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .input{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .avatar{border-radius:calc(11px * var(--tw-r))!important}
+html[data-tw-radius] .chip{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .preview-line{border-radius:calc(5px * var(--tw-r))!important}
 html[data-tw-radius] .leaderboard-summary{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .leaderboard-summary::after{border-radius:50%!important}
-html[data-tw-radius] .rank-number{border-radius:9px!important}
-html[data-tw-radius] .student-name em{border-radius:5px!important}
-html[data-tw-radius] .year-tag{border-radius:7px!important}
-html[data-tw-radius] .profile-arrow{border-radius:7px!important}
-html[data-tw-radius] .row-actions a{border-radius:7px!important}
-html[data-tw-radius] .page-button{border-radius:8px!important}
+html[data-tw-radius] .rank-number{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .student-name em{border-radius:calc(5px * var(--tw-r))!important}
+html[data-tw-radius] .year-tag{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] .profile-arrow{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] .row-actions a{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] .page-button{border-radius:calc(8px * var(--tw-r))!important}
 @media (max-width:700px){html[data-tw-radius] .mobile-rank-card{border-radius:calc(13px * var(--tw-r))!important}}
-@media (max-width:700px){html[data-tw-radius] .mobile-rank-actions a{border-radius:8px!important}}
-html[data-tw-radius] .dashboard-extras span{border-radius:10px!important}
-html[data-tw-radius] .resource-grid>div{border-radius:10px!important}
-html[data-tw-radius] .home-kicker{border-radius:999px!important}
+@media (max-width:700px){html[data-tw-radius] .mobile-rank-actions a{border-radius:calc(8px * var(--tw-r))!important}}
+html[data-tw-radius] .dashboard-extras span{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .resource-grid>div{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .home-kicker{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .home-kicker>span{border-radius:50%!important}
-html[data-tw-radius] .home-highlights span{border-radius:999px!important}
+html[data-tw-radius] .home-highlights span{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .home-orbit{border-radius:50%!important}
-html[data-tw-radius] .showcase-icon{border-radius:10px!important}
-html[data-tw-radius] .showcase-scope{border-radius:10px!important}
-html[data-tw-radius] .showcase-avatar{border-radius:9px!important}
-html[data-tw-radius] .showcase-lines i{border-radius:5px!important}
-html[data-tw-radius] .showcase-level{border-radius:5px!important}
+html[data-tw-radius] .showcase-icon{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .showcase-scope{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .showcase-avatar{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .showcase-lines i{border-radius:calc(5px * var(--tw-r))!important}
+html[data-tw-radius] .showcase-level{border-radius:calc(5px * var(--tw-r))!important}
 html[data-tw-radius] .logtime-today,html[data-tw-radius] .logtime-goal{border-radius:calc(13px * var(--tw-r))!important}
-html[data-tw-radius] .logtime-track{border-radius:999px!important}
-html[data-tw-radius] .logtime-track>span{border-radius:999px!important}
-html[data-tw-radius] .outcome-badge{border-radius:999px!important}
-html[data-tw-radius] .loading-line{border-radius:9px!important}
-html[data-tw-radius] .cluster-intro-badge{border-radius:999px!important}
+html[data-tw-radius] .logtime-track{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .logtime-track>span{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .outcome-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .loading-line{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-intro-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .cluster-refresh-dot{border-radius:50%!important}
-html[data-tw-radius] .cluster-icon-button{border-radius:9px!important}
-html[data-tw-radius] .cluster-count{border-radius:9px!important}
-html[data-tw-radius] .cluster-notice{border-radius:10px!important}
+html[data-tw-radius] .cluster-icon-button{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-count{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-notice{border-radius:calc(10px * var(--tw-r))!important}
 html[data-tw-radius] .cluster-legend i{border-radius:50%!important}
-html[data-tw-radius] .cluster-seat{border-radius:9px!important}
-html[data-tw-radius] .cluster-stats>div{border-radius:8px!important}
-html[data-tw-radius] .cluster-search-results button{border-radius:8px!important}
-html[data-tw-radius] .cluster-state-pill{border-radius:999px!important}
+html[data-tw-radius] .cluster-seat{border-radius:calc(9px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-stats>div{border-radius:calc(8px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-search-results button{border-radius:calc(8px * var(--tw-r))!important}
+html[data-tw-radius] .cluster-state-pill{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .cluster-floor-shell{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .cluster-zoom button{border-radius:7px!important}
-html[data-tw-radius] ::-webkit-scrollbar-thumb{border-radius:9px!important}
+html[data-tw-radius] .cluster-zoom button{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] ::-webkit-scrollbar-thumb{border-radius:calc(9px * var(--tw-r))!important}
 html[data-tw-radius] .panel{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:calc(22px * var(--tw-r))!important}
 html[data-tw-radius] .input{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .avatar{border-radius:50%!important}
 html[data-tw-radius] .navlinks a{border-radius:calc(22px * var(--tw-r))!important}
-html[data-tw-radius] .nav-logout button{border-radius:999px!important}
-html[data-tw-radius] .nav-rank{border-radius:999px!important}
-html[data-tw-radius] .nav-rank-value{border-radius:999px!important}
+html[data-tw-radius] .nav-logout button{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .nav-rank{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .nav-rank-value{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .nav-rank-pop{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .pl-dot{border-radius:50%!important}
 html[data-tw-radius] .pl-winner-portrait{border-radius:50%!important}
 html[data-tw-radius] .pl-pill{border-radius:calc(30px * var(--tw-r))!important}
-html[data-tw-radius] .pl-scope{border-radius:999px!important}
+html[data-tw-radius] .pl-scope{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pl-filters{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .pl-filters-trigger{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .pl-control{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .pl-row{border-radius:calc(23px * var(--tw-r))!important}
-html[data-tw-radius] .pl-copy strong em{border-radius:999px!important}
-html[data-tw-radius] .pl-rank{border-radius:999px!important}
+html[data-tw-radius] .pl-copy strong em{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-rank{border-radius:var(--tw-pill,999px)!important}
 @media (max-width:700px){html[data-tw-radius] .bottom-nav{border-radius:calc(30px * var(--tw-r))!important}}
 @media (max-width:700px){html[data-tw-radius] .bottom-nav a{border-radius:calc(25px * var(--tw-r))!important}}
 @media (max-width:700px){html[data-tw-radius] .pl-row{border-radius:calc(21px * var(--tw-r))!important}}
-html[data-tw-radius] .pl-searchbar{border-radius:999px!important}
+html[data-tw-radius] .pl-searchbar{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pl-searchbar-clear{border-radius:50%!important}
 html[data-tw-radius] .pl-searchbar-go{border-radius:50%!important}
-html[data-tw-radius] .pl-token{border-radius:999px!important}
-html[data-tw-radius] .pl-token-reset{border-radius:999px!important}
+html[data-tw-radius] .pl-token{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-token-reset{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pl-more{border-radius:calc(28px * var(--tw-r))!important}
 html[data-tw-radius] .pl-more-trigger{border-radius:calc(22px * var(--tw-r))!important}
-html[data-tw-radius] .pl-more-count{border-radius:999px!important}
+html[data-tw-radius] .pl-more-count{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .scroll-row-btn{border-radius:50%!important}
-html[data-tw-radius] .pl-chip{border-radius:999px!important}
+html[data-tw-radius] .pl-chip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .nav-rank-caret{border-radius:50%!important}
 html[data-tw-radius] .pl-runner-portrait{border-radius:50%!important}
 html[data-tw-radius] .pl-runner-rank{border-radius:50%!important}
-html[data-tw-radius] .pl-runner-level{border-radius:999px!important}
-html[data-tw-radius] .pl-bh{border-radius:999px!important}
-html[data-tw-radius] .pc-count{border-radius:999px!important}
-html[data-tw-radius] .pc-project b{border-radius:999px!important}
-html[data-tw-radius] .pc-team-more{border-radius:999px!important}
+html[data-tw-radius] .pl-runner-level{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-bh{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pc-count{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pc-project b{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pc-team-more{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pc-team-login:focus-visible{border-radius:4px!important}
 html[data-tw-radius] .pc-team-link{border-radius:inherit!important}
 html[data-tw-radius] .pl-filter-btn{border-radius:50%!important}
-html[data-tw-radius] .pl-filter-badge{border-radius:999px!important}
+html[data-tw-radius] .pl-filter-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pl-groups{border-radius:calc(28px * var(--tw-r))!important}
 html[data-tw-radius] .pc-project-row{border-radius:calc(16px * var(--tw-r))!important}
-html[data-tw-radius] .pc-project-row b{border-radius:999px!important}
+html[data-tw-radius] .pc-project-row b{border-radius:var(--tw-pill,999px)!important}
 @media (max-width:1023px){html[data-tw-radius] .pl-panel{border-radius:calc(30px * var(--tw-r))!important}}
 html[data-tw-radius] .pc-loader{border-radius:calc(24px * var(--tw-r))!important}
-html[data-tw-radius] .pc-loader-bar{border-radius:999px!important}
-html[data-tw-radius] .pc-loader-bar span{border-radius:999px!important}
+html[data-tw-radius] .pc-loader-bar{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pc-loader-bar span{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pc-skeleton{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .pc-skeleton i{border-radius:50%!important}
-html[data-tw-radius] .pc-skeleton b{border-radius:7px!important}
-html[data-tw-radius] .pc-skeleton em{border-radius:6px!important}
-html[data-tw-radius] .pc-skeleton u{border-radius:999px!important}
+html[data-tw-radius] .pc-skeleton b{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] .pc-skeleton em{border-radius:calc(6px * var(--tw-r))!important}
+html[data-tw-radius] .pc-skeleton u{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .sk{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .sk-title{border-radius:calc(12px * var(--tw-r))!important}
 html[data-tw-radius] .sk-race{border-radius:calc(28px * var(--tw-r))!important}
@@ -599,22 +605,22 @@ html[data-tw-radius] .sk-stat{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .sk-kpi{border-radius:calc(26px * var(--tw-r))!important}
 html[data-tw-radius] .sk-offer{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .sk-avatar{border-radius:50%!important}
-html[data-tw-radius] .sk-kpi::before,html[data-tw-radius] .sk-chart::before,html[data-tw-radius] .sk-side::before,html[data-tw-radius] .sk-offer::before,html[data-tw-radius] .sk-stat::before{border-radius:7px!important}
-html[data-tw-radius] .sk-kpi::after,html[data-tw-radius] .sk-offer::after{border-radius:9px!important}
+html[data-tw-radius] .sk-kpi::before,html[data-tw-radius] .sk-chart::before,html[data-tw-radius] .sk-side::before,html[data-tw-radius] .sk-offer::before,html[data-tw-radius] .sk-stat::before{border-radius:calc(7px * var(--tw-r))!important}
+html[data-tw-radius] .sk-kpi::after,html[data-tw-radius] .sk-offer::after{border-radius:calc(9px * var(--tw-r))!important}
 @media (max-width:1023px){html[data-tw-radius] .bottom-nav{border-radius:calc(30px * var(--tw-r))!important}}
 @media (max-width:1023px){html[data-tw-radius] .bottom-nav a{border-radius:calc(25px * var(--tw-r))!important}}
 html[data-tw-radius] .creator-head img{border-radius:50%!important}
-html[data-tw-radius] .creator-tags li{border-radius:999px!important}
+html[data-tw-radius] .creator-tags li{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .creator-links a{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .pl-ext{border-radius:50%!important}
 @media (max-width:1023px){html[data-tw-radius] .pl-panel-close{border-radius:50%!important}}
-html[data-tw-radius] .st-seg{border-radius:999px!important}
-html[data-tw-radius] .st-seg a{border-radius:999px!important}
+html[data-tw-radius] .st-seg{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .st-seg a{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .st-seg a i{border-radius:50%!important}
 html[data-tw-radius] .st-card{border-radius:calc(28px * var(--tw-r))!important}
-html[data-tw-radius] .st-note-chip{border-radius:999px!important}
+html[data-tw-radius] .st-note-chip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .st-leaders a{border-radius:calc(18px * var(--tw-r))!important}
-html[data-tw-radius] .st-year{border-radius:9px!important}
+html[data-tw-radius] .st-year{border-radius:calc(9px * var(--tw-r))!important}
 html[data-tw-radius] .st-month-nav a{border-radius:50%!important}
 html[data-tw-radius] .st-feed a{border-radius:calc(16px * var(--tw-r))!important}
 html[data-tw-radius] .st-feed-avatar{border-radius:50%!important}
@@ -632,56 +638,59 @@ html[data-tw-radius] .st-enlarge{border-radius:50%!important}
 html[data-tw-radius] .tw-trigger{border-radius:50%!important}
 html[data-tw-radius] .tw-dot{border-radius:50%!important}
 html[data-tw-radius] .tw-panel{border-radius:calc(24px * var(--tw-r))!important}
-html[data-tw-radius] .tw-badge{border-radius:999px!important}
+html[data-tw-radius] .tw-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .tw-close{border-radius:50%!important}
 html[data-tw-radius] .tw-surfaces button,html[data-tw-radius] .tw-radii button{border-radius:calc(14px * var(--tw-r))!important}
-html[data-tw-radius] .tw-surface-preview{border-radius:9px!important}
+html[data-tw-radius] .tw-surface-preview{border-radius:calc(9px * var(--tw-r))!important}
 html[data-tw-radius] .tw-surface-preview i{border-radius:4px!important}
 html[data-tw-radius] .tw-accents button{border-radius:50%!important}
-html[data-tw-radius] .tw-reset{border-radius:999px!important}
-html[data-tw-radius] .gh-stars-count{border-radius:999px!important}
-html[data-tw-radius] .gh-stars.is-nav{border-radius:999px!important}
-html[data-tw-radius] .lb-skeleton-search{border-radius:999px!important}
-html[data-tw-radius] .nav-rank-logout{border-radius:999px!important}
-html[data-tw-radius] .theme-toggle{border-radius:999px!important}
+html[data-tw-radius] .tw-reset{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .gh-stars-count{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .gh-stars.is-nav{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .lb-skeleton-search{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .nav-rank-logout{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .theme-toggle{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .st-rbar-name i{border-radius:50%!important}
 html[data-tw-radius] .st-rbar-track{border-radius:4px!important}
 html[data-tw-radius] .st-rbar-track em{border-radius:4px!important}
 html[data-tw-radius] .st-rbars-avg em{border-radius:4px!important}
 html[data-tw-radius] .st-correctors-list a{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .st-correctors-rank{border-radius:999px!important}
+html[data-tw-radius] .st-correctors-rank{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .st-correctors-bar{border-radius:2px!important}
 html[data-tw-radius] .st-correctors-bar em{border-radius:2px!important}
-html[data-tw-radius] .st-period{border-radius:999px!important}
-html[data-tw-radius] .st-period>*{border-radius:999px!important}
+html[data-tw-radius] .st-period{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .st-period>*{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .st-correctors-campus{border-radius:50%!important}
 html[data-tw-radius] .st-info{border-radius:50%!important}
 html[data-tw-radius] .st-info-tip{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .st-info-tip span::before{border-radius:50%!important}
+html[data-tw-radius] [data-tw-radius=round] .st .st-card{border-radius:calc(23px * .4)!important}
+html[data-tw-radius] [data-tw-radius=round] .st .st-kpi{border-radius:calc(26px * .4)!important}
+html[data-tw-radius] .st-hb-bar{border-radius:0 10px 10px 0!important}
 html[data-tw-radius] .st-rbars-legend i{border-radius:3px!important}
-html[data-tw-radius] .sv-pill{border-radius:999px!important}
+html[data-tw-radius] .sv-pill{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .sv-dialog{border-radius:calc(26px * var(--tw-r))!important}
 html[data-tw-radius] .sv-close{border-radius:50%!important}
 html[data-tw-radius] .sv-icon{border-radius:calc(16px * var(--tw-r))!important}
 html[data-tw-radius] .sv-option{border-radius:calc(14px * var(--tw-r))!important}
-html[data-tw-radius] .sv-primary,html[data-tw-radius] .sv-secondary{border-radius:999px!important}
+html[data-tw-radius] .sv-primary,html[data-tw-radius] .sv-secondary{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .kiwi-note img{border-radius:50%!important}
 html[data-tw-radius] .of-card{border-radius:calc(24px * var(--tw-r))!important}
-html[data-tw-radius] .of-value{border-radius:999px!important}
-html[data-tw-radius] .of-start{border-radius:999px!important}
+html[data-tw-radius] .of-value{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .of-start{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .of-note{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .of-cta{border-radius:999px!important}
-html[data-tw-radius] .of-card-req{border-radius:999px!important}
-html[data-tw-radius] .pl-reverse{border-radius:999px!important}
+html[data-tw-radius] .of-cta{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .of-card-req{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-reverse{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race{border-radius:calc(28px * var(--tw-r))!important}
-html[data-tw-radius] .race-gap{border-radius:999px!important}
-html[data-tw-radius] .race-tries i{border-radius:999px!important}
+html[data-tw-radius] .race-gap{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-tries i{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-runner img{border-radius:50%!important}
 html[data-tw-radius] .race-bonk{border-radius:50%!important}
-html[data-tw-radius] .race-here,html[data-tw-radius] .race-fell{border-radius:999px!important}
-html[data-tw-radius] .race-play{border-radius:999px!important}
-html[data-tw-radius] .race-speed{border-radius:999px!important}
-html[data-tw-radius] .race-speed button{border-radius:999px!important}
+html[data-tw-radius] .race-here,html[data-tw-radius] .race-fell{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-play{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-speed{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-speed button{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-stats>div{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .sp-avatar{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .sp-stack>.xp-hero{border-radius:calc(24px * var(--tw-r))!important}
@@ -689,103 +698,106 @@ html[data-tw-radius] .sp-skel{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .sp-skel.is-head{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .race-empty{border-radius:calc(28px * var(--tw-r))!important}
 html[data-tw-radius] .pl-row-link::after{border-radius:inherit!important}
-html[data-tw-radius] .race-vs{border-radius:999px!important}
-html[data-tw-radius] .race-vs button{border-radius:999px!important}
-html[data-tw-radius] .race-intra{border-radius:999px!important}
+html[data-tw-radius] .race-vs{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-vs button{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-intra{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-notice{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .race-versus-note a{border-radius:50%!important}
 html[data-tw-radius] .race-score img{border-radius:50%!important}
-html[data-tw-radius] .race-tag{border-radius:999px!important}
+html[data-tw-radius] .race-tag{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-circle-star{border-radius:50%!important}
-html[data-tw-radius] .race-circle-label{border-radius:999px!important}
+html[data-tw-radius] .race-circle-label{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-circle.is-unlocked::after{border-radius:50%!important}
 html[data-tw-radius] .race-vs-list{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .race-vs-list li{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .race-vs-list em{border-radius:999px!important}
-html[data-tw-radius] .race-scrub{border-radius:999px!important}
+html[data-tw-radius] .race-vs-list em{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-scrub{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-scrub::-webkit-slider-thumb{border-radius:50%!important}
 html[data-tw-radius] .race-scrub::-moz-range-thumb{border-radius:50%!important}
 html[data-tw-radius] .race-mark{border-radius:50%!important}
 html[data-tw-radius] .race-compare-row img{border-radius:50%!important}
-html[data-tw-radius] .race-compare-bar{border-radius:999px!important}
-html[data-tw-radius] .race-compare-bar i{border-radius:999px!important}
+html[data-tw-radius] .race-compare-bar{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .race-compare-bar i{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pr-kpis>div{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .pr-cell{border-radius:3px!important}
 html[data-tw-radius] .pr-seats i{border-radius:3px!important}
 html[data-tw-radius] .pr-seats em{border-radius:3px!important}
 @media (max-width:800px){html[data-tw-radius] .pr-cell{border-radius:2px!important}}
 html[data-tw-radius] .pr-loading-note i{border-radius:50%!important}
-html[data-tw-radius] .pr-skel{border-radius:8px!important}
+html[data-tw-radius] .pr-skel{border-radius:calc(8px * var(--tw-r))!important}
 html[data-tw-radius] .race-sound{border-radius:50%!important}
 html[data-tw-radius] .legal-toc li a{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .legal-other{border-radius:999px!important}
+html[data-tw-radius] .legal-other{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .legal-body section{border-radius:calc(22px * var(--tw-r))!important}
-@media (max-width:860px){html[data-tw-radius] .legal-toc li a{border-radius:999px!important}}
+@media (max-width:860px){html[data-tw-radius] .legal-toc li a{border-radius:var(--tw-pill,999px)!important}}
 html[data-tw-radius] .fb-field textarea{border-radius:calc(14px * var(--tw-r))!important}
-html[data-tw-radius] .fa-filter{border-radius:999px!important}
+html[data-tw-radius] .fa-filter{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .fa-item{border-radius:calc(18px * var(--tw-r))!important}
-html[data-tw-radius] .fa-kind{border-radius:999px!important}
+html[data-tw-radius] .fa-kind{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .hk-contact{border-radius:50%!important}
-html[data-tw-radius] .hk-tip{border-radius:999px!important}
-html[data-tw-radius] .hk-badge{border-radius:999px!important}
-html[data-tw-radius] .al-badge{border-radius:999px!important}
-html[data-tw-radius] .fz-badge{border-radius:999px!important}
-html[data-tw-radius] .gh-tip{border-radius:999px!important}
+html[data-tw-radius] .hk-tip{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .hk-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .al-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .fz-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .gh-tip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
-html[data-tw-radius] .dn-home{border-radius:999px!important}
+html[data-tw-radius] .dn-home{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .pl-more-dots i{border-radius:50%!important}
-html[data-tw-radius] .pl-more-retry{border-radius:999px!important}
-html[data-tw-radius] .fa-tabs{border-radius:999px!important}
-html[data-tw-radius] .fa-tab{border-radius:999px!important}
+html[data-tw-radius] .pl-more-retry{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .fa-tabs{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .fa-tab{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .ex-kpis>div{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .ex-group{border-radius:calc(18px * var(--tw-r))!important}
-html[data-tw-radius] .ex-bar{border-radius:999px!important}
+html[data-tw-radius] .ex-bar{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .ex-legend i{border-radius:3px!important}
 html[data-tw-radius] .ex-table-wrap{border-radius:calc(18px * var(--tw-r))!important}
-html[data-tw-radius] .ex-choice{border-radius:999px!important}
-html[data-tw-radius] .pl-top{border-radius:999px!important}
+html[data-tw-radius] .ex-choice{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-top{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-side>.xp-hero{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .xp-hero-arrow{border-radius:50%!important}
-html[data-tw-radius] .xp-hero-gain{border-radius:999px!important}
-html[data-tw-radius] .xp-bar{border-radius:999px!important}
+html[data-tw-radius] .xp-hero-gain{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .xp-bar{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-bar i{border-radius:inherit!important}
-html[data-tw-radius] .xp-presets button:not(.xp-remove){border-radius:999px!important}
+html[data-tw-radius] .xp-presets button:not(.xp-remove){border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-remove{border-radius:50%!important}
 html[data-tw-radius] .xp-add{border-radius:calc(16px * var(--tw-r))!important}
 html[data-tw-radius] .xp-picker{border-radius:calc(20px * var(--tw-r))!important}
-html[data-tw-radius] .xp-picker-search{border-radius:999px!important}
+html[data-tw-radius] .xp-picker-search{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-option{border-radius:calc(12px * var(--tw-r))!important}
-html[data-tw-radius] .xp-option-done{border-radius:999px!important}
+html[data-tw-radius] .xp-option-done{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-mark{border-radius:calc(20px * var(--tw-r))!important}
 html[data-tw-radius] .xp-mark-thumb{border-radius:4px!important}
-html[data-tw-radius] .xp-mark-gain{border-radius:999px!important}
+html[data-tw-radius] .xp-mark-gain{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-panel{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .xp-tabs button::after{border-radius:2px!important}
-html[data-tw-radius] .xp-tabs button:focus-visible{border-radius:10px!important}
+html[data-tw-radius] .xp-tabs button:focus-visible{border-radius:calc(10px * var(--tw-r))!important}
 html[data-tw-radius] .xp-picker-close{border-radius:50%!important}
 @media (max-width:760px){html[data-tw-radius] .xp-picker{border-radius:0!important}}
-html[data-tw-radius] .xp-chip{border-radius:999px!important}
+html[data-tw-radius] .xp-chip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-path i{border-radius:50%!important}
-html[data-tw-radius] .xp-path li.is-last strong{border-radius:999px!important}
-html[data-tw-radius] .nav-new{border-radius:999px!important}
-html[data-tw-radius] .xp-rank em{border-radius:999px!important}
+html[data-tw-radius] .xp-path li.is-last strong{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .nav-new{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .xp-rank em{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-coalition-name i{border-radius:50%!important}
-html[data-tw-radius] .xp-coalition-name span{border-radius:999px!important}
-html[data-tw-radius] .xp-switch{border-radius:999px!important}
+html[data-tw-radius] .xp-coalition-name span{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .xp-switch{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .xp-switch-thumb{border-radius:50%!important}
-html[data-tw-radius] .xp-bonus-field input{border-radius:10px!important}
-html[data-tw-radius] .menu-new{border-radius:999px!important}
+html[data-tw-radius] .xp-bonus-field input{border-radius:calc(10px * var(--tw-r))!important}
+html[data-tw-radius] .pc-suggest{border-radius:calc(24px * var(--tw-r))!important}
+html[data-tw-radius] .pc-suggest-row{border-radius:calc(16px * var(--tw-r))!important}
+html[data-tw-radius] .menu-new{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .as-online i{border-radius:50%!important}
 html[data-tw-radius] .as-stack{border-radius:4px!important}
 html[data-tw-radius] .as-stack i{border-radius:2px!important}
 html[data-tw-radius] .as-legend i{border-radius:50%!important}
 html[data-tw-radius] .as-page-track{border-radius:4px!important}
 html[data-tw-radius] .as-page-track em{border-radius:4px!important}
-html[data-tw-radius] .ann-button{border-radius:999px!important}
-html[data-tw-radius] .ann-count{border-radius:999px!important}
+html[data-tw-radius] .ann-button{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ann-count{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .ann-panel-inner{border-radius:calc(23px * var(--tw-r))!important}
-html[data-tw-radius] .ann-cta{border-radius:999px!important}
+html[data-tw-radius] .ann-cta{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-vs-spin{border-radius:50%!important}
+html[data-tw-radius] :is([data-slot=button],[data-slot=badge]).rounded-full{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
@@ -1060,6 +1072,14 @@ html[data-tw-light]:not(:has(.landing)) .st-period a:hover{background:#e2e2df!im
 html[data-tw-light]:not(:has(.landing)) .st-period a[aria-current]{background:#141414!important;color:#fff!important}
 html[data-tw-light]:not(:has(.landing)) .st-info{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .st-info:is(:hover,:focus-visible){background:#ecece9!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-name{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-name em{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-plot{background:linear-gradient(#0000001c,#0000001c) left/1px 100% no-repeat,linear-gradient(#00000010,#00000010) center/1px 100% no-repeat,linear-gradient(#00000010,#00000010) right/1px 100% no-repeat!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-row:is(:hover,:focus-visible) .st-hb-name span{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-avg{border-left:1.5px dashed #0000008c!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-ticks span{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-note{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .st-hb-note i{border-left:1.5px dashed #0000008c!important}
 html[data-tw-light]:not(:has(.landing)) .st-rbars-legend{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .sv-pill{background:#ecece9!important;border:1px solid #00000014!important}
 html[data-tw-light]:not(:has(.landing)) .sv-overlay{background:#ffffffa6!important}
@@ -1192,8 +1212,6 @@ html[data-tw-light]:not(:has(.landing)) .ex-legend{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .ex-table-wrap{background:#ffffff!important;border:1px solid #0000000d!important}
 html[data-tw-light]:not(:has(.landing)) .ex-table td{color:#141414!important;border-top:1px solid #0000000d!important}
 html[data-tw-light]:not(:has(.landing)) .ex-table a{color:#141414!important}
-html[data-tw-light]:not(:has(.landing)) .pl-top{background:#ecece9!important;color:#141414!important;border:1px solid #0000001f!important}
-html[data-tw-light]:not(:has(.landing)) .pl-top:hover{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .xp-side>.xp-hero{background:#ffffff!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-from strong{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-arrow{background:#ecece9!important}
@@ -1247,6 +1265,12 @@ html[data-tw-light]:not(:has(.landing)) .xp-coalition-name span{background:#ecec
 html[data-tw-light]:not(:has(.landing)) .xp-bonus{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .xp-switch{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .xp-bonus-field input{background:#ecece9!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest{background:#ecece9!important;box-shadow:0 24px 50px -18px #000,0 0 0 1px #00000012!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest-title{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest-row{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest-row svg{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest-row small{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .pc-suggest-row[data-active]{background:#e2e2df!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact a{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .hm-contact b{color:#3d3d3d!important}
@@ -1344,6 +1368,7 @@ html:not([data-tw-light]):not(:has(.landing)) .sc-legend li:focus-visible{box-sh
 html:not([data-tw-light]):not(:has(.landing)) .st-period a:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .st-info:focus-visible{box-shadow:0 0 0 2px #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .st-info-tip span::before{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .st-hb-bar{background:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .st-rbars-legend i{background:repeating-linear-gradient(135deg,#d9767b80 0 5px,#d9767b40 5px 10px)!important}
 html:not([data-tw-light]):not(:has(.landing)) .sv-pill button:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .sv-icon{background:#a7d8b1!important}
@@ -1407,6 +1432,7 @@ html:not([data-tw-light]):not(:has(.landing)) .fa-tab.is-picked{background:#a7d8
 html:not([data-tw-light]):not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-keep{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) :is(.ex-bar,.ex-legend,.ex-table) .is-switch{background:#c9a3d6!important}
 html:not([data-tw-light]):not(:has(.landing)) .ex-table a:hover{color:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .pl-top{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pl-top:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-hero-to strong{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-hero-arrow{color:#a7d8b1!important}
@@ -1424,6 +1450,7 @@ html:not([data-tw-light]):not(:has(.landing)) .nav-new{background:#a7d8b1!import
 html:not([data-tw-light]):not(:has(.landing)) .xp-switch[data-state=checked]{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-switch:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-bonus-field input:focus-visible{outline:2px solid #a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) [data-tw-light]{--accent-deep:color-mix(in srgb,var(--tw-accent,#a7d8b1) 52%,#0e3b1d)!important}
 html:not([data-tw-light]):not(:has(.landing)) .hm-error{color:#d9767b!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-field.is-invalid textarea{border-color:#d9767b!important;box-shadow:0 0 0 3px #d9767b33!important}
 html:not([data-tw-light]):not(:has(.landing)) .fb-reply.is-invalid{color:#d9767b!important}

@@ -18,10 +18,10 @@ export const accents = [
   { key: 'lemon', label: 'Lemon', color: '#fff3a3', swatch: '#fff3a3' },
 ] as const;
 export const radii = [
-  { key: 'sharp', label: 'Sharp', scale: .4 },
-  { key: 'soft', label: 'Soft', scale: .7 },
-  { key: 'default', label: 'Default', scale: null },
-  { key: 'round', label: 'Round', scale: 1.35 },
+  { key: 'sharp', label: 'Sharp', scale: .4, pill: '6px' },
+  { key: 'soft', label: 'Soft', scale: .7, pill: '12px' },
+  { key: 'default', label: 'Default', scale: null, pill: null },
+  { key: 'round', label: 'Round', scale: 1.35, pill: null },
 ] as const;
 
 export type Settings = { surface: string; accent: string; radius: string; lastDark?: string };
@@ -39,14 +39,15 @@ function apply(settings: Settings) {
   root.classList.toggle('dark', settings.surface !== 'light');
   const surface = surfaces.find((item) => item.key === settings.surface)?.tones;
   const accent = accents.find((item) => item.key === settings.accent)?.color;
-  const radius = radii.find((item) => item.key === settings.radius)?.scale;
+  const shape = radii.find((item) => item.key === settings.radius), radius = shape?.scale;
   if (settings.surface === 'light') root.dataset.twLight = ''; else delete root.dataset.twLight;
   if (surface) { root.dataset.twSurface = settings.surface; for (const [name, value] of Object.entries(surface)) root.style.setProperty(`--tw-${name}`, value); }
   else { delete root.dataset.twSurface; for (const name of ['bg', 'card', 'raise', 'hover']) root.style.removeProperty(`--tw-${name}`); }
   if (accent) { root.dataset.twAccent = settings.accent; root.style.setProperty('--tw-accent', accent); }
   else { delete root.dataset.twAccent; root.style.removeProperty('--tw-accent'); }
-  if (radius) { root.dataset.twRadius = settings.radius; root.style.setProperty('--tw-r', String(radius)); }
-  else { delete root.dataset.twRadius; root.style.removeProperty('--tw-r'); }
+  if (radius) { root.dataset.twRadius = settings.radius; root.style.setProperty('--tw-r', String(radius)); root.style.setProperty('--radius', `${radius}rem`); }
+  else { delete root.dataset.twRadius; root.style.removeProperty('--tw-r'); root.style.removeProperty('--radius'); }
+  if (shape?.pill) root.style.setProperty('--tw-pill', shape.pill); else root.style.removeProperty('--tw-pill');
 }
 
 function load() {

@@ -4,11 +4,11 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { NewTabMark, appHref, newTab } from '@/components/rank-row';
 import { Avatar } from '@/components/avatar';
-import { ArrowUpRight, Check, ChevronUp, Clock3, LockKeyhole } from '@/components/icons';
+import { ArrowUpRight, Check, ChevronUp, Clock3, LockKeyhole, X } from '@/components/icons';
 import { projectTone } from '@/lib/correction-teams';
 import { cn } from '@/lib/utils';
 
-export type CorrectionMember = { userId: number; login: string; mine: boolean; level: number; year: string | null; src: string | null };
+export type CorrectionMember = { userId: number; login: string; name?: string | null; mine: boolean; level: number; year: string | null; src: string | null };
 /** One project push: a single student, or every member of the team that pushed it. `steps`: the internship steps it stands for. */
 export type CorrectionRowData = { id: number; members: CorrectionMember[]; project: string; projectSlug: string; at: string; mark?: number | null; attempt?: number | null; steps?: string[] };
 /** The team's project page on 42 Intra (`id` is a member's projects_user id, which shows the team). */
@@ -29,7 +29,7 @@ function ago(iso: string, now = Date.now()) {
  * Waiting, recently validated or freshly locked team projects, 25 at a time: more appear as the end of the list comes into view. Like the
  * leaderboard, a click opens the student in the app and the hover button opens 42 Intra.
  */
-export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode: 'waiting' | 'validated' | 'locked' }) {
+export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode: 'waiting' | 'validated' | 'failed' | 'locked' }) {
   const [shown, setShown] = useState(STEP);
   const [far, setFar] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -44,7 +44,7 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
   }, [done, shown]);
 
   useEffect(() => {
-    const update = () => setFar(window.scrollY > window.innerHeight * 1.5);
+    const update = () => setFar(window.scrollY > 320);
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
@@ -67,7 +67,7 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
           <span className="pl-avatar"><Avatar login={solo.login} src={solo.src} size={45}/></span>
           <span className="pl-copy"><strong><Link href={appHref(solo.login)} {...newTab} className="pl-row-link">{solo.login}<NewTabMark/></Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
         </>}
-        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning title={row.steps?.join(', ')}>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}{row.steps?.length ? ` · ${row.steps.length} ${row.steps.length === 1 ? 'step' : 'steps'}` : ''}</>}</small></span>
+        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning title={row.steps?.join(', ')}>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'failed' ? <><X size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}{row.steps?.length ? ` · ${row.steps.length} ${row.steps.length === 1 ? 'step' : 'steps'}` : ''}</>}</small></span>
       </div>
     </li>;
     })}</ol>

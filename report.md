@@ -19,8 +19,8 @@ This replaces the older V2/V3 report, which described the first prototype (anoth
 - Rankings are cached per campus and refreshed every 30 minutes (about 53 42-API requests per refresh).
 
 ### Stats and Corrections
-- Stats: leaders, latest validations, return rate, validated projects and correctors, scoped by campus and period. Heavy slices are cached by fixed time slices (past slices for a month).
-- Corrections: tabs for waiting, recently validated (14 days) and locked teams (60 days), grouped by team, refreshed every 5 minutes with the time shown, filtered by campus, cohort, project and search.
+- Stats: leaders, latest validations, return rate, Hardest projects (return rate per project, split by campus), validated projects and correctors, scoped by campus and period. A group project counts once per team, not once per member. Heavy slices are cached by fixed time slices (past slices for a month).
+- Corrections: tabs for Waiting, Validated, Failed (graded, not yet retried) and Locked teams, grouped by team, filtered by campus, cohort, project and search. Validated and Failed offer 14, 30 and 60 days (14 by default, each window fetched only when opened); Locked offers 30 and 60 days. Waiting is a live queue refreshed every 5 minutes.
 - Pending fix: rows now show only students the rankings list at the selected campus, so students from another campus (for example Rabat under Khouribga) do not appear.
 
 ### XP calculator (`/xp`)
