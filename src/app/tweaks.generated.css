@@ -450,6 +450,7 @@ html[data-tw-surface]:not(:has(.landing)) .ann-button:hover,html[data-tw-surface
 html[data-tw-surface]:not(:has(.landing)) .ann-count{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .ann-panel-inner{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .ann-cta{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-viewing button{background:none!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -489,6 +490,7 @@ html[data-tw-accent] .xp-switch[data-state=checked]{background:var(--tw-accent)!
 html[data-tw-accent] .menu-new{background:var(--tw-accent)!important}
 html[data-tw-accent] .ann-count{background:var(--tw-accent)!important}
 html[data-tw-accent] .ann-cta{background:var(--tw-accent)!important}
+html[data-tw-accent] .xp-viewing b{color:var(--tw-accent)!important}
 html[data-tw-radius] .panel{border-radius:calc(18px * var(--tw-r))!important}
 html[data-tw-radius] .btn{border-radius:10px!important}
 html[data-tw-radius] .input{border-radius:10px!important}
@@ -783,6 +785,7 @@ html[data-tw-radius] .ann-button{border-radius:999px!important}
 html[data-tw-radius] .ann-count{border-radius:999px!important}
 html[data-tw-radius] .ann-panel-inner{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .ann-cta{border-radius:999px!important}
+html[data-tw-radius] .race-vs-spin{border-radius:50%!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
 html[data-tw-light]:not(:has(.landing)) .nav .brand img{filter:brightness(0);opacity:.88}
@@ -1265,6 +1268,9 @@ html[data-tw-light]:not(:has(.landing)) .ann-button:hover,html[data-tw-light]:no
 html[data-tw-light]:not(:has(.landing)) .ann-panel-inner{background:#ffffff!important;color:#141414!important;border:1px solid #00000014!important}
 html[data-tw-light]:not(:has(.landing)) .ann-item+.ann-item{border-top:1px solid #0000000f!important}
 html[data-tw-light]:not(:has(.landing)) .ann-body p{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .xp-viewing{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .xp-viewing button{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .race-vs-spin{border:2px solid #0000002e!important}
 html:not([data-tw-light]):not(:has(.landing)){--primary:#a7d8b1!important;--ring:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)){--mint:#a7d8b1!important;--lilac:#c9a3d6!important;--green:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .avatar{background:#cdaed8!important}
@@ -1426,6 +1432,8 @@ html:not([data-tw-light]):not(:has(.landing)) .menu-new{background:#a7d8b1!impor
 html:not([data-tw-light]):not(:has(.landing)) .ann-button:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ann-count{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ann-cta{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-viewing b{color:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .race-vs-spin{border-top-color:#a7d8b1!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */
 html[data-tw-light]:not(:has(.landing)) :is(.st-returns-lead strong,.st-correctors-score strong,.st-rbars-avg em){color:#c92a3a!important}
 html[data-tw-light]:not(:has(.landing)) .st-correctors-list li+li{border-top-color:#0000000f!important}

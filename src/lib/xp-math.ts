@@ -30,18 +30,18 @@ export type XpOption = { slug: string; name: string; xp: number; tag: string };
 /** The student's coalition as the calculator shows it; `rank` is its place on the campus. */
 export type XpCoalition = { name: string; color: string | null; rank: number; total: number };
 
-export type XpStep = { xp: number; mark: number; doneMark?: number | null };
+export type XpStep = { xp: number; mark: number; doneMark?: number | null; boost?: boolean };
 
 /**
  * Levels after each project in order. A project already validated only adds the XP of the extra mark
  * (100 → 125 adds a quarter of its XP), and a lower mark adds nothing. `bonus` is the coalition bonus in percent,
- * on top of every gain.
+ * on top of every gain; a step with `boost: false` skips it.
  */
 export function chainLevels(startLevel: number, steps: XpStep[], bonus = 0) {
   let xp = levelToXp(startLevel);
   const boost = 1 + Math.max(bonus, 0) / 100;
   return steps.map((step) => {
-    const gain = boost * Math.max(0, projectGain(step.xp, step.mark) - (step.doneMark != null ? projectGain(step.xp, step.doneMark) : 0));
+    const gain = (step.boost === false ? 1 : boost) * Math.max(0, projectGain(step.xp, step.mark) - (step.doneMark != null ? projectGain(step.xp, step.doneMark) : 0));
     xp += gain;
     return { gain, level: xpToLevel(xp) };
   });

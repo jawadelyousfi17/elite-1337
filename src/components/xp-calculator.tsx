@@ -13,7 +13,7 @@ import { XpViewTabs, type XpView } from '@/components/xp-view-tabs';
 const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
 // Intra shows levels cut to two decimals, not rounded.
 const lvl = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
-type Picked = { slug: string; mark: number };
+type Picked = { slug: string; mark: number; boost: boolean };
 
 /**
  * Levels after one or more projects, in order; projects not validated yet come first in the picker. Both lists live
@@ -38,10 +38,11 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
   const [percent, setPercent] = useState('4.2');
   const bonus = boosted ? Math.min(Math.max(Number(percent) || 0, 0), 100) : 0;
 
-  const steps = useMemo(() => chainLevels(start, picked.map((item) => ({ xp: bySlug.get(item.slug)!.xp, mark: item.mark, doneMark: done[item.slug] })), bonus), [start, picked, bySlug, done, bonus]);
+  const steps = useMemo(() => chainLevels(start, picked.map((item) => ({ xp: bySlug.get(item.slug)!.xp, mark: item.mark, doneMark: done[item.slug], boost: item.boost })), bonus), [start, picked, bySlug, done, bonus]);
   const final = steps.at(-1)?.level ?? start;
+  const toggleBoost = (slug: string) => setPicked((items) => items.map((item) => item.slug === slug ? { ...item, boost: !item.boost } : item));
   const update = (slug: string, mark: number) => setPicked((items) => items.map((item) => item.slug === slug ? { ...item, mark } : item));
-  const add = (slug: string) => setPicked((items) => [...items, { slug, mark: done[slug] !== undefined ? 125 : 100 }]);
+  const add = (slug: string) => setPicked((items) => [...items, { slug, mark: done[slug] !== undefined ? 125 : 100, boost: true }]);
   const taken = new Set(picked.map((item) => item.slug));
   // The next Common Core projects in circle order; empty once the circles are done.
   const upNext = (core ?? []).filter((project) => done[project.slug] === undefined && !other.has(project.slug) && !taken.has(project.slug)).slice(0, 4);
@@ -106,7 +107,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
       {picked.length > 0 && <ol className="xp-steps">{picked.map((item, index) => {
         const project = bySlug.get(item.slug)!, doneMark = done[item.slug];
         return <li key={item.slug} className="xp-step">
-          <MarkCard tone={TONES[index % TONES.length]} name={project.name} gain={steps[index]?.gain ?? 0} doneMark={doneMark} mark={item.mark} onChange={(value) => update(item.slug, value)} onRemove={() => setPicked((items) => items.filter((other) => other.slug !== item.slug))}/>
+          <MarkCard tone={TONES[index % TONES.length]} name={project.name} gain={steps[index]?.gain ?? 0} coalition={boosted && bonus > 0 ? { on: item.boost, percent: bonus, onToggle: () => toggleBoost(item.slug) } : null} doneMark={doneMark} mark={item.mark} onChange={(value) => update(item.slug, value)} onRemove={() => setPicked((items) => items.filter((other) => other.slug !== item.slug))}/>
         </li>;
       }).reverse()}</ol>}
     </div>
@@ -129,7 +130,7 @@ const at = (mark: number) => `${(mark - MIN_MARK) / (MAX_MARK - MIN_MARK) * 100}
  * The whole project card is the mark slider: drag anywhere on it and a soft fill follows from the left. A line marks
  * 100, so the bonus zone is visible. The buttons on top stay clickable; arrow keys work on the focused card.
  */
-function MarkCard({ tone, name, gain, doneMark, mark, onChange, onRemove }: { tone: typeof TONES[number]; name: string; gain: number; doneMark?: number; mark: number; onChange: (mark: number) => void; onRemove: () => void }) {
+function MarkCard({ tone, name, gain, coalition, doneMark, mark, onChange, onRemove }: { tone: typeof TONES[number]; name: string; gain: number; coalition: { on: boolean; percent: number; onToggle: () => void } | null; doneMark?: number; mark: number; onChange: (mark: number) => void; onRemove: () => void }) {
   // Buttons sit above the slider: stop their press from also moving the mark.
   const own = { onPointerDown: (event: React.PointerEvent) => event.stopPropagation() };
   const colours = { '--xp-fill': tone.dark, '--xp-fill-light': tone.light, '--xp-accent': tone.accent, '--xp-ink': tone.ink } as React.CSSProperties;
@@ -146,6 +147,7 @@ function MarkCard({ tone, name, gain, doneMark, mark, onChange, onRemove }: { to
     <div className="xp-mark-tools">
       <span className="xp-mark-hint">Drag to set the mark</span>
       <div className="xp-presets" role="group" aria-label={`Quick marks for ${name}`}>
+        {coalition && <button type="button" {...own} className={cn('xp-coal', coalition.on && 'is-on')} aria-pressed={coalition.on} aria-label={`Coalition bonus for ${name}`} onClick={coalition.onToggle}>{coalition.on ? <Check size={13} weight="bold"/> : <X size={13} weight="bold"/>}+{Number(coalition.percent.toFixed(1))}%</button>}
         {[100, 125].map((value) => <button key={value} type="button" {...own} className={cn(mark === value && 'is-on')} aria-pressed={mark === value} onClick={() => onChange(value)}>{value === 125 ? '125 · bonus' : '100'}</button>)}
         <button type="button" {...own} className="xp-remove" onClick={onRemove} aria-label={`Remove ${name}`}><X size={14}/></button>
       </div>

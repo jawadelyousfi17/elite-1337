@@ -9,6 +9,7 @@ import { loadOwnCoalition } from '@/lib/coalitions';
 import { withTimeout } from '@/lib/timeout';
 import { cookies } from 'next/headers';
 import { XP_VIEW_COOKIE, type XpView } from '@/components/xp-view-tabs';
+import { XpFor } from '@/components/xp-for';
 
 export const metadata = { title: 'XP Calculator', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -19,9 +20,14 @@ const isView = (value: unknown): value is XpView => value === 'core' || value ==
 /** The level a student reaches after validating projects with a given mark, and the rank that level would give. */
 export default async function XpPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const user = await requireStudent();
-  const asked = (await searchParams).view;
+  const query = await searchParams;
+  const asked = query.view, wanted = typeof query.user === 'string' ? query.user.trim().slice(0, 40) : '';
+  const rankings = loadRankingDataset();
+  // "Calculate for" another student: only the rankings can turn a login into a student, so wait for them just then.
+  const early = wanted && wanted.toLowerCase() !== user.login?.toLowerCase() ? await rankings : null;
+  const other = early?.status === 'ready' ? early.data.students.find((student) => !student.anonymous && student.login.toLowerCase() === wanted.toLowerCase() && String(student.id) !== user.id) : undefined;
   // The journey is the same cached record the Me page uses: which projects are validated, and with what mark.
-  const rankings = loadRankingDataset(), journey = await loadJourney(Number(user.id));
+  const journey = await loadJourney(other?.id ?? Number(user.id));
   const stops = journey.status === 'ready' ? journey.journey.stops : [];
   const done: Record<string, number> = {};
   for (const stop of stops) if (stop.passed) done[stop.slug] = stop.attempts.at(-1)?.mark ?? 100;
@@ -38,7 +44,7 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   const catalog = withTimeout(loadAdvancedProjects(), 50_000, null).catch(() => null);
   const [state, coreProjects] = await Promise.all([rankings, loadXpProjects().catch(() => null)]);
 
-  const own = state.status === 'ready' ? state.data.students.find((student) => String(student.id) === user.id) : undefined;
+  const own = state.status === 'ready' ? other ?? state.data.students.find((student) => String(student.id) === user.id) : undefined;
   const level = own?.level ?? null;
   // Rank scope = the leaderboard's default view: same campus and Common Core cohort. Only the others' levels are sent.
   const campus = own?.campusIds[0];
@@ -57,7 +63,8 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   return <main className="shell xp">
     <header className="of-head xp-head">
       <h1>XP calculator</h1>
+      <XpFor viewing={other?.login ?? null} missing={wanted && early && !other ? wanted : null}/>
     </header>
-    <XpCalculator core={core} advanced={advanced} view={view} level={level} done={done} skipped={skipped} peers={peers} scope={scope} coalition={coalition}/>
+    <XpCalculator key={own?.id ?? "me"} core={core} advanced={advanced} view={view} level={level} done={done} skipped={skipped} peers={peers} scope={scope} coalition={coalition}/>
   </main>;
 }

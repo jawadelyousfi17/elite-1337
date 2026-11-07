@@ -33,4 +33,9 @@ describe('chainLevels', () => {
     expect(chainLevels(0, [{ xp: 1000, mark: 125, doneMark: 100 }], 4)[0].gain).toBeCloseTo(260, 9);
     expect(chainLevels(0, [{ xp: 1000, mark: 100 }], -10)[0].gain).toBe(1000);
   });
+  it('skips the coalition bonus for a project switched off', () => {
+    const [on, off] = chainLevels(0, [{ xp: 1000, mark: 100 }, { xp: 1000, mark: 100, boost: false }], 4);
+    expect(on.gain).toBeCloseTo(1040, 9);
+    expect(off.gain).toBe(1000);
+  });
 });
