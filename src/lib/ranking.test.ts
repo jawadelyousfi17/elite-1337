@@ -20,7 +20,7 @@ describe('classification and rankings', () => {
   it('excludes staff, inactive, alumni, missing levels, and audited IDs', () => {
     expect(isEligible(record(1, 1, 'alpha', 10), 21)).toBe(true);
     expect(isEligible(record(2, 2, 'staff', 10, { staff: true }), 21)).toBe(false);
-    expect(isEligible(record(3, 3, 'inactive', 10, { active: false }), 21)).toBe(false);
+    expect(isEligible(record(3, 3, 'inactive', 0, { active: false }), 21)).toBe(false);
     expect(isEligible(record(4, 4, 'alumni', 10, { endAt: '2026-01-01' }), 21)).toBe(false);
     expect(isEligible(record(5, 5, 'nulllevel', null), 21)).toBe(false);
     expect(isEligible(record(6, 6, 'test', 10), 21, new Set([6]))).toBe(false);
@@ -64,13 +64,14 @@ describe('classification and rankings', () => {
     expect(students.map((student) => [student.login, student.alumni ?? false])).toEqual([['grad', true], ['alpha', false], ['grad2', true]]);
     expect(selectLeaderboard(students, { page: 1, alumni: true }).rows.map((student) => [student.login, student.rank])).toEqual([['grad', 1], ['grad2', 3]]);
   });
-  it('ranks likely-frozen students: paused, enrollment open, blackhole ahead, past level 0', () => {
+  it('ranks likely-frozen students: paused, enrollment open, past level 0, whatever the blackhole date', () => {
     const now = Date.parse('2026-10-25T00:00:00Z'), ahead = '2026-12-01T00:00:00Z';
     const frozen = record(1, 1, 'frozen', 4.2, { active: false, blackholedAt: ahead });
     expect(likelyFrozen(frozen, now)).toBe(true);
     expect(likelyFrozen(record(2, 2, 'fresh', 0, { active: false, blackholedAt: ahead }), now)).toBe(false);
-    expect(likelyFrozen(record(3, 3, 'gone', 4, { active: false, blackholedAt: '2026-09-01T00:00:00Z' }), now)).toBe(false);
+    expect(likelyFrozen(record(3, 3, 'gone', 4, { active: false, blackholedAt: '2026-09-01T00:00:00Z' }), now)).toBe(true);
     expect(likelyFrozen(record(4, 4, 'ended', 4, { active: false, blackholedAt: ahead, endAt: '2026-10-01T00:00:00Z' }), now)).toBe(false);
+    expect(likelyFrozen(record(6, 6, 'nodate', 11, { active: false }), now)).toBe(true);
     expect(likelyFrozen(record(5, 5, 'live', 4, { blackholedAt: ahead }), now)).toBe(false);
     expect(classifyCommonCore(frozen, 21, new Set(), now)).toEqual({ eligible: true });
     expect(classifyCommonCore(record(2, 2, 'fresh', 0, { active: false, blackholedAt: ahead }), 21, new Set(), now)).toEqual({ eligible: false, reason: 'inactive' });

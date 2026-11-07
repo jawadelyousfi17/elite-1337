@@ -14,13 +14,14 @@ export function commonCoreEntryYear(beginAt: string | null | undefined): string 
 
 /**
  * The 42 API hides freezes from non-staff apps. A paused account whose enrollment
- * has not ended and whose blackhole is still ahead is the closest public signal.
+ * has not ended is the closest public signal. The blackhole date is ignored: a freeze
+ * does not move it and can leave it empty. Blackholed students have their enrollment closed.
  * Level 0 rules out new students whose accounts are not activated yet.
  */
 export function likelyFrozen(record: ApiCursusUser, now = Date.now()): boolean {
-  const user = record.user, blackhole = record.blackholed_at ? Date.parse(record.blackholed_at) : NaN;
+  const user = record.user;
   return (user.active === false || user['active?'] === false) && user['alumni?'] !== true && user.alumni !== true
-    && !record.end_at && Number.isFinite(blackhole) && blackhole > now && (record.level ?? 0) > 0;
+    && !record.end_at && (record.level ?? 0) > 0;
 }
 
 export function classifyCommonCore(record: ApiCursusUser, cursusId: number, excludedUserIds: ReadonlySet<number> = new Set(), now = Date.now()): Classification {
