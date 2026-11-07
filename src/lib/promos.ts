@@ -9,7 +9,6 @@ type PromoTarget = { href: string | null; campus: number };
  */
 export const PROMO_TARGETS: Record<string, PromoTarget> = {
   robotics: { href: 'https://discord.gg/n4B2PrXmX', campus: CAMPUS.khouribga },
-  'cp0-ctf': { href: 'https://cp-zero.site/register', campus: CAMPUS.khouribga },
 };
 
 export type PromoOutcome = 'allowed' | 'denied' | 'error';

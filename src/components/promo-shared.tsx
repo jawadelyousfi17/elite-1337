@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { Dialog } from 'radix-ui';
-import { ArrowUpRight, Calendar, Check, Discord, MapPin, Users, X } from '@/components/icons';
+import { Calendar, Check, Discord, MapPin, Users, X } from '@/components/icons';
 import { track } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 import type { PromoAccess } from '@/app/api/promos/route';
@@ -36,14 +36,6 @@ export const PROMOS: Promo[] = [
     chip: 'Join', cta: 'Join our Discord server', ctaIcon: <Discord size={16} weight="fill"/>, campus: 'Khouribga',
     denied: 'The 1337 Robotics Club is open to Khouribga students only, and your 42 profile shows another campus.',
     logo: '/assets/events/robotics-logo.webp',
-  },
-  {
-    id: 'cp0-ctf', name: 'CP0 CTF', short: 'CP0 CTF', when: 'Sat 7 Nov', kicker: 'Capture the flag',
-    pitch: 'A capture-the-flag competition on campus. Crack challenges, find the flags, climb the scoreboard.',
-    facts: [{ icon: <Calendar size={15}/>, text: 'Saturday 7 November' }, { icon: <MapPin size={15}/>, text: '1337 Khouribga' }],
-    chip: 'Subscribe', cta: 'Subscribe', ctaIcon: <ArrowUpRight size={16} weight="bold"/>, campus: 'Khouribga',
-    denied: 'CP0 CTF takes place on site at 1337 Khouribga and is open to Khouribga students only. Your 42 profile shows another campus.',
-    logo: '/assets/events/cp0-black.webp',
   },
 ];
 
