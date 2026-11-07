@@ -55,7 +55,7 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
     : lockedTab ? await loadLockedTeams(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row })) } : state)
     : await loadPendingCorrections(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row, at: row.updatedAt })) } : state);
   const students = new Map(dataset.students.map((student) => [student.id, student]));
-  const active = pending.status === 'ready' ? pending.rows.filter((row) => students.has(row.userId)).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)) : [];
+  const active = pending.status === 'ready' ? pending.rows.filter((row) => students.get(row.userId)?.campusIds.includes(campus!)).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)) : [];
   // Promo = Common Core entry year; the chips list only years that have rows in this tab.
   const cohorts = [...new Set(active.map((row) => students.get(row.userId)?.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
   // A group project pushed by a team is one entry: counts and filters work on teams, a team matches if any member does.
