@@ -369,7 +369,9 @@ html[data-tw-surface]:not(:has(.landing)) .hk-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-badge{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .al-badge{background:#a9d4ff!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-surface]:not(:has(.landing)) [data-tw-radius] .pl-row>.pl-ext{background:none!important}
 html[data-tw-surface]:not(:has(.landing)) .fz-badge{background:#bff3f0!important}
+html[data-tw-surface]:not(:has(.landing)) .fz-since{background:#7fe0d9!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback{background:var(--muted-surface)!important}
@@ -738,6 +740,7 @@ html[data-tw-radius] .hk-contact{border-radius:50%!important}
 html[data-tw-radius] .hk-tip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .hk-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .al-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-row>.pl-ext,html[data-tw-radius] [data-tw-radius] .pl-row>.pl-ext{border-radius:0!important}
 html[data-tw-radius] .fz-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .gh-tip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}

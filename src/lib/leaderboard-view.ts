@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { campusName, type BlackholedStudent, type RankingDataset } from './dataset';
 import { mergeByLevel, selectLeaderboard, type StudentRank } from './ranking';
+import { loadLastSeen } from './last-seen';
 import { matchesSearch } from './search';
 import { hackerLogins } from './hackers';
 import { photoReferences } from './avatars/intra-photo';
@@ -47,9 +48,9 @@ export function resolveFilters(raw: Raw, dataset: RankingDataset, profile: Profi
 }
 
 /** One page of the list for the filters, with the podium kept out of the rows where it is shown. */
-export function listPage(dataset: RankingDataset, filters: Filters, ownId?: number) {
+export function listPage(dataset: RankingDataset, filters: Filters, ownId?: number, seen?: ReadonlyMap<number, string | null>) {
   const blackholedMode = filters.bh === 'blackholed', alumniMode = filters.bh === 'alumni', frozenMode = filters.bh === 'frozen', everyoneMode = filters.bh === 'all';
-  const { rows, matches, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode }, ownId);
+  const { rows, matches, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode, seen }, ownId);
   const inScope = (student: BlackholedStudent) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreEntryYear === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
   const lost = blackholedMode || everyoneMode ? dataset.blackholed.filter((student) => !student.anonymous && inScope(student)) : [];
   if (filters.order === 'desc') lost.reverse();
@@ -61,7 +62,14 @@ export function listPage(dataset: RankingDataset, filters: Filters, ownId?: numb
   const onPodium = new Set(showWinner ? podium.map((student) => student.id) : []);
   const base: (Ranked | BlackholedStudent)[] = everyoneMode ? mergedRows : rows;
   const listed = page === 1 || filters.order === 'desc' ? base.filter((student) => !onPodium.has(student.id)) : base;
-  return { blackholedMode, alumniMode, frozenMode, total: blackholedMode || everyoneMode ? merged.length : rankedTotal, page, pages, podium, showWinner, listed, lostRows: blackholedMode ? lost.slice((mergedPage - 1) * 25, mergedPage * 25) : [] };
+  return { blackholedMode, alumniMode, frozenMode, total: blackholedMode || everyoneMode ? merged.length : rankedTotal, page, pages, podium, showWinner, listed, seen, lostRows: blackholedMode ? lost.slice((mergedPage - 1) * 25, mergedPage * 25) : [] };
+}
+
+/** Last sessions of the frozen students in the filtered list, so it can run from the most recently seen; empty outside the Frozen view. */
+export async function frozenSeen(dataset: RankingDataset, filters: Filters): Promise<Map<number, string | null> | undefined> {
+  if (filters.bh !== 'frozen') return undefined;
+  const { matches } = selectLeaderboard(dataset.students, { ...filters, frozen: true, page: 1 });
+  return loadLastSeen(matches.filter((student) => student.id > 0 && !student.anonymous).map((student) => student.id));
 }
 
 /** Signed 42 Intra photo links for the people shown. */
@@ -81,6 +89,6 @@ export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPag
     kind: 'ranked', id: student.id, login: 'Anonymous student', level: 0, year: null, campus: '', src: null, hacker: false, rank: student.rank, mine: false, alumni: false, frozen: false, anonymous: true,
   } as RankRowData : ({
     kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
-    hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen,
+    hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen, ...(student.frozen && view.seen?.get(student.id) ? { lastSeen: view.seen.get(student.id)! } : {}),
   } as RankRowData));
 }

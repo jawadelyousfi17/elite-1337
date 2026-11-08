@@ -1686,7 +1686,11 @@ main[data-pending]{cursor:progress}
 @media(prefers-reduced-motion:reduce){.hk-contact,.hk-tip{transition:none}.hk-contact:hover{transform:none}}
 .hk-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#ff8a8f;color:#4c111a;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
 .al-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#a9d4ff;color:#0d2740;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
+.pl-row>.pl-ext,html[data-tw-surface]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-light]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-radius] .pl-row>.pl-ext{margin:0 0 0 auto;width:auto;height:auto;background:none!important;border:0;border-radius:0!important}
 .fz-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#bff3f0;color:#0b3a38;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
+.fz-badge{box-sizing:border-box;height:20px;padding:0 8px;font-size:11px;line-height:1}
+.fz-since{gap:4px;margin-left:-5px;letter-spacing:.04em;background:#7fe0d9;color:#062f2d}
+html[data-tw-light]:not(:has(.landing)) .fz-since{background:#7fe0d9!important;color:#062f2d!important}
 h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 
 /* Navbar GitHub hover tip. */

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 import { loadRankingDataset } from '@/lib/dataset';
 import { getStudentProfile } from '@/lib/student-overview';
-import { avatarsFor, listPage, resolveFilters, rowData } from '@/lib/leaderboard-view';
+import { avatarsFor, frozenSeen, listPage, resolveFilters, rowData } from '@/lib/leaderboard-view';
 
 export const dynamic = 'force-dynamic';
 const noStore = { 'Cache-Control': 'private, no-store' };
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   if (state.status !== 'ready') return Response.json({ rows: [] }, { status: 503, headers: noStore });
   const raw = Object.fromEntries(request.nextUrl.searchParams);
   const { filters, own } = resolveFilters(raw, state.data, profile, session.user.id);
-  const view = listPage(state.data, filters, own?.id);
+  const view = listPage(state.data, filters, own?.id, await frozenSeen(state.data, filters));
   // Asking past the end returns nothing, instead of repeating the last page.
   if (filters.page > view.pages) return Response.json({ rows: [], page: filters.page, pages: view.pages }, { headers: noStore });
   const avatars = await avatarsFor(view.blackholedMode ? view.lostRows : view.listed);

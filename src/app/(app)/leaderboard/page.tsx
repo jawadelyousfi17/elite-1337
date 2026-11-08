@@ -13,7 +13,7 @@ import { requireStudent } from '@/lib/guard';
 import { loadRankingDataset } from '@/lib/dataset';
 import { DatasetState } from '@/components/dataset-state';
 import { getStudentProfile } from '@/lib/student-overview';
-import { ALL, avatarsFor, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
+import { ALL, avatarsFor, frozenSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
 
@@ -31,7 +31,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   const { filters, own, defaultCampus, defaultCohort } = resolveFilters(raw, dataset, profile, user.id);
   // The list always opens at the top and loads the rest while scrolling, even from an old ?page= link.
   filters.page = 1;
-  const view = listPage(dataset, filters, own?.id);
+  const view = listPage(dataset, filters, own?.id, await frozenSeen(dataset, filters));
   const { blackholedMode, alumniMode, frozenMode, total, pages, podium, showWinner } = view;
   const winner = podium[0];
   const avatars = await avatarsFor([...(blackholedMode ? view.lostRows : view.listed), ...podium]);

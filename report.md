@@ -14,7 +14,7 @@ This replaces the older V2/V3 report, which described the first prototype (anoth
 ### Rankings
 - Leaderboard with a podium, campus, Common Core cohort and status filters (including All), login search and infinite scroll with a Back to top button.
 - Campuses: Khouribga (16), Benguerir (21), Tétouan (55), Rabat (75); Common Core cursus 21. Rankings are deduplicated across campus memberships and equal levels share a rank.
-- Cohort is the UTC year of the Common Core `begin_at`. Blackholed, alumni and likely-frozen students have their own views.
+- Cohort is the UTC year of the Common Core `begin_at`. Blackholed, alumni and likely-frozen students have their own views. The Frozen view runs from the most recently seen: each frozen student's last session is read once from 42 (`users/:id/locations`, 1 request) and cached 60 days; students not fetched yet are listed last until a later visit loads them (about 15 s of fetching per visit).
 - Race page: compares students' Common Core paths.
 - Rankings are cached per campus and refreshed every 30 minutes (about 53 42-API requests per refresh).
 

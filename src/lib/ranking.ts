@@ -9,7 +9,7 @@ export type StudentRank = {
   photo?: string | null; alumni?: boolean; frozen?: boolean; anonymous?: boolean;
 };
 export type CampusCursusRecords = { campusId: number; records: ApiCursusUser[] };
-export type RankingFilters = { campus?: number; cohort?: string; poolYear?: string; poolMonth?: string; q?: string; alumni?: boolean; frozen?: boolean; page: number; order?: 'desc' };
+export type RankingFilters = { campus?: number; cohort?: string; poolYear?: string; poolMonth?: string; q?: string; alumni?: boolean; frozen?: boolean; seen?: ReadonlyMap<number, string | null>; page: number; order?: 'desc' };
 const ordered = (items: StudentRank[]) => items.sort((a, b) => b.level - a.level || a.login.localeCompare(b.login) || a.id - b.id);
 
 export function isEligible(record: ApiCursusUser, cursusId: number, excludedUserIds: ReadonlySet<number> = new Set()): boolean {
@@ -60,6 +60,16 @@ export function rankStudents(sources: CampusCursusRecords[], cursusId: number, e
   return classifyPopulation(sources, cursusId, excludedUserIds).students;
 }
 
+/** Frozen students, the most recently seen first; students with no known session go last, in rank order. */
+export function byLastSeen<T extends { id: number; rank: number }>(students: T[], seen: ReadonlyMap<number, string | null>): T[] {
+  const time = (id: number) => { const at = seen.get(id); return at ? Date.parse(at) : NaN; };
+  return [...students].sort((a, b) => {
+    const x = time(a.id), y = time(b.id);
+    if (Number.isNaN(x) !== Number.isNaN(y)) return Number.isNaN(x) ? 1 : -1;
+    return (Number.isNaN(x) ? 0 : y - x) || a.rank - b.rank;
+  });
+}
+
 export function selectLeaderboard(students: StudentRank[], filters: RankingFilters, viewerId?: number) {
   const scope = ordered(students.filter((student) =>
     (!filters.campus || student.campusIds.includes(filters.campus)) &&
@@ -72,7 +82,8 @@ export function selectLeaderboard(students: StudentRank[], filters: RankingFilte
   // Like search, the alumni and frozen filters keep each student's rank within the full scope.
   const found = ranked.filter((student) => (!filters.alumni || student.alumni) && (!filters.frozen || student.frozen) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName])));
   // Reversed lists run from the last rank to the first; ranks themselves never change.
-  const matches = filters.order === 'desc' ? [...found].reverse() : found;
+  const sorted = filters.frozen && filters.seen ? byLastSeen(found, filters.seen) : found;
+  const matches = filters.order === 'desc' ? [...sorted].reverse() : sorted;
   const pages = Math.max(1, Math.ceil(matches.length / 25));
   const page = Math.max(1, Math.min(filters.page, pages));
   const viewer = viewerId === undefined ? undefined : ranked.find((student) => student.id === viewerId);
