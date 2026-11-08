@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { auth, signIn } from '@/auth';
 import { AccessPlatformButton } from '@/components/access-platform-button';
-import { Credits } from '@/components/credits';
+import { SiteCredits } from '@/components/site-credits';
 import { EventBanner } from '@/components/event-banner';
 import { LegalLinks } from '@/components/legal-page';
 import { REPO_URL } from '@/lib/github';
@@ -35,7 +35,7 @@ export default async function Home() {
     </section>
 
     <footer className="landing-credits">
-      <Credits/>
+      <SiteCredits/>
       <LegalLinks/>
     </footer>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}/>

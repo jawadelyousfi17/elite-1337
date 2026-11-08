@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { Nav } from '@/components/nav';
-import { Credits } from '@/components/credits';
+import { SiteCredits } from '@/components/site-credits';
 import { CONTACT_DISCORD, CONTACT_EMAIL } from '@/lib/site';
 
 /** Last real change to either legal page; bump it with every edit. */
@@ -31,7 +31,7 @@ export async function LegalPage({ title, intro, sections, other }: { title: stri
         </div>
       </div>
     </main>
-    <footer className="footer"><div className="shell"><Credits/><LegalLinks/></div></footer>
+    <footer className="footer"><div className="shell"><SiteCredits/><LegalLinks/></div></footer>
   </>;
 }
 

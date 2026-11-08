@@ -2255,3 +2255,15 @@ html[data-tw-light]:not(:has(.landing)) .xp-viewing.is-miss{color:#b3261e}
 .cd-field textarea:focus-visible{outline:3px solid var(--mint)}
 .cd-note{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
 @media(max-width:700px){.cd-head h1{font-size:26px}.cd-preview{padding:16px 8px}}
+
+/* Footer contributors: one row of overlapping avatars, each opening a card on hover. */
+.credits-faces{display:flex;align-items:center;margin:0;padding:0;list-style:none}
+.credits-faces li{margin-left:-7px}
+.credits-faces li:first-child{margin-left:0}
+.credits-faces li:hover,.credits-faces li:focus-within{z-index:2}
+button.credit-face{display:block;border:0;background:transparent;padding:0;border-radius:50%;cursor:pointer;transition:transform .18s}
+button.credit-face:hover,button.credit-face[data-state=open]{transform:translateY(-2px)}
+button.credit-face:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+button.credit-face img{display:block;width:28px;height:28px;border-radius:50%;object-fit:cover;background:#202020;box-shadow:0 0 0 2px #0b0b0b}
+.credits-more{margin-left:8px!important;font-size:12px;font-weight:600;color:#9a9a9a}
+@media(prefers-reduced-motion:reduce){button.credit-face{transition:none}}

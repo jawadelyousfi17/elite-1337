@@ -24,9 +24,9 @@ This replaces the older V2/V3 report, which described the first prototype (anoth
 - Pending fix: rows now show only students the rankings list at the selected campus, so students from another campus (for example Rabat under Khouribga) do not appear.
 
 ### Rank card for GitHub (`/card`)
-- A student presses Share (profile menu, "Rank card for GitHub") and gets a Markdown/HTML snippet for their profile README. The image is an SVG at `/api/card/<id>.svg?t=<signature>` showing login, level, cohort/campus/all-1337 ranks and a Frozen or Alumni badge; it follows the viewer's light or dark theme (`&theme=dark|light` forces one).
+- A student presses Share (profile menu, "Rank card for GitHub") and gets a Markdown/HTML snippet for their profile README. The image is an 840x340 SVG at `/api/card/<id>.svg?t=<signature>` in a terminal style: a text portrait of the student's photo on the left, and `login@elite-1337` key/value lines on the right (status, campus, cohort, level bar, ranks in cohort, campus and all of 1337 with top %). It follows the viewer's light or dark theme (`&theme=dark|light` forces one). Without a usable photo it draws a silhouette.
 - The route is public, because GitHub's image proxy sends no cookies. The signed token is the permission: it is an HMAC of the student's id, so only students who opened `/card` have a working link. Nothing is stored; changing `AUTH_SECRET` revokes every link. Removed (anonymized) students have no card.
-- Data comes from the cached rankings, so a card costs no 42 requests (a cold rankings refresh aside). Responses are cached for an hour (a placeholder for one minute while rankings load).
+- Data comes from the cached rankings, so a card costs no 42 requests (a cold rankings refresh aside). The portrait is the student's photo from the 42 CDN (not the API, so no request budget), turned into 60x30 text with `sharp` and cached for a month per photo. Responses are cached for an hour (a placeholder for one minute while rankings load).
 
 ### XP calculator (`/xp`)
 - Starts empty. Pick projects (core and advanced views, per-promo project lists), set a mark with a slider or the 100 / 125 presets.

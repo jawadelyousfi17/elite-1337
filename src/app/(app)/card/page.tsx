@@ -14,10 +14,10 @@ export default async function CardPage() {
   if (!path) return <main className="shell cd"><KiwiNote><h2>Rank card unavailable</h2><p>Try again in a minute.</p></KiwiNote></main>;
   const url = new URL(path, siteUrl).href;
   const markdown = `[![Elite 1337 rank](${url})](${siteUrl.origin})`;
-  const html = `<a href="${siteUrl.origin}"><img src="${url}" alt="Elite 1337 rank" width="495"></a>`;
+  const html = `<a href="${siteUrl.origin}"><img src="${url}" alt="Elite 1337 rank" width="840"></a>`;
   return <main className="shell cd">
     <header className="cd-head"><h1>Rank card</h1><p>Show your rank on your GitHub profile. It updates by itself, about once an hour.</p></header>
-    <section className="cd-preview" aria-label="Preview"><img src={path} alt="Your rank card" width={495} height={160}/></section>
+    <section className="cd-preview" aria-label="Preview"><img src={path} alt="Your rank card" width={840} height={340}/></section>
     <section className="cd-steps">
       <h2>Add it to your GitHub profile</h2>
       <ol>

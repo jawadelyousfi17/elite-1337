@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { ArrowUpRight, GitHub, Instagram, LinkedIn } from '@/components/icons';
+import type { Contributor } from '@/lib/contributors';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Creator = { alias: string; name: string; login: string; photo: string; bio: string; tags: string[]; links: { label: string; href: string; icon: 'github' | 'instagram' | 'linkedin' | 'intra' }[] };
@@ -30,7 +31,8 @@ const creators: Creator[] = [
 
 const icons = { github: GitHub, instagram: Instagram, linkedin: LinkedIn, intra: ArrowUpRight };
 
-function CreatorCard({ creator }: { creator: Creator }) {
+/** Opens its card on hover (mouse) or tap, after a short delay so moving across the row does not flicker. */
+function HoverCard({ label, face, children }: { label: string; face: React.ReactNode; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hover = (next: boolean) => (event: React.PointerEvent) => {
@@ -40,36 +42,59 @@ function CreatorCard({ creator }: { creator: Creator }) {
   };
   return <Popover open={open} onOpenChange={setOpen}>
     <PopoverTrigger asChild>
-      <button type="button" className="credit" onPointerEnter={hover(true)} onPointerLeave={hover(false)} aria-label={`About ${creator.alias}`}>
-        <img src={creator.photo} alt="" width={28} height={28}/>
-        <strong>{creator.alias}</strong>
-      </button>
+      <button type="button" className="credit-face" onPointerEnter={hover(true)} onPointerLeave={hover(false)} aria-label={label}>{face}</button>
     </PopoverTrigger>
-    <PopoverContent side="top" sideOffset={12} className="creator-card w-80 rounded-[26px] border-white/10 p-0" onPointerEnter={hover(true)} onPointerLeave={hover(false)}>
-      <header className="creator-head">
-        <img src={creator.photo} alt="" width={64} height={64}/>
-        <div>
-          <p className="creator-name">{creator.name}</p>
-          <p className="creator-login">@{creator.login} · aka <b>{creator.alias}</b></p>
-        </div>
-      </header>
-      <div className="creator-body">
-        <p>{creator.bio}</p>
-        <ul className="creator-tags">{creator.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
-        <div className="creator-links">{creator.links.map((link) => {
-          const Icon = icons[link.icon];
-          return <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"><Icon size={17}/>{link.label}</a>;
-        })}</div>
-      </div>
-    </PopoverContent>
+    <PopoverContent side="top" sideOffset={12} className="creator-card w-80 rounded-[26px] border-white/10 p-0" onPointerEnter={hover(true)} onPointerLeave={hover(false)}>{children}</PopoverContent>
   </Popover>;
 }
 
-export function Credits({ className }: { className?: string }) {
+function CreatorCard({ creator }: { creator: Creator }) {
+  return <HoverCard label={`About ${creator.alias}`} face={<img src={creator.photo} alt="" width={28} height={28}/>}>
+    <header className="creator-head">
+      <img src={creator.photo} alt="" width={64} height={64}/>
+      <div>
+        <p className="creator-name">{creator.name}</p>
+        <p className="creator-login">@{creator.login} · aka <b>{creator.alias}</b></p>
+      </div>
+    </header>
+    <div className="creator-body">
+      <p>{creator.bio}</p>
+      <ul className="creator-tags">{creator.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
+      <div className="creator-links">{creator.links.map((link) => {
+        const Icon = icons[link.icon];
+        return <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"><Icon size={17}/>{link.label}</a>;
+      })}</div>
+    </div>
+  </HoverCard>;
+}
+
+function ContributorCard({ person }: { person: Contributor }) {
+  return <HoverCard label={`About ${person.login}`} face={<img src={person.avatar} alt="" width={28} height={28} loading="lazy" referrerPolicy="no-referrer"/>}>
+    <header className="creator-head">
+      <img src={person.avatar} alt="" width={64} height={64} referrerPolicy="no-referrer"/>
+      <div>
+        <p className="creator-name">{person.login}</p>
+        <p className="creator-login">Contributor{person.commits > 0 && <> · {person.commits} {person.commits === 1 ? 'commit' : 'commits'}</>}</p>
+      </div>
+    </header>
+    <div className="creator-body">
+      <div className="creator-links"><a href={person.url} target="_blank" rel="noopener noreferrer"><GitHub size={17}/>GitHub</a></div>
+    </div>
+  </HoverCard>;
+}
+
+const SHOWN = 8;
+
+/** The contributors in one row: Jawad and ikosoft first, then everyone else who has code in the repository. */
+export function Credits({ className, contributors = [] }: { className?: string; contributors?: Contributor[] }) {
+  const shown = contributors.slice(0, SHOWN), more = contributors.length - shown.length;
   return <div className={`credits ${className ?? ''}`}>
-    <span>Made by</span>
-    <CreatorCard creator={creators[0]}/>
-    <span className="credit-amp" aria-hidden="true">&amp;</span>
-    <CreatorCard creator={creators[1]}/>
+    <span>Contributors</span>
+    <ul className="credits-faces">
+      <li><CreatorCard creator={creators[1]}/></li>
+      <li><CreatorCard creator={creators[0]}/></li>
+      {shown.map((person) => <li key={person.login}><ContributorCard person={person}/></li>)}
+      {more > 0 && <li className="credits-more" aria-label={`${more} more contributors`}>+{more}</li>}
+    </ul>
   </div>;
 }
