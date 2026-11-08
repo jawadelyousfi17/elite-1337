@@ -212,6 +212,11 @@ export class FortyTwoClient {
     if (all.some((item) => item.campus_id !== campusId)) throw new IncompletePopulationError('Active campus locations include another campus');
     return all;
   }
+  /** The student's latest session (end, or start if still open), or null when they never logged in. One request. */
+  async userLastSession(userId: number): Promise<string | null> {
+    const { data } = await this.request(`users/${userId}/locations`, z.array(z.object({ begin_at: z.string().nullish(), end_at: z.string().nullish() })), { sort: '-begin_at', 'page[size]': '1' });
+    return data[0]?.end_at ?? data[0]?.begin_at ?? null;
+  }
   async campusObservedHosts(campusId: number): Promise<string[]> {
     // This is a bounded 100-record recent-use sample, never an enabled-seat inventory.
     const path = `campus/${campusId}/locations`;

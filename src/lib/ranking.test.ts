@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cursusUserSchema } from './fortytwo-api';
 import { admissionOutcome, classifyCommonCore, likelyFrozen, piscineSession } from './classification';
-import { cohortRank, isEligible, mergeByLevel, rankStudents, selectLeaderboard, topPercent } from './ranking';
+import { byLastSeen, cohortRank, isEligible, mergeByLevel, rankStudents, selectLeaderboard, topPercent } from './ranking';
 
 const record = (id: number, userId: number, login: string, level: number | null, options: {
   active?: boolean; endAt?: string | null; beginAt?: string | null; blackholedAt?: string | null; poolYear?: string; poolMonth?: string; staff?: boolean; kind?: string; alumni?: boolean;
@@ -119,5 +119,13 @@ describe('mergeByLevel', () => {
   });
   it('runs from the lowest level when reversed', () => {
     expect(mergeByLevel([...ranked].reverse(), lost, 'desc').map((student) => student.id)).toEqual([2, 4, 3, 1]);
+  });
+});
+
+describe('byLastSeen', () => {
+  const people = [1, 2, 3, 4].map((id) => ({ id, rank: id }));
+  it('puts the most recent session first and unknown students last in rank order', () => {
+    const seen = new Map<number, string | null>([[1, '2025-01-01T00:00:00Z'], [3, '2026-05-01T00:00:00Z'], [4, null]]);
+    expect(byLastSeen(people, seen).map((p) => p.id)).toEqual([3, 1, 2, 4]);
   });
 });

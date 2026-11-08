@@ -8,3 +8,14 @@ export function timeAgo(iso: string, now = Date.now()) {
   const days = Math.floor(hours / 24);
   return `${days} ${days === 1 ? 'day' : 'days'} ago`;
 }
+
+/** Age for long spans, in whole units: "today", "9 days ago", "1 month 5 days ago", "1 year 2 months ago". */
+export function daysAgo(iso: string, now = Date.now()) {
+  const total = Math.floor((now - Date.parse(iso)) / 86_400_000);
+  if (!Number.isFinite(total) || total < 1) return 'today';
+  const unit = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+  if (total < 30) return `${unit(total, 'day')} ago`;
+  if (total < 365) { const months = Math.floor(total / 30), days = total % 30; return `${unit(months, 'month')}${days ? ` ${unit(days, 'day')}` : ''} ago`; }
+  const years = Math.floor(total / 365), months = Math.floor((total % 365) / 30);
+  return `${unit(years, 'year')}${months ? ` ${unit(months, 'month')}` : ''} ago`;
+}

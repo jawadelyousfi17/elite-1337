@@ -3,6 +3,7 @@ import { KiwiNote } from '@/components/kiwi-guide';
 import Link from 'next/link';
 import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
+import { AnonymousAvatar, AnonymousTip } from '@/components/anonymous-tip';
 import { Campus, Cohort, Hourglass, Reverse, RotateCcw, X } from '@/components/icons';
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
@@ -13,7 +14,7 @@ import { requireStudent } from '@/lib/guard';
 import { loadRankingDataset } from '@/lib/dataset';
 import { DatasetState } from '@/components/dataset-state';
 import { getStudentProfile } from '@/lib/student-overview';
-import { ALL, avatarsFor, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
+import { ALL, avatarsFor, frozenSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
 
@@ -31,7 +32,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   const { filters, own, defaultCampus, defaultCohort } = resolveFilters(raw, dataset, profile, user.id);
   // The list always opens at the top and loads the rest while scrolling, even from an old ?page= link.
   filters.page = 1;
-  const view = listPage(dataset, filters, own?.id);
+  const view = listPage(dataset, filters, own?.id, await frozenSeen(dataset, filters));
   const { blackholedMode, alumniMode, frozenMode, total, pages, podium, showWinner } = view;
   const winner = podium[0];
   const avatars = await avatarsFor([...(blackholedMode ? view.lostRows : view.listed), ...podium]);
@@ -77,12 +78,12 @@ const cohorts = (students: { commonCoreCohort: string | null }[]) => [...new Set
 function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
   // A student who asked to be removed keeps their place on the podium, with no name, level or link.
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-runner" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties} aria-label={`Rank ${student.rank}, anonymous student`}>
-    <div className="pl-runner-portrait"><Avatar login="?" name="?" src={null} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>Anonymous</strong>
+    <div className="pl-runner-portrait"><AnonymousAvatar size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
+    <strong><AnonymousTip>Anonymous</AnonymousTip></strong>
   </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge id={student.id}/>}
     <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
   </Link></span>;
 }
@@ -90,17 +91,17 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
 function Winner({ student, src }: { student: Ranked; src?: string }) {
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-winner" aria-label={`Rank ${student.rank}, anonymous student`}>
     <div className="pl-winner-portrait">
-      <Avatar login="?" name="?" src={null} size={96}/>
+      <AnonymousAvatar size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>Anonymous</h2>
+    <h2><AnonymousTip>Anonymous</AnonymousTip></h2>
   </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-winner-portrait">
       <Avatar login={student.login} src={src} size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge id={student.id}/>}
     <span className="pl-pill">Level {student.level.toFixed(2)}</span>
   </Link></span>;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filtersSchema, leaderboardHref, listPage, resolveFilters } from './leaderboard-view';
+import { filtersSchema, leaderboardHref, listPage, resolveFilters, rowData } from './leaderboard-view';
 import type { RankingDataset } from './dataset';
 import type { StudentRank } from './ranking';
 
@@ -40,5 +40,16 @@ describe('split promo filters', () => {
     const { filters } = resolveFilters({ cohort: 'all' }, dataset, null, '2');
     expect(filters.cohort).toBeUndefined();
     expect(listPage(dataset, filters).total).toBe(2);
+  });
+
+  it('preserves frozen-student ordering and last-seen dates within each split promo', () => {
+    const data = { ...dataset, students: [...dataset.students, student(5, '2019-10')].map((student) => ({ ...student, frozen: true })) };
+    const seen = new Map([[1, '2026-11-08T00:00:00Z'], [2, '2026-10-01T00:00:00Z'], [5, '2026-11-01T00:00:00Z']]);
+    const view = listPage(data, { campus: 16, cohort: '2019-10', bh: 'frozen', page: 1 }, 2, seen);
+    expect(view.listed.map((student) => student.id)).toEqual([5, 2]);
+    expect(rowData(data, view, {}, '2')).toMatchObject([
+      { id: 5, rank: 2, year: '2019-10', lastSeen: seen.get(5) },
+      { id: 2, rank: 1, year: '2019-10', lastSeen: seen.get(2) },
+    ]);
   });
 });

@@ -369,7 +369,9 @@ html[data-tw-surface]:not(:has(.landing)) .hk-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .hk-badge{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .al-badge{background:#a9d4ff!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-surface]:not(:has(.landing)) [data-tw-radius] .pl-row>.pl-ext{background:none!important}
 html[data-tw-surface]:not(:has(.landing)) .fz-badge{background:#bff3f0!important}
+html[data-tw-surface]:not(:has(.landing)) .fz-since{background:#7fe0d9!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-tip::before{background:inherit!important}
 html[data-tw-surface]:not(:has(.landing)) .avatar .avatar-fallback{background:var(--muted-surface)!important}
@@ -441,6 +443,8 @@ html[data-tw-surface]:not(:has(.landing)) .xp-switch[data-state=checked] .xp-swi
 html[data-tw-surface]:not(:has(.landing)) .xp-bonus-field input{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .pc-suggest{background:#1a1a1a!important}
 html[data-tw-surface]:not(:has(.landing)) .pc-suggest-row[data-active]{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-anon-tip::after{background:#fff!important}
+html[data-tw-surface]:not(:has(.landing)) .pl-anon-tip::before{background:#fff!important}
 html[data-tw-surface]:not(:has(.landing)) .menu-new{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .as-online i{background:#8fd99f!important}
 html[data-tw-surface]:not(:has(.landing)) :is(.as-stack,.as-legend) .is-allowed{background:#8fd99f!important}
@@ -742,6 +746,7 @@ html[data-tw-radius] .hk-contact{border-radius:50%!important}
 html[data-tw-radius] .hk-tip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .hk-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .al-badge{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .pl-row>.pl-ext,html[data-tw-radius] [data-tw-radius] .pl-row>.pl-ext{border-radius:0!important}
 html[data-tw-radius] .fz-badge{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .gh-tip{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .avatar .avatar-fallback{border-radius:inherit!important}
@@ -789,6 +794,7 @@ html[data-tw-radius] .xp-switch-thumb{border-radius:50%!important}
 html[data-tw-radius] .xp-bonus-field input{border-radius:calc(10px * var(--tw-r))!important}
 html[data-tw-radius] .pc-suggest{border-radius:calc(24px * var(--tw-r))!important}
 html[data-tw-radius] .pc-suggest-row{border-radius:calc(16px * var(--tw-r))!important}
+html[data-tw-radius] .pl-anon-tip::after{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] .menu-new{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .as-online i{border-radius:50%!important}
 html[data-tw-radius] .as-stack{border-radius:4px!important}
@@ -1284,6 +1290,8 @@ html[data-tw-light]:not(:has(.landing)) .hm-contact b{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .hm-rules{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .hm-rules a{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .hm-rules b{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .pl-anon-tip::after{background:#141414!important;color:#fff!important}
+html[data-tw-light]:not(:has(.landing)) .pl-anon-tip::before{background:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .pl-row.is-anonymous .pl-copy strong{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .st-leader-anon{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) .as-empty{color:#5f5f5f!important}
