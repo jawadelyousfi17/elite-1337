@@ -22,7 +22,7 @@ async function viewerRanks(): Promise<ViewerRanks | null> {
   const campus = profile?.campus_users.find((entry) => entry.is_primary && own.campusIds.includes(entry.campus_id))?.campus_id ?? own.campusIds[0];
   return {
     login: own.login, photo: intraPhotoUrl(own.id, own.photo), level: own.level,
-    cohort: cohortRank(dataset.students, own, campus), cohortLabel: own.commonCoreEntryYear ? `Cohort ${own.commonCoreEntryYear}` : 'Cohort',
+    cohort: cohortRank(dataset.students, own, campus), cohortLabel: own.commonCoreCohort ? `Cohort ${own.commonCoreCohort}` : 'Cohort',
     campus: campus ? own.campusRanks[campus] ?? null : null, campusLabel: campus ? campusName(dataset, campus) : 'Campus', global: own.globalRank,
   };
 }

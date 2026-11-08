@@ -825,7 +825,8 @@ button.credit:hover,button.credit[data-state=open]{background:#ffffff10}
 
 .sc-heat table{width:100%;border-collapse:separate;border-spacing:3px;table-layout:fixed}
 .sc-heat th{font-size:11px;font-weight:500;color:#9a9a9a;padding:2px 2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-heat tbody th{width:42px;padding:0 6px 0 0;text-align:left;font-size:16px;font-weight:600;color:#ececec}
+.sc-heat th:first-child{width:76px}
+.sc-heat tbody th{width:76px;padding:0 6px 0 0;text-align:left;font-size:14px;font-weight:600;color:#ececec}
 .sc-heat td{padding:0}
 .sc-cell{position:relative;display:grid;place-items:center;height:32px;border-radius:9px;font-size:12px;font-weight:600;color:#e4e4e4;font-variant-numeric:tabular-nums;outline:none;cursor:default;transition:filter .15s}
 .sc-cell.is-light{color:#0a0a0a}
@@ -1830,10 +1831,10 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 .xp-empty-plan{display:flex;align-items:center;gap:16px;padding:12px 0}
 .xp-empty-plan img{flex-shrink:0;object-fit:contain}
 @media(max-width:600px){.xp-hero-levels{gap:10px}.xp-hero-levels .xp-hero-arrow{width:28px;height:28px}.xp-hero-levels strong{font-size:42px}}
-.xp-hero-levels{position:relative;display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px 20px}
+.xp-hero-levels{position:relative;display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px}
 .xp-hero-levels>div{display:flex;flex-direction:column;gap:4px}
 .xp-hero-levels span{color:var(--muted);font-size:13px}
-.xp-hero-levels strong{font-size:clamp(46px,9vw,64px);font-weight:600;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+.xp-hero-levels strong{font-size:clamp(42px,5vw,56px);font-weight:600;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
 .xp-hero-from strong{color:#8a8a8a}
 .xp-hero-to strong{color:#cafbd2}
 .xp-hero-arrow{display:grid;place-items:center;width:44px;height:44px;margin-bottom:6px;border-radius:50%;background:#202020;color:#cafbd2}
@@ -2202,6 +2203,22 @@ html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-gain{backgroun
 /* XP calculator: calculate for another student, per-project coalition switch */
 .xp-for{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px 16px;min-width:0}
 .xp-for .race-vs{width:min(340px,100%)}
+/* Edit the XP starting level in place */
+.xp-start-editor{display:flex;align-items:center;gap:4px}
+.xp-hero-levels .xp-start-number{position:relative;display:block;font-size:clamp(42px,5vw,56px);font-weight:600;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+.xp-hero-levels .xp-start-number strong{font:inherit;letter-spacing:inherit;line-height:inherit}
+.xp-start-number strong.is-editing{visibility:hidden;white-space:pre}
+.xp-start-number input{position:absolute;inset:0;width:100%;height:100%;min-width:0;padding:0;border:0;border-bottom:2px solid #cafbd2;border-radius:0;background:transparent;color:#f2f2f2;font:inherit;letter-spacing:inherit;line-height:inherit;outline:none}
+.xp-level-edit{display:grid;flex-shrink:0;place-items:center;width:26px;height:26px;padding:0;border:0;border-radius:50%;background:#202020;color:#9a9a9a;cursor:pointer}
+.xp-level-edit:hover{background:#2b2b2b;color:#f2f2f2}
+.xp-level-edit:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
+.xp-level-edit:disabled{opacity:.5;cursor:wait}
+.xp-level-tip{z-index:80;padding:6px 10px;border-radius:8px;background:#f2f2f2;color:#141414;font-size:12px;font-weight:600;box-shadow:0 4px 16px #0003}
+.xp-level-tip svg{fill:#f2f2f2}
+.xp-level-error{margin:0;color:#ffb4a8;font-size:12px;line-height:1.5}
+html[data-tw-light]:not(:has(.landing)) .xp-level-error{color:#9f2c20}
+html[data-tw-light]:not(:has(.landing)) .xp-start-number input{border-bottom-color:#17803d}
+@media(max-width:600px){.xp-hero-levels strong,.xp-hero-levels .xp-start-number{font-size:42px}}
 .xp-viewing{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:#9a9a9a}
 .xp-head .xp-viewing{margin:0}
 .xp-head h1{margin:0}

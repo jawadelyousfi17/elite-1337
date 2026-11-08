@@ -3,6 +3,7 @@ import { KiwiNote } from '@/components/kiwi-guide';
 import { Suspense } from 'react';
 import { CorrectionsLoading } from './corrections-loading';
 import { z } from 'zod';
+import { cohortSchema } from '@/lib/cohorts';
 import { Campus, Check, Clock3, Cohort, Corrections, LockKeyhole, X } from '@/components/icons';
 import { ScrollRow } from '@/components/scroll-row';
 import { CorrectionsResults } from '@/components/corrections-results';
@@ -26,7 +27,7 @@ export const metadata = { title: 'Waiting for Correction' };
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(PROJECT_SLUG).optional().catch(undefined), q: z.string().trim().max(40).optional(), tab: z.enum(['validated', 'failed', 'locked']).optional().catch(undefined), d: z.enum(['14', '30', '60']).optional().catch(undefined), cohort: z.string().regex(/^\d{4}$/).optional().catch(undefined) });
+const params = z.object({ campus: z.coerce.number().int().positive().optional(), project: z.string().regex(PROJECT_SLUG).optional().catch(undefined), q: z.string().trim().max(40).optional(), tab: z.enum(['validated', 'failed', 'locked']).optional().catch(undefined), d: z.enum(['14', '30', '60']).optional().catch(undefined), cohort: cohortSchema.optional().catch(undefined) });
 /** One row in either tab: waiting projects carry their try number, validated ones their mark. */
 type Item = { id: number; userId: number; login: string; project: string; projectSlug: string; at: string; teamId: number | null; attempt?: number | null; mark?: number | null; steps?: string[] };
 
@@ -61,11 +62,11 @@ async function CorrectionsBody({ userId, raw }: { userId: string; raw: ReturnTyp
     : await loadPendingCorrections(campus).then((state) => state.status === 'ready' ? { ...state, rows: state.rows.map((row): Item => ({ ...row, at: row.updatedAt })) } : state);
   const students = new Map(dataset.students.map((student) => [student.id, student]));
   const active = pending.status === 'ready' ? pending.rows.filter((row) => students.get(row.userId)?.campusIds.includes(campus!)).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)) : [];
-  // Promo = Common Core entry year; the chips list only years that have rows in this tab.
-  const cohorts = [...new Set(active.map((row) => students.get(row.userId)?.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
+  // Only promos with rows in this tab need a filter chip.
+  const cohorts = [...new Set(active.map((row) => students.get(row.userId)?.commonCoreCohort).filter((year): year is string => !!year))].sort().reverse();
   // A group project pushed by a team is one entry: counts and filters work on teams, a team matches if any member does.
   const teams = groupTeams(mergeInternshipSteps(active));
-  const inCohort = cohort ? teams.filter((team) => team.some((row) => students.get(row.userId)?.commonCoreEntryYear === cohort)) : teams;
+  const inCohort = cohort ? teams.filter((team) => team.some((row) => students.get(row.userId)?.commonCoreCohort === cohort)) : teams;
   const projects = [...inCohort.reduce((counts, [row]) => counts.set(row.projectSlug, { name: row.project, count: (counts.get(row.projectSlug)?.count ?? 0) + 1 }), new Map<string, { name: string; count: number }>())].sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name));
   const picked = inCohort.filter((team) => !project || team[0].projectSlug === project);
   const shown = picked.filter((team) => !q || team.some((row) => matchesSearch(q, [row.login, students.get(row.userId)?.displayName, row.project, ...row.steps ?? []])));
@@ -116,7 +117,7 @@ const avatars = photoReferences(picked.flat().map((row) => ({ id: row.userId, ph
       <CorrectionsResults mode={tab ?? 'waiting'}
         scope={{ campus: campus ? campusName(dataset, campus) : 'This campus', days, periods: windows.map((window) => ({ days: window, href: link({ days: window }) })), cohort, project: projectName, updated: pending.status === 'ready' ? timeAgo(pending.fetchedAt) : null }}
         problem={pending.status !== 'ready' ? <div className="pl-empty"><Clock3 size={26}/><h2>{pending.status === 'rate-limited' ? '42 API limit reached' : pending.status === 'incomplete' ? 'The 42 API returned an incomplete list' : lockedTab ? 'Locked teams are unavailable' : 'Pending corrections are unavailable'}</h2><p>Try again in a few minutes.</p></div> : null}
-        rows={shown.map(([first, ...rest]) => ({ id: first.id, project: first.project, projectSlug: first.projectSlug, at: first.at, mark: first.mark, attempt: first.attempt, steps: first.steps, members: [first, ...rest].map((row) => { const student = students.get(row.userId)!; return { userId: row.userId, login: row.login, name: student.displayName, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreEntryYear, src: avatars[row.userId] ?? null }; }) }))}
+        rows={shown.map(([first, ...rest]) => ({ id: first.id, project: first.project, projectSlug: first.projectSlug, at: first.at, mark: first.mark, attempt: first.attempt, steps: first.steps, members: [first, ...rest].map((row) => { const student = students.get(row.userId)!; return { userId: row.userId, login: row.login, name: student.displayName, mine: String(row.userId) === user.id, level: student.level, year: student.commonCoreCohort, src: avatars[row.userId] ?? null }; }) }))}
         empty={<div className="pl-empty"><KiwiNote>{q ? <><h2>No match</h2><p>Nothing here matches “{q}”. Try a login, a name or a project.</p></> : validatedTab ? <><h2>Nothing validated lately</h2><p>No project was validated here in the last {days} days.</p></> : failedTab ? <><h2>Nothing failed lately</h2><p>No project was failed here in the last {days} days.</p></> : lockedTab ? <><h2>No new teams</h2><p>No team locked a group project here in the last {days} days.</p></> : <><h2>Nothing waiting for correction</h2><p>Everyone is corrected. Kiwi approves.</p></>}</KiwiNote></div>}/>
     </section>
   </main>;

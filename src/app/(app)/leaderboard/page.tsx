@@ -62,7 +62,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
         </div>}
       </section>
 
-      <FilterBox filters={filters} campuses={dataset.campuses} cohorts={cohorts(dataset.students)} open={false} reset={href(scopes[0].filters)} isDefault={activeScope === 'Cohort' && !filters.q && !filters.bh}/>
+      <FilterBox filters={filters} campuses={dataset.campuses} cohorts={cohorts([...dataset.students, ...dataset.blackholed])} open={false} reset={href(scopes[0].filters)} isDefault={activeScope === 'Cohort' && !filters.q && !filters.bh}/>
     </aside>
 
     <section className="pl-list" aria-label="Leaderboard">
@@ -73,7 +73,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   </main>;
 }
 
-const cohorts = (students: { commonCoreEntryYear: string | null }[]) => [...new Set(students.map((student) => student.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
+const cohorts = (students: { commonCoreCohort: string | null }[]) => [...new Set(students.map((student) => student.commonCoreCohort).filter((year): year is string => !!year))].sort().reverse();
 
 function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
   // A student who asked to be removed keeps their place on the podium, with no name, level or link.
@@ -116,11 +116,11 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
   ].filter((token): token is NonNullable<typeof token> => !!token);
   const hidden: Record<string, string> = { campus: filters.campus ? String(filters.campus) : ALL, cohort: filters.cohort ?? ALL, ...(filters.bh ? { bh: filters.bh } : {}) };
   return <FilterShell action="/leaderboard" hidden={hidden} q={filters.q} placeholder="Search a login or name" clearHref={go({ q: undefined })} activeCount={isDefault ? 0 : tokens.length} defaultOpen={open}>
-    {(tokens.length > 0 || !isDefault) && <div className="pl-tokens" aria-label="Active filters">
-      {tokens.map((token) => <Link key={token.key} href={token.remove} className={`pl-token is-${token.tone}`} aria-label={`Remove ${token.label}`}>{token.label}<X size={13}/></Link>)}
-      {!isDefault && <Link href={reset} className="pl-token-reset"><RotateCcw size={14}/> Reset to my year</Link>}
+    {(tokens.length > 0 || !isDefault) && <div className="pl-tokens" aria-label="Active filters" data-keep-scroll>
+      {tokens.map((token) => <Link key={token.key} href={token.remove} scroll={false} className={`pl-token is-${token.tone}`} aria-label={`Remove ${token.label}`}>{token.label}<X size={13}/></Link>)}
+      {!isDefault && <Link href={reset} scroll={false} className="pl-token-reset"><RotateCcw size={14}/> Reset to my cohort</Link>}
     </div>}
-    <div className="pl-groups">
+    <div className="pl-groups" data-keep-scroll>
       <ChipGroup icon={<Campus size={17}/>} label="Campus" tone="lilac" chips={[{ label: 'All', href: go({ campus: undefined }), active: !filters.campus }, ...campuses.map((campus) => ({ label: campus.name, href: go({ campus: campus.id }), active: filters.campus === campus.id }))]}/>
       <ChipGroup icon={<Cohort size={17}/>} label="Cohort" tone="yellow" scroll chips={[{ label: 'All', href: go({ cohort: undefined }), active: !filters.cohort }, ...cohorts.map((year) => ({ label: year, href: go({ cohort: year }), active: filters.cohort === year }))]}/>
       <ChipGroup icon={<Hourglass size={17}/>} label="Status" tone="mint" chips={[{ label: 'All', href: go({ bh: 'all' }), active: filters.bh === 'all' }, { label: 'Active students', href: go({ bh: undefined }), active: !filters.bh }, { label: 'Alumni', href: go({ bh: 'alumni' }), active: filters.bh === 'alumni', tone: 'alumni' }, { label: 'Frozen', href: go({ bh: 'frozen' }), active: filters.bh === 'frozen', tone: 'frozen' }, { label: 'Blackholed', href: go({ bh: 'blackholed' }), active: filters.bh === 'blackholed', tone: 'red' }]}/>
@@ -129,7 +129,7 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
 }
 
 function ChipGroup({ icon, label, tone, chips, scroll = false }: { icon: React.ReactNode; label: string; tone: string; chips: { label: string; href: string; active: boolean; tone?: string }[]; scroll?: boolean }) {
-  const items = chips.map((chip) => <Link key={chip.label} href={chip.href} className={`pl-chip is-${chip.tone ?? tone}`} data-active={chip.active || undefined} aria-current={chip.active ? 'true' : undefined}>{chip.label}</Link>);
+  const items = chips.map((chip) => <Link key={chip.label} href={chip.href} scroll={false} className={`pl-chip is-${chip.tone ?? tone}`} data-active={chip.active || undefined} aria-current={chip.active ? 'true' : undefined}>{chip.label}</Link>);
   return <div className="pl-chip-group" role="group" aria-label={label}>
     <span className="pl-chip-label">{icon}{label}</span>
     {scroll ? <ScrollRow className="pl-chips is-scroll">{items}</ScrollRow> : <div className="pl-chips">{items}</div>}

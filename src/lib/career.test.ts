@@ -4,7 +4,7 @@ import type { StudentRank } from './ranking';
 
 const row = (user: number, project: number, status: string, validated: boolean | null, at = '2026-01-01T00:00:00Z') =>
   ({ status, 'validated?': validated, marked_at: at, created_at: at, project: { id: project, name: 'p', slug: 'p' }, user: { id: user, login: `u${user}` } });
-const student = (id: number, campusIds: number[]): StudentRank => ({ id, login: `u${id}`, displayName: null, poolYear: null, poolMonth: null, commonCoreEntryYear: '2023', level: 10, campusIds, globalRank: 0, campusRanks: {} });
+const student = (id: number, campusIds: number[]): StudentRank => ({ id, login: `u${id}`, displayName: null, poolYear: null, poolMonth: null, commonCoreCohort: '2023', level: 10, campusIds, globalRank: 0, campusRanks: {} });
 
 describe('classifyCareer', () => {
   it('sorts students into waiting, internship and done', () => {

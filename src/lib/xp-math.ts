@@ -4,7 +4,9 @@
  * against a real student: the XP of their validated projects gave level 6.67 for a real 6.68.
  */
 export const LEVEL_XP = [0, 462, 2688, 5885, 11777, 29217, 46255, 63559, 74340, 85483, 95000, 105630, 124446, 145782, 169932, 197316, 228354, 263508, 303366, 348516, 399672, 457632, 523320, 597786, 682164, 777756, 886074, 1008798, 1147902, 1305486, 1484070];
-const TOP = LEVEL_XP.length - 1;
+/** Custom starting levels must stay within the XP table rather than silently clamping. */
+export const MAX_XP_LEVEL = LEVEL_XP.length - 1;
+const TOP = MAX_XP_LEVEL;
 
 /** 6.68 → the XP a student at that level has. */
 export function levelToXp(level: number) {

@@ -51,16 +51,16 @@ export async function StudentProfile({ dataset, userId }: { dataset: RankingData
   const campusLabel = campus ? campusName(dataset, campus) : null;
   const level = person.level, whole = Math.floor(level), progress = level - whole;
   const peers = ranked && campus ? dataset.students.filter((student) => student.campusIds.includes(campus)) : [];
-  const cohortPeers = ranked?.commonCoreEntryYear ? peers.filter((student) => student.commonCoreEntryYear === ranked.commonCoreEntryYear) : [];
+  const cohortPeers = ranked?.commonCoreCohort ? peers.filter((student) => student.commonCoreCohort === ranked.commonCoreCohort) : [];
   const inCohort = ranked && campus ? cohortRank(dataset.students, ranked, campus) : null;
   const pool = ranked?.poolMonth && ranked.poolYear ? `Piscine ${ranked.poolMonth[0].toUpperCase()}${ranked.poolMonth.slice(1)} ${ranked.poolYear}` : null;
   const status = lost ? `Blackholed ${dateOf(lost.blackholedAt)}` : ranked?.alumni ? 'Alumni' : ranked?.frozen ? 'Frozen' : null;
   const ranks = ranked ? [
     ...(campus && ranked.campusRanks[campus] ? [{ label: `at ${campusLabel}`, rank: ranked.campusRanks[campus], total: peers.length }] : []),
-    ...(inCohort ? [{ label: `in cohort ${ranked.commonCoreEntryYear}`, rank: inCohort, total: cohortPeers.length }] : []),
+    ...(inCohort ? [{ label: `in cohort ${ranked.commonCoreCohort}`, rank: inCohort, total: cohortPeers.length }] : []),
     { label: 'across 1337', rank: ranked.globalRank, total: dataset.students.length },
   ] : [];
-  const chips = [campusLabel, person.commonCoreEntryYear && `Cohort ${person.commonCoreEntryYear}`, pool, status].filter((item): item is string => !!item);
+  const chips = [campusLabel, person.commonCoreCohort && `Cohort ${person.commonCoreCohort}`, pool, status].filter((item): item is string => !!item);
 
   return <>
     <header className="of-head sp-head">

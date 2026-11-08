@@ -17,10 +17,17 @@ describe('blackholed students', () => {
       record(6, { end_at: null }, { 'active?': false }),
     ] }], 21, new Set([5]), now);
     expect(lost.map((item) => item.id)).toEqual([1]);
-    expect(lost[0]).toMatchObject({ login: 'u1', commonCoreEntryYear: '2023', campusIds: [16] });
+    expect(lost[0]).toMatchObject({ login: 'u1', commonCoreCohort: '2023', campusIds: [16] });
   });
   it('leaves alumni out of the blackholed list', () => {
     const lost = collectBlackholed([{ campusId: 16, records: [record(7, {}, { 'alumni?': true }), record(10)] }], 21, new Set(), now);
     expect(lost.map((item) => item.id)).toEqual([10]);
+  });
+  it('uses the same split 2019 promos for ended enrollments', () => {
+    const lost = collectBlackholed([{ campusId: 16, records: [
+      record(1, { begin_at: '2019-03-04T08:00:00Z' }),
+      record(2, { begin_at: '2019-11-04T08:00:00Z' }),
+    ] }], 21, new Set(), now);
+    expect(lost.map((student) => student.commonCoreCohort)).toEqual(['2019-03', '2019-10']);
   });
 });
