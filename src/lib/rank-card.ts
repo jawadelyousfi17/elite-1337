@@ -1,6 +1,5 @@
 import { campusName, type RankingDataset } from './dataset';
 import { cohortRank, topPercent } from './ranking';
-import { ART_COLS, ART_ROWS, artRows, silhouetteLuma } from './card-art';
 
 export type CardData = {
   login: string; level: number; campus: string; cohort: string | null;
@@ -32,12 +31,12 @@ const escape = (value: string) => value.replace(/[&<>"']/g, (char) => ({ '&': '&
 const rank = (value: number | null) => value ? `#${value}` : '—';
 
 const W = 840, H = 340, MONO = "ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'DejaVu Sans Mono','Liberation Mono',monospace";
-const ART_X = 34, CELL_W = 5, CELL_H = 9.1, ART_TOP = 33, ART_FONT = 8.6;
+const PHOTO_X = 34, PHOTO_Y = 30, PHOTO = 280;
 const TEXT_X = 366, COLS = 60, CHAR_W = 7.4, LINE = 22, TEXT_TOP = 46, TEXT_FONT = 12.3;
 
-const DARK = '.bg{fill:#0d1117;stroke:#30363d}.panel{fill:#161b22}.art{fill:#c9d1d9}.k{fill:#d2a8ff}.v{fill:#a5d6ff}.d{fill:#6e7681}.t{fill:#c9d1d9}.c{fill:#6e7681}.g{fill:#56d364}.z{fill:#79e2d9}.p{fill:#f0abfc}.art-l{display:none}';
-const LIGHT = '.bg{fill:#fff;stroke:#d0d7de}.panel{fill:#f6f8fa}.art{fill:#24292f}.k{fill:#8250df}.v{fill:#0550ae}.d{fill:#8c959f}.t{fill:#24292f}.c{fill:#6e7781}.g{fill:#1a7f37}.z{fill:#0b7a75}.p{fill:#a626a4}.art-d{display:none}';
-const STYLE: Record<CardTheme, string> = { dark: DARK, light: LIGHT, auto: `${DARK}@media (prefers-color-scheme: light){${LIGHT.replace('.art-d{display:none}', '.art-d{display:none}.art-l{display:inline}')}}` };
+const DARK = '.bg{fill:#0d1117;stroke:#30363d}.panel{fill:#161b22}.ph{fill:#21262d}.ph2{fill:#30363d}.ring{fill:none;stroke:#30363d}.k{fill:#d2a8ff}.v{fill:#a5d6ff}.d{fill:#6e7681}.t{fill:#c9d1d9}.c{fill:#6e7681}.g{fill:#56d364}.z{fill:#79e2d9}.p{fill:#f0abfc}';
+const LIGHT = '.bg{fill:#fff;stroke:#d0d7de}.panel{fill:#f6f8fa}.ph{fill:#e6eaef}.ph2{fill:#c5ccd4}.ring{fill:none;stroke:#d0d7de}.k{fill:#8250df}.v{fill:#0550ae}.d{fill:#8c959f}.t{fill:#24292f}.c{fill:#6e7781}.g{fill:#1a7f37}.z{fill:#0b7a75}.p{fill:#a626a4}';
+const STYLE: Record<CardTheme, string> = { dark: DARK, light: LIGHT, auto: `${DARK}@media (prefers-color-scheme: light){${LIGHT}}` };
 
 type Segment = [cls: string, text: string];
 const rule = (title: string): Segment[] => [['t', `- ${title} `], ['d', '─'.repeat(COLS - title.length - 3)]];
@@ -68,22 +67,27 @@ function lines(data: CardData): Segment[][] {
   ];
 }
 
-const artGroup = (luma: Uint8Array, theme: 'dark' | 'light') => `<g class="art-${theme === 'dark' ? 'd' : 'l'}" font-size="${ART_FONT}">${artRows(luma, theme).map((row, index) => row && `<text class="art" x="${ART_X}" y="${(ART_TOP + (index + 1) * CELL_H - 1.6).toFixed(1)}" textLength="${row.length * CELL_W}" lengthAdjust="spacing" xml:space="preserve">${row}</text>`).join('')}</g>`;
+/** The student's photo as a rounded square; a neutral head-and-shoulders shape when there is none. */
+function portrait(photo: string | null): string {
+  const clip = `<clipPath id="pc"><rect x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO}" height="${PHOTO}" rx="16"/></clipPath>`;
+  const body = photo
+    ? `<image x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO}" height="${PHOTO}" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${photo}"/>`
+    : `<rect class="ph" x="${PHOTO_X}" y="${PHOTO_Y}" width="${PHOTO}" height="${PHOTO}"/><circle class="ph2" cx="${PHOTO_X + 140}" cy="${PHOTO_Y + 108}" r="54"/><ellipse class="ph2" cx="${PHOTO_X + 140}" cy="${PHOTO_Y + 290}" rx="112" ry="100"/>`;
+  return `<defs>${clip}</defs><g clip-path="url(#pc)">${body}</g><rect class="ring" x="${PHOTO_X + .5}" y="${PHOTO_Y + .5}" width="${PHOTO - 1}" height="${PHOTO - 1}" rx="16"/>`;
+}
 
 /**
- * A self-contained 840x340 SVG in a terminal style: a text portrait of the student and a few key/value lines. It has no
- * fonts, scripts or images, so GitHub's image proxy shows it as is, and it follows the viewer's light or dark theme.
- * `luma` is the photo as ART_COLS x ART_ROWS grayscale bytes; without it a neutral silhouette is drawn.
+ * A self-contained 840x340 SVG in a terminal style: the student's photo and a few key/value lines. The photo is embedded
+ * as a small base64 JPEG (no external requests, scripts or fonts), so GitHub's image proxy shows it as is, and the card
+ * follows the viewer's light or dark theme. `photo` is that JPEG in base64; without it a neutral silhouette is drawn.
  */
-export function renderRankCard(data: CardData, theme: CardTheme = 'auto', luma: Uint8Array | null = null): string {
-  const picture = luma && luma.length === ART_COLS * ART_ROWS ? luma : silhouetteLuma();
-  const art = (theme === 'auto' || theme === 'dark' ? artGroup(picture, 'dark') : '') + (theme === 'auto' || theme === 'light' ? artGroup(picture, 'light') : '');
+export function renderRankCard(data: CardData, theme: CardTheme = 'auto', photo: string | null = null): string {
   const text = lines(data).map((segments, index) => `<text x="${TEXT_X}" y="${TEXT_TOP + index * LINE}" textLength="${(segments.reduce((sum, [, part]) => sum + part.length, 0) * CHAR_W).toFixed(1)}" lengthAdjust="spacing" xml:space="preserve">${segments.map(([cls, part]) => `<tspan class="${cls}">${escape(part)}</tspan>`).join('')}</text>`).join('\n');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escape(`${data.login}: level ${data.level.toFixed(2)}, ${rank(data.cohortRank)} in cohort, ${data.campus}`)}" font-family="${MONO}">
 <style>${STYLE[theme]}</style>
 <rect class="bg" x=".5" y=".5" width="${W - 1}" height="${H - 1}" rx="14"/>
 <rect class="panel" x="14" y="14" width="${W - 28}" height="${H - 28}" rx="10"/>
-${art}
+${portrait(photo)}
 <g font-size="${TEXT_FONT}">
 ${text}
 </g>

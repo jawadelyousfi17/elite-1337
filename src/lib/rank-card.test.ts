@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { RankingDataset } from './dataset';
 import type { StudentRank } from './ranking';
-import { ART_COLS, ART_ROWS } from './card-art';
 import { cardData, renderPendingCard, renderRankCard, type CardData } from './rank-card';
 
 const student = (id: number, login: string, level: number, extra: Partial<StudentRank> = {}): StudentRank => ({ id, login, displayName: null, poolYear: null, poolMonth: null, commonCoreCohort: '2024', level, campusIds: [16], globalRank: id, campusRanks: { 16: id }, ...extra });
@@ -24,17 +23,15 @@ describe('renderRankCard', () => {
     const svg = renderRankCard(data);
     expect(svg.startsWith('<svg')).toBe(true);
     for (const text of ['jel-yous@elite-1337', 'Khouribga', '2024', '7.42', '#12 of 280 · top 5%', '#34 of 900', '#210 of 3000', 'Active']) expect(svg).toContain(text);
-    expect(svg).not.toMatch(/<image|<script|href=|@import|url\(/);
+    expect(svg).not.toMatch(/<script|http-equiv|@import|href="http/);
   });
-  it('draws the photo as text, light ink on dark and the reverse on light, and a silhouette without a photo', () => {
-    const luma = new Uint8Array(ART_COLS * ART_ROWS).fill(255);
-    const dark = renderRankCard(data, 'dark', luma), light = renderRankCard(data, 'light', luma);
-    expect(dark).toContain('█████');
-    expect(dark).not.toContain('class="art-l"');
-    expect(light).not.toContain('█████');
-    expect(light).toContain('class="art-l"');
-    expect(renderRankCard(data, 'dark')).toContain('class="art"');
-    expect(renderRankCard(data)).toContain('class="art-d"');
+  it('embeds the photo as a data image, and draws a silhouette without one', () => {
+    const withPhoto = renderRankCard(data, 'auto', 'QUJD');
+    expect(withPhoto).toContain('href="data:image/jpeg;base64,QUJD"');
+    expect(withPhoto).not.toContain('class="ph2"');
+    const without = renderRankCard(data);
+    expect(without).not.toContain('<image');
+    expect(without).toContain('class="ph2"');
   });
   it('escapes anything that came from outside', () => {
     const svg = renderRankCard({ ...data, login: '<b>"x"&', campus: '</text><script>' });

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { loadRankingDataset } from '@/lib/dataset';
 import { validCardToken } from '@/lib/card-token';
-import { loadCardLuma } from '@/lib/card-photo';
+import { loadCardPhoto } from '@/lib/card-photo';
 import { withTimeout } from '@/lib/timeout';
 import { cardData, renderPendingCard, renderRankCard, type CardTheme } from '@/lib/rank-card';
 
@@ -29,8 +29,8 @@ export async function GET(request: NextRequest, context: { params: Promise<{ fil
   if (state.status !== 'ready') return new Response(renderPendingCard(theme), { headers: headers(60, 0) });
   const data = cardData(state.data, id);
   if (!data) return notFound.clone();
-  // The portrait comes from the photo CDN (cached a month per photo). If it is slow the card goes out with a silhouette and a short cache.
-  const luma = data.photo ? await withTimeout(loadCardLuma(id, data.photo).catch(() => null), 6_000, undefined) : null;
+  // The photo comes from the photo CDN (cached a month per photo). If it is slow the card goes out with a silhouette and a short cache.
+  const photo = data.photo ? await withTimeout(loadCardPhoto(id, data.photo).catch(() => null), 6_000, undefined) : null;
   // GitHub caches images for a while anyway; an hour keeps the rank fresh without touching 42 (rankings refresh every 30 minutes).
-  return new Response(renderRankCard(data, theme, luma ?? null), { headers: headers(luma === undefined ? 300 : 3600) });
+  return new Response(renderRankCard(data, theme, photo ?? null), { headers: headers(photo === undefined ? 300 : 3600) });
 }
