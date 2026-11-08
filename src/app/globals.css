@@ -2236,3 +2236,22 @@ html[data-tw-light]:not(:has(.landing)) .xp-viewing b{color:#1a7a35}
 html[data-tw-light]:not(:has(.landing)) :is(.xp-viewing button){color:#141414}
 html[data-tw-light]:not(:has(.landing)) .race-vs-spin{border-color:#00000026;border-top-color:#1a7a35}
 html[data-tw-light]:not(:has(.landing)) .xp-viewing.is-miss{color:#b3261e}
+
+/* Rank card page. */
+.cd{max-width:760px}
+.cd-head h1{margin:6px 0 0;font-size:30px;font-weight:600;letter-spacing:-.04em}
+.cd-head p{margin:6px 0 22px;color:var(--muted);font-size:15px}
+.cd-preview{display:grid;place-items:center;padding:24px 12px;border-radius:23px;background:#141414;overflow:hidden}
+.cd-preview img{max-width:100%;height:auto;border-radius:18px}
+.cd-steps{margin-top:22px;display:grid;gap:14px}
+.cd-steps h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.02em}
+.cd-steps ol{margin:0;padding-left:22px;list-style:decimal;display:grid;gap:6px;color:var(--muted);font-size:14px;line-height:1.5}
+.cd-steps code{padding:1px 6px;border-radius:6px;background:#202020;color:var(--text);font-size:13px}
+.cd-field{display:grid;gap:8px;padding:14px;border-radius:18px;background:#141414}
+.cd-field-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600}
+.cd-copy{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;background:#202020;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:background .18s}
+.cd-copy:hover{background:#2b2b2b}
+.cd-field textarea{width:100%;resize:none;field-sizing:content;padding:10px 12px;border-radius:12px;background:#0a0a0a;color:#cfcfcf;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;border:0;outline:none;word-break:break-all}
+.cd-field textarea:focus-visible{outline:3px solid var(--mint)}
+.cd-note{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+@media(max-width:700px){.cd-head h1{font-size:26px}.cd-preview{padding:16px 8px}}

@@ -23,6 +23,11 @@ This replaces the older V2/V3 report, which described the first prototype (anoth
 - Corrections: tabs for Waiting, Validated, Failed (graded, not yet retried) and Locked teams, grouped by team, filtered by campus, cohort, project and search. Validated and Failed offer 14, 30 and 60 days (14 by default, each window fetched only when opened); Locked offers 30 and 60 days. Waiting is a live queue refreshed every 5 minutes.
 - Pending fix: rows now show only students the rankings list at the selected campus, so students from another campus (for example Rabat under Khouribga) do not appear.
 
+### Rank card for GitHub (`/card`)
+- A student presses Share (profile menu, "Rank card for GitHub") and gets a Markdown/HTML snippet for their profile README. The image is an SVG at `/api/card/<id>.svg?t=<signature>` showing login, level, cohort/campus/all-1337 ranks and a Frozen or Alumni badge; it follows the viewer's light or dark theme (`&theme=dark|light` forces one).
+- The route is public, because GitHub's image proxy sends no cookies. The signed token is the permission: it is an HMAC of the student's id, so only students who opened `/card` have a working link. Nothing is stored; changing `AUTH_SECRET` revokes every link. Removed (anonymized) students have no card.
+- Data comes from the cached rankings, so a card costs no 42 requests (a cold rankings refresh aside). Responses are cached for an hour (a placeholder for one minute while rankings load).
+
 ### XP calculator (`/xp`)
 - Starts empty. Pick projects (core and advanced views, per-promo project lists), set a mark with a slider or the 100 / 125 presets.
 - Hero card: level now → level after, rank among cohort and campus peers, and the **total XP gained** from the added projects.
