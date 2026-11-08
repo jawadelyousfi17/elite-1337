@@ -4,8 +4,8 @@ import type { BlackholedStudent } from './dataset';
 import type { StudentRank } from './ranking';
 
 const now = Date.parse('2026-10-23T12:00:00Z');
-const student = (id: number, level: number, campusIds: number[], year: string): StudentRank => ({ id, login: `s${id}`, displayName: null, poolYear: null, poolMonth: null, commonCoreEntryYear: year, level, campusIds, globalRank: 0, campusRanks: {} });
-const lost = (id: number, daysAgo: number, campusIds: number[], year: string): BlackholedStudent => ({ id, login: `b${id}`, displayName: null, level: 3, campusIds, commonCoreEntryYear: year, blackholedAt: new Date(now - daysAgo * 86_400_000).toISOString(), photo: null });
+const student = (id: number, level: number, campusIds: number[], year: string): StudentRank => ({ id, login: `s${id}`, displayName: null, poolYear: null, poolMonth: null, commonCoreCohort: year, level, campusIds, globalRank: 0, campusRanks: {} });
+const lost = (id: number, daysAgo: number, campusIds: number[], year: string): BlackholedStudent => ({ id, login: `b${id}`, displayName: null, level: 3, campusIds, commonCoreCohort: year, blackholedAt: new Date(now - daysAgo * 86_400_000).toISOString(), photo: null });
 
 describe('computeStats', () => {
   const dataset = {
@@ -40,6 +40,16 @@ describe('computeStats', () => {
     const { matrix } = computeStats(dataset, { now });
     expect(matrix.cells['2024'][16]).toEqual({ active: 1, blackholed: 2, rate: 1 / 3 });
     expect(matrix.cells['2024'][21].rate).toBeNull();
+  });
+  it('keeps both 2019 promos separate in survival and cohort leaders', () => {
+    const stats = computeStats({
+      students: [student(1, 15, [16], '2019-03'), student(2, 10, [16], '2019-10')],
+      blackholed: [lost(3, 2, [16], '2019-03'), lost(4, 3, [16], '2019-10'), lost(5, 4, [16], '2019-10')],
+    }, { now });
+    expect(stats.matrix.years).toEqual(['2019-10', '2019-03']);
+    expect(stats.matrix.cells['2019-03'][16]).toEqual({ active: 1, blackholed: 1, rate: 1 / 2 });
+    expect(stats.matrix.cells['2019-10'][16]).toEqual({ active: 1, blackholed: 2, rate: 1 / 3 });
+    expect(stats.leaders.map(({ year, student, cohortSize }) => [year, student.id, cohortSize])).toEqual([['2019-10', 2, 1], ['2019-03', 1, 1]]);
   });
   it('picks the best level of each cohort and builds the calendar month', () => {
     const stats = computeStats(dataset, { now, month: '2026-10' });

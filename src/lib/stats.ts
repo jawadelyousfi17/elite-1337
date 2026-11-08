@@ -66,13 +66,13 @@ export function computeStats(dataset: Pick<RankingDataset, 'students' | 'blackho
     return { campusId: id, active: members.length, avgLevel: average(members.map((student) => student.level)), blackholed30: dataset.blackholed.filter((student) => student.campusIds.includes(id) && now - Date.parse(student.blackholedAt) <= 30 * DAY).length };
   });
 
-  const years = [...new Set([...dataset.students, ...dataset.blackholed].map((student) => student.commonCoreEntryYear).filter((year): year is string => !!year))].sort((a, b) => b.localeCompare(a));
+  const years = [...new Set([...dataset.students, ...dataset.blackholed].map((student) => student.commonCoreCohort).filter((year): year is string => !!year))].sort((a, b) => b.localeCompare(a));
   const cells: PlatformStats['matrix']['cells'] = {};
   for (const year of years) {
     cells[year] = {};
     for (const id of campusIds) {
-      const active = dataset.students.filter((student) => student.commonCoreEntryYear === year && student.campusIds.includes(id)).length;
-      const blackholed = dataset.blackholed.filter((student) => student.commonCoreEntryYear === year && student.campusIds.includes(id)).length;
+      const active = dataset.students.filter((student) => student.commonCoreCohort === year && student.campusIds.includes(id)).length;
+      const blackholed = dataset.blackholed.filter((student) => student.commonCoreCohort === year && student.campusIds.includes(id)).length;
       cells[year][id] = { active, blackholed, rate: active + blackholed ? active / (active + blackholed) : null };
     }
   }
@@ -81,7 +81,7 @@ export function computeStats(dataset: Pick<RankingDataset, 'students' | 'blackho
   const levels = Array.from({ length: top + 1 }, (_, level) => ({ level, count: students.filter((student) => Math.floor(student.level) === level).length }));
 
   const leaders = years.flatMap((year) => {
-    const cohort = students.filter((student) => student.commonCoreEntryYear === year);
+    const cohort = students.filter((student) => student.commonCoreCohort === year);
     const best = cohort.reduce<StudentRank | undefined>((winner, student) => !winner || student.level > winner.level ? student : winner, undefined);
     return best ? [{ year, student: best, cohortSize: cohort.length }] : [];
   });

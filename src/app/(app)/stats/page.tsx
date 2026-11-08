@@ -170,7 +170,7 @@ export default async function StatsPage({ searchParams }: { searchParams: Promis
           {latest.length ? <ul className="st-feed">{latest.map((student) => <li key={student.id}>
             <Link href={profileHref(student.login)} {...external}>
               <span className="st-feed-avatar" style={{ '--ring': campusColors[student.campusIds[0]] ?? '#555' } as CSSProperties}><Avatar login={student.login} src={avatars[student.id]} size={38}/></span>
-              <span className="st-who"><small>{shortDate(student.blackholedAt)}</small><b>{student.login}<NewTabMark/></b><small>Level {student.level.toFixed(2)} · {student.commonCoreEntryYear ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</small></span>
+              <span className="st-who"><small>{shortDate(student.blackholedAt)}</small><b>{student.login}<NewTabMark/></b><small>Level {student.level.toFixed(2)} · {student.commonCoreCohort ?? '?'} · {student.campusIds.map((id) => campusName(dataset, id)).join(' · ')}</small></span>
             </Link>
           </li>)}</ul> : <p className="st-empty">Nobody blackholed here yet.</p>}
         </section>

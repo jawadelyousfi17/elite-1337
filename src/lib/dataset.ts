@@ -2,11 +2,11 @@ import { unstable_cache } from 'next/cache';
 import { singleFlight } from './single-flight';
 import { campusIds, cursusId, excludedUserIds } from './config';
 import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus, type ApiCursusUser } from './fortytwo-api';
-import { commonCoreEntryYear } from './classification';
+import { commonCoreCohort } from './cohorts';
 import { classifyPopulation, type StudentRank } from './ranking';
 import { maskAnonymous } from './anonymous';
 
-export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreEntryYear: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean };
+export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreCohort: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean };
 export type RankingDataset = { students: StudentRank[]; blackholed: BlackholedStudent[]; acceptedUserIds: number[]; campuses: ApiCampus[]; fetchedAt: string; complete: true };
 
 export function collectBlackholed(sources: { campusId: number; records: ApiCursusUser[] }[], curriculum: number, ranked: ReadonlySet<number>, now = Date.now()): BlackholedStudent[] {
@@ -18,7 +18,7 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
     if (!record.end_at || Date.parse(record.end_at) > now) continue;
     const previous = found.get(user.id);
     if (previous) { if (!previous.campusIds.includes(campusId)) previous.campusIds.push(campusId); if (Date.parse(previous.blackholedAt) >= at) continue; }
-    found.set(user.id, { id: user.id, login: user.login, displayName: user.displayname ?? null, level: record.level ?? 0, campusIds: previous?.campusIds ?? [campusId], commonCoreEntryYear: commonCoreEntryYear(record.begin_at), blackholedAt: record.blackholed_at!, photo: user.image ?? null });
+    found.set(user.id, { id: user.id, login: user.login, displayName: user.displayname ?? null, level: record.level ?? 0, campusIds: previous?.campusIds ?? [campusId], commonCoreCohort: commonCoreCohort(record.begin_at), blackholedAt: record.blackholed_at!, photo: user.image ?? null });
   }
   return [...found.values()].sort((a, b) => Date.parse(b.blackholedAt) - Date.parse(a.blackholedAt) || a.login.localeCompare(b.login));
 }

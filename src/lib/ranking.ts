@@ -1,10 +1,11 @@
+import { commonCoreCohort } from './cohorts';
 import type { ApiCursusUser } from './fortytwo-api';
 import { matchesSearch } from './search';
-import { classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession, type ExclusionReason } from './classification';
+import { classifyCommonCore, likelyFrozen, piscineSession, type ExclusionReason } from './classification';
 
 export type StudentRank = {
   id: number; login: string; displayName: string | null;
-  poolYear: string | null; poolMonth: string | null; commonCoreEntryYear: string | null;
+  poolYear: string | null; poolMonth: string | null; commonCoreCohort: string | null;
   level: number; campusIds: number[]; globalRank: number; campusRanks: Record<number, number>;
   photo?: string | null; alumni?: boolean; frozen?: boolean; anonymous?: boolean;
 };
@@ -34,7 +35,7 @@ export function classifyPopulation(sources: CampusCursusRecords[], cursusId: num
     const session = piscineSession(record.user.pool_year, record.user.pool_month);
     students.push({
       id, login: record.user.login, displayName: record.user.displayname ?? null,
-      ...session, commonCoreEntryYear: commonCoreEntryYear(record.begin_at),
+      ...session, commonCoreCohort: commonCoreCohort(record.begin_at),
       level: record.level!, campusIds: [...group.campuses].sort((a, b) => a - b), globalRank: 0, campusRanks: {},
       photo: record.user.image ?? null, ...(record.user['alumni?'] === true || record.user.alumni === true ? { alumni: true } : {}), ...(likelyFrozen(record) ? { frozen: true } : {}),
     });
@@ -63,7 +64,7 @@ export function rankStudents(sources: CampusCursusRecords[], cursusId: number, e
 export function selectLeaderboard(students: StudentRank[], filters: RankingFilters, viewerId?: number) {
   const scope = ordered(students.filter((student) =>
     (!filters.campus || student.campusIds.includes(filters.campus)) &&
-    (!filters.cohort || student.commonCoreEntryYear === filters.cohort) &&
+    (!filters.cohort || student.commonCoreCohort === filters.cohort) &&
     (!filters.poolYear || student.poolYear === filters.poolYear) &&
     (!filters.poolMonth || student.poolMonth === filters.poolMonth)
   ));
@@ -90,10 +91,11 @@ export function topPercent(rank: number, total: number): number {
   return Math.min(100, Math.max(1, Math.ceil(rank / total * 100)));
 }
 
+/** Keep personal ranks scoped to the same promo and campus as the leaderboard. */
 export function cohortRank(students: StudentRank[], student: StudentRank, campusId?: number): number | null {
-  if (!student.commonCoreEntryYear) return null;
+  if (!student.commonCoreCohort) return null;
   return rankWithinScope(students, student, campusId);
 }
 function rankWithinScope(students: StudentRank[], student: StudentRank, campusId?: number) {
-  return 1 + students.filter((member) => member.commonCoreEntryYear === student.commonCoreEntryYear && (!campusId || member.campusIds.includes(campusId)) && member.level > student.level).length;
+  return 1 + students.filter((member) => member.commonCoreCohort === student.commonCoreCohort && (!campusId || member.campusIds.includes(campusId)) && member.level > student.level).length;
 }

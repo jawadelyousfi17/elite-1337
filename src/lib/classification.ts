@@ -6,12 +6,6 @@ export type ExclusionReason =
 
 export type Classification = { eligible: true } | { eligible: false; reason: ExclusionReason };
 
-export function commonCoreEntryYear(beginAt: string | null | undefined): string | null {
-  if (!beginAt || !/^\d{4}-\d{2}-\d{2}T/.test(beginAt)) return null;
-  const date = new Date(beginAt);
-  return Number.isFinite(date.getTime()) ? String(date.getUTCFullYear()) : null;
-}
-
 /**
  * The 42 API hides freezes from non-staff apps. A paused account whose enrollment
  * has not ended is the closest public signal. The blackhole date is ignored: a freeze

@@ -48,11 +48,11 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   const level = own?.level ?? null;
   // Rank scope = the leaderboard's default view: same campus and Common Core cohort. Only the others' levels are sent.
   const campus = own?.campusIds[0];
-  const peers = state.status === 'ready' && own ? state.data.students.filter((student) => student.id !== own.id && student.campusIds.includes(campus!) && student.commonCoreEntryYear === own.commonCoreEntryYear).map((student) => student.level) : null;
+  const peers = state.status === 'ready' && own ? state.data.students.filter((student) => student.id !== own.id && student.campusIds.includes(campus!) && student.commonCoreCohort === own.commonCoreCohort).map((student) => student.level) : null;
   // The coalition only offers the bonus switch: never hold the page for it.
   const standing = own && campus ? await withTimeout(loadOwnCoalition(own.id, campus), 3000, null) : null;
   const coalition = standing && { name: standing.name, color: standing.color, rank: standing.rank, total: standing.total };
-  const scope = state.status === 'ready' && own && campus ? `${own.commonCoreEntryYear ? `Cohort ${own.commonCoreEntryYear}` : 'Cohort'} · ${campusName(state.data, campus)}` : null;
+  const scope = state.status === 'ready' && own && campus ? `${own.commonCoreCohort ? `Cohort ${own.commonCoreCohort}` : 'Cohort'} · ${campusName(state.data, campus)}` : null;
   // Alternatives the student skipped: FdF once so_long is validated, webserv once ft_irc is.
   const skipped = circlesFor(track).flat().filter((group) => group.some((slug) => done[slug] !== undefined)).flat().filter((slug) => done[slug] === undefined);
   const core = coreProjects && coreProjects[track].filter((project) => project.xp > 0).map((project) => ({ ...project, tag: `C${project.circle}` }));

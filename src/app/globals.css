@@ -825,7 +825,8 @@ button.credit:hover,button.credit[data-state=open]{background:#ffffff10}
 
 .sc-heat table{width:100%;border-collapse:separate;border-spacing:3px;table-layout:fixed}
 .sc-heat th{font-size:11px;font-weight:500;color:#9a9a9a;padding:2px 2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-heat tbody th{width:42px;padding:0 6px 0 0;text-align:left;font-size:16px;font-weight:600;color:#ececec}
+.sc-heat th:first-child{width:76px}
+.sc-heat tbody th{width:76px;padding:0 6px 0 0;text-align:left;font-size:14px;font-weight:600;color:#ececec}
 .sc-heat td{padding:0}
 .sc-cell{position:relative;display:grid;place-items:center;height:32px;border-radius:9px;font-size:12px;font-weight:600;color:#e4e4e4;font-variant-numeric:tabular-nums;outline:none;cursor:default;transition:filter .15s}
 .sc-cell.is-light{color:#0a0a0a}

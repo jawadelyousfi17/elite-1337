@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cursusUserSchema } from './fortytwo-api';
-import { admissionOutcome, classifyCommonCore, commonCoreEntryYear, likelyFrozen, piscineSession } from './classification';
+import { admissionOutcome, classifyCommonCore, likelyFrozen, piscineSession } from './classification';
 import { cohortRank, isEligible, mergeByLevel, rankStudents, selectLeaderboard, topPercent } from './ranking';
 
 const record = (id: number, userId: number, login: string, level: number | null, options: {
@@ -11,10 +11,22 @@ const record = (id: number, userId: number, login: string, level: number | null,
 });
 
 describe('classification and rankings', () => {
+  it('separates the two 2019 promos when filtering and computing cohort ranks', () => {
+    const students = rankStudents([{ campusId: 16, records: [
+      record(1, 1, 'march', 15, { beginAt: '2019-03-04T08:00:00Z' }),
+      record(2, 2, 'october', 12, { beginAt: '2019-10-07T08:00:00Z' }),
+      record(3, 3, 'november', 10, { beginAt: '2019-11-04T08:00:00Z' }),
+    ] }], 21);
+    expect(students.map((student) => student.commonCoreCohort)).toEqual(['2019-03', '2019-10', '2019-10']);
+    const view = selectLeaderboard(students, { campus: 16, cohort: '2019-10', page: 1 });
+    expect(view.rows.map(({ login, rank }) => [login, rank])).toEqual([['october', 1], ['november', 2]]);
+    expect(cohortRank(students, students[1], 16)).toBe(1);
+    expect(cohortRank(students, students[2], 16)).toBe(2);
+    expect(selectLeaderboard(students, { campus: 16, cohort: '2019-03', page: 1 }).rows.map((student) => student.login)).toEqual(['march']);
+  });
   it('uses Common Core begin_at for cohort and keeps the earlier Piscine session', () => {
     const student = rankStudents([{ campusId: 16, records: [record(1, 1, 'alpha', 10, { beginAt: '2025-01-02T00:00:00Z', poolYear: '2024' })] }], 21)[0];
-    expect(student).toMatchObject({ commonCoreEntryYear: '2025', poolYear: '2024', poolMonth: 'july' });
-    expect(commonCoreEntryYear(null)).toBeNull();
+    expect(student).toMatchObject({ commonCoreCohort: '2025', poolYear: '2024', poolMonth: 'july' });
     expect(piscineSession('2024', 'July')).toEqual({ poolYear: '2024', poolMonth: 'july' });
   });
   it('excludes staff, inactive, alumni, missing levels, and audited IDs', () => {
@@ -79,7 +91,7 @@ describe('classification and rankings', () => {
 });
 
 describe('selectLeaderboard order', () => {
-  const students = Array.from({ length: 30 }, (_, i) => ({ id: i + 1, login: `s${String(i + 1).padStart(2, '0')}`, displayName: null, poolYear: null, poolMonth: null, commonCoreEntryYear: '2024', level: 30 - i, campusIds: [16], globalRank: 0, campusRanks: {} }));
+  const students = Array.from({ length: 30 }, (_, i) => ({ id: i + 1, login: `s${String(i + 1).padStart(2, '0')}`, displayName: null, poolYear: null, poolMonth: null, commonCoreCohort: '2024', level: 30 - i, campusIds: [16], globalRank: 0, campusRanks: {} }));
   it('lists from the last rank when reversed, keeping ranks and the podium', () => {
     const normal = selectLeaderboard(students, { page: 1 });
     const reversed = selectLeaderboard(students, { page: 1, order: 'desc' });

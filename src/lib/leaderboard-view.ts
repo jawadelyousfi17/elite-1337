@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { cohortSchema } from './cohorts';
 import { campusName, type BlackholedStudent, type RankingDataset } from './dataset';
 import { mergeByLevel, selectLeaderboard, type StudentRank } from './ranking';
 import { matchesSearch } from './search';
@@ -10,7 +11,7 @@ import type { RankRowData } from '@/components/rank-row';
 export const ALL = 'all';
 export const filtersSchema = z.object({
   campus: z.coerce.number().int().positive().optional(),
-  cohort: z.string().regex(/^\d{4}$/).optional(),
+  cohort: cohortSchema.optional(),
   q: z.string().trim().max(40).optional(),
   bh: z.enum(['all', 'blackholed', 'alumni', 'frozen']).optional(),
   page: z.coerce.number().int().min(1).max(10000).default(1),
@@ -35,7 +36,7 @@ export function resolveFilters(raw: Raw, dataset: RankingDataset, profile: Profi
   const own = dataset.students.find((student) => String(student.id) === userId);
   const validCampusIds = new Set(dataset.campuses.map((campus) => campus.id));
   const defaultCampus = profile?.campus_users.find((entry) => entry.is_primary && validCampusIds.has(entry.campus_id))?.campus_id ?? own?.campusIds[0];
-  const defaultCohort = own?.commonCoreEntryYear ?? undefined;
+  const defaultCohort = own?.commonCoreCohort ?? undefined;
   const parsed = filtersSchema.safeParse({
     campus: param('campus') === undefined ? defaultCampus : param('campus') || undefined,
     cohort: param('cohort') === undefined ? defaultCohort : param('cohort') || undefined,
@@ -50,7 +51,7 @@ export function resolveFilters(raw: Raw, dataset: RankingDataset, profile: Profi
 export function listPage(dataset: RankingDataset, filters: Filters, ownId?: number) {
   const blackholedMode = filters.bh === 'blackholed', alumniMode = filters.bh === 'alumni', frozenMode = filters.bh === 'frozen', everyoneMode = filters.bh === 'all';
   const { rows, matches, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode }, ownId);
-  const inScope = (student: BlackholedStudent) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreEntryYear === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
+  const inScope = (student: BlackholedStudent) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreCohort === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
   const lost = blackholedMode || everyoneMode ? dataset.blackholed.filter((student) => !student.anonymous && inScope(student)) : [];
   if (filters.order === 'desc') lost.reverse();
   const merged = blackholedMode ? lost : everyoneMode ? mergeByLevel(matches, lost, filters.order) : [];
@@ -74,13 +75,13 @@ export function avatarsFor(people: { id: number; photo?: string | null }[]) {
 export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string): RankRowData[] {
   const hackers = hackerLogins();
   const campus = (ids: number[]) => ids.map((id) => campusName(dataset, id)).join(' · ');
-  const lostRow = (student: BlackholedStudent): RankRowData => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: hackers.has(student.login.toLowerCase()), blackholedAt: student.blackholedAt });
+  const lostRow = (student: BlackholedStudent): RankRowData => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreCohort, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: hackers.has(student.login.toLowerCase()), blackholedAt: student.blackholedAt });
   if (view.blackholedMode) return view.lostRows.map(lostRow);
   return view.listed.map((student) => !('rank' in student) ? lostRow(student) : student.anonymous ? {
     // Nothing but the place in the list leaves the server for an anonymous student.
     kind: 'ranked', id: student.id, login: 'Anonymous student', level: 0, year: null, campus: '', src: null, hacker: false, rank: student.rank, mine: false, alumni: false, frozen: false, anonymous: true,
   } as RankRowData : ({
-    kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
+    kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreCohort, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
     hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen,
   } as RankRowData));
 }
