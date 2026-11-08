@@ -39,6 +39,14 @@ describe('rank card route', () => {
     expect(response.headers.get('cache-control')).toContain('max-age=60');
     expect(await response.text()).toContain('Rankings are updating');
   });
+  it('applies the look chosen in the link and ignores bad values', async () => {
+    const body = await (await call('42.svg', `${signed(42)}&theme=forest&accent=mint&font=courier&logo=0`)).text();
+    expect(body).toContain('.bg{fill:#0f1d17;');
+    expect(body).toContain('.k{fill:#cafbd2}');
+    expect(body).toContain("'Courier New'");
+    expect(body).not.toContain('class="lg"');
+    expect(await (await call('42.svg', `${signed(42)}&theme=neon&font=comic`)).text()).toContain('prefers-color-scheme');
+  });
   it('can force a theme', async () => {
     expect(await (await call('42.svg', `${signed(42)}&theme=light`)).text()).not.toContain('prefers-color-scheme');
   });

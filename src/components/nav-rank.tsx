@@ -46,7 +46,7 @@ export function NavRank({ ranks, login, logout }: { ranks: ViewerRanks | null; l
         <Separator className="my-3 bg-white/10"/>
         <dl className="grid gap-2">{rows.map(([label, value]) => <div key={label} className="flex items-baseline justify-between gap-3"><dt className="truncate text-sm text-muted-foreground">{label}</dt><dd className="nav-rank-num">{value ? `#${value}` : '—'}</dd></div>)}</dl>
       </>}
-      <Button asChild className="mt-4 w-full"><Link href="/me" onClick={() => change(false)}>Open my dashboard</Link></Button>
+      <Button asChild className="mt-4 w-full justify-start px-4"><Link href="/me" onClick={() => change(false)}>Open my dashboard</Link></Button>
       <Link href="/card" className="nav-rank-logout mt-2" onClick={() => change(false)}><Share size={17} aria-hidden="true"/>Rank card for GitHub<em className="menu-new">New!</em></Link>
       <Link href="/offers" className="nav-rank-logout mt-2" onClick={() => change(false)}><Gift size={17} aria-hidden="true"/>Student offers</Link>
       <button type="button" className="nav-rank-logout mt-2" onClick={() => { change(false); window.dispatchEvent(new Event(OPEN_HIDE_ME)); }}><Trash size={17} aria-hidden="true"/>Remove my profile<em className="menu-new">New!</em></button>

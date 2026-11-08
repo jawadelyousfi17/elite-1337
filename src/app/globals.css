@@ -1070,7 +1070,8 @@ button.credit:hover,button.credit[data-state=open]{background:#ffffff10}
 .nav-actions{flex-wrap:nowrap}
 .nav-logout button{white-space:nowrap}
 /* Log out lives in the profile popover */
-.nav-rank-logout{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:40px;border:0;border-radius:999px;background:#2b2b2b;color:#cfcfcf;font:inherit;font-size:14px;cursor:pointer;transition:background .18s,color .18s}
+.nav-rank-logout{display:flex;align-items:center;justify-content:flex-start;gap:10px;width:100%;height:40px;padding:0 16px;text-align:left;border:0;border-radius:999px;background:#2b2b2b;color:#cfcfcf;font:inherit;font-size:14px;cursor:pointer;transition:background .18s,color .18s}
+.nav-rank-logout .menu-new{margin-left:auto}
 .nav-rank-logout:hover{background:#363636;color:#fff}
 .nav-rank-logout:focus-visible{outline:3px solid #cafbd2;outline-offset:2px}
 /* Small round nav buttons: theme, coffee, GitHub */
@@ -2237,33 +2238,59 @@ html[data-tw-light]:not(:has(.landing)) :is(.xp-viewing button){color:#141414}
 html[data-tw-light]:not(:has(.landing)) .race-vs-spin{border-color:#00000026;border-top-color:#1a7a35}
 html[data-tw-light]:not(:has(.landing)) .xp-viewing.is-miss{color:#b3261e}
 
-/* Rank card page. */
-.cd{max-width:760px}
-.cd-head h1{margin:6px 0 0;font-size:30px;font-weight:600;letter-spacing:-.04em}
-.cd-head p{margin:6px 0 22px;color:var(--muted);font-size:15px}
-.cd-preview{display:grid;place-items:center;padding:24px 12px;border-radius:23px;background:#141414;overflow:hidden}
-.cd-preview img{max-width:100%;height:auto;border-radius:18px}
-.cd-steps{margin-top:22px;display:grid;gap:14px}
-.cd-steps h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.02em}
-.cd-steps ol{margin:0;padding-left:22px;list-style:decimal;display:grid;gap:6px;color:var(--muted);font-size:14px;line-height:1.5}
-.cd-steps code{padding:1px 6px;border-radius:6px;background:#202020;color:var(--text);font-size:13px}
-.cd-field{display:grid;gap:8px;padding:14px;border-radius:18px;background:#141414}
-.cd-field-head{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600}
-.cd-copy{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;background:#202020;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:background .18s}
-.cd-copy:hover{background:#2b2b2b}
-.cd-field textarea{width:100%;resize:none;field-sizing:content;padding:10px 12px;border-radius:12px;background:#0a0a0a;color:#cfcfcf;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;border:0;outline:none;word-break:break-all}
-.cd-field textarea:focus-visible{outline:3px solid var(--mint)}
-.cd-note{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
-@media(max-width:700px){.cd-head h1{font-size:26px}.cd-preview{padding:16px 8px}}
+/* Rank card page: same two columns as Corrections (picker left, card right). */
+.cd-drop{position:relative;display:grid;justify-items:center;gap:4px;padding:26px 16px;border:2px dashed #3a3a3a;border-radius:20px;background:#141414;color:#cfcfcf;text-align:center;cursor:pointer;transition:border-color .18s,background .18s,color .18s}
+.cd-drop strong{margin-top:4px;color:var(--text);font-size:15px;font-weight:500}
+.cd-drop span{color:var(--muted);font-size:13px}
+.cd-drop:hover,.cd-drop.is-over{border-color:var(--mint);background:#171917;color:var(--mint)}
+.cd-drop:has(input:focus-visible){outline:3px solid var(--mint);outline-offset:2px}
+.cd-drop input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.pc-tabs .fa-tab{cursor:pointer;border:0}
+.pc-tabs .fa-tab:disabled,.pl-searchbar-go:disabled{opacity:.6;cursor:default}
+.cd-title{margin:22px 0 4px;font-size:18px;font-weight:600;letter-spacing:-.02em}
+.cd-sub{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.5}
+.cd-status{min-height:18px;margin:12px 4px 0;font-size:13px;color:var(--muted)}
+.cd-status.is-ok{color:var(--mint)}
+.cd-status.is-error{color:#ff8a8a}
+.cd-preview{display:block;width:100%;height:auto;border-radius:10px}
+.cd-tweaks{margin-top:14px;border-radius:18px}
+.cd-swatch{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 2px #00000033;cursor:pointer;transition:transform .15s}
+.cd-swatch:hover{transform:scale(1.08)}
+.cd-swatch.is-active{box-shadow:0 0 0 2px #161616,0 0 0 4px var(--swatch)}
+.cd-swatch:focus-visible,.pl-chip:focus-visible,.cd-code-tab:focus-visible,.cd-code-icon:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+/* Snippet block: header with tabs and tools, thin divider, code below. */
+.cd-code{overflow:hidden;border-radius:12px;background:#1c1c1c}
+.cd-code-head{display:flex;align-items:stretch;justify-content:space-between;height:48px;padding:0 16px;background:#161616;border-bottom:1px solid #2a2a2a}
+.cd-code-tabs{display:flex;gap:20px}
+.cd-code-tab{position:relative;padding:0;background:transparent;color:#8a8a8a;font-size:15px;font-weight:500;cursor:pointer;transition:color .18s}
+.cd-code-tab:hover{color:#cfcfcf}
+.cd-code-tab.is-active{color:#fff}
+.cd-code-tab.is-active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#fff}
+.cd-code-tools{display:flex;align-items:center;gap:6px}
+.cd-code-icon{position:relative;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:8px;background:transparent;color:#8a8a8a;cursor:pointer;transition:color .18s,background .18s}
+.cd-code-icon:hover{color:#fff;background:#ffffff0f}
+.cd-code-tools .pl-anon-tip{border-bottom:0;cursor:default}
+.cd-code-tools .pl-anon-tip::after{left:auto;right:0;transform:translate(0,-4px)}
+.cd-code-tools .pl-anon-tip::before{left:auto;right:12px;margin-left:0}
+.cd-code-tools .pl-anon-tip:hover::after,.cd-code-tools .pl-anon-tip:focus-visible::after{transform:none}
+.cd-code-body{margin:0;padding:14px 16px;overflow-wrap:anywhere;white-space:pre-wrap;color:#cfcfcf;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;outline:none}
+.cd-code-body:focus-visible{box-shadow:inset 0 0 0 2px var(--mint)}
+html[data-tw-light]:not(:has(.landing)) .cd-status.is-ok{color:#0f7b48}
+html[data-tw-light]:not(:has(.landing)) .cd-status.is-error{color:#c0342b}
 
-/* Footer contributors: one row of overlapping avatars, each opening a card on hover. */
-.credits-faces{display:flex;align-items:center;margin:0;padding:0;list-style:none}
-.credits-faces li{margin-left:-7px}
-.credits-faces li:first-child{margin-left:0}
-.credits-faces li:hover,.credits-faces li:focus-within{z-index:2}
+/* Footer contributors: one row of avatars, the two makers first, no divider, each opening a card on hover. */
+.credits{gap:12px;flex-wrap:nowrap}
+.credits-faces{display:flex;align-items:center;gap:4px;margin:0;padding:0;list-style:none}
 button.credit-face{display:block;border:0;background:transparent;padding:0;border-radius:50%;cursor:pointer;transition:transform .18s}
 button.credit-face:hover,button.credit-face[data-state=open]{transform:translateY(-2px)}
 button.credit-face:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
-button.credit-face img{display:block;width:28px;height:28px;border-radius:50%;object-fit:cover;background:#202020;box-shadow:0 0 0 2px #0b0b0b}
-.credits-more{margin-left:8px!important;font-size:12px;font-weight:600;color:#9a9a9a}
+button.credit-face img{display:block;width:28px;height:28px;border-radius:50%;object-fit:cover;background:#202020}
+.credits-more{display:grid;place-items:center;min-width:28px;height:28px;padding:0 8px;border-radius:999px;background:#202020;color:#cfcfcf;font-size:12px;font-weight:600}
 @media(prefers-reduced-motion:reduce){button.credit-face{transition:none}}
+/* Small screens: the card shows right after the picture choice, the style options and the snippet follow. */
+@media(max-width:900px){
+.cd{display:flex;flex-direction:column}
+.cd .pl-side,.cd .pl-list{display:contents}
+.cd .pc-head{order:1}.cd .cd-drop,.cd .pl-searchbar{order:3}.cd .cd-status{order:4}.cd .cd-preview{order:5}.cd .cd-tweaks{order:6}.cd .cd-title{order:7}.cd .cd-sub{order:8}.cd .cd-code{order:9}
+.cd .cd-preview{margin-bottom:12px}
+}
