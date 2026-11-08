@@ -72,13 +72,6 @@ export async function frozenSeen(dataset: RankingDataset, filters: Filters): Pro
   return loadLastSeen(matches.filter((student) => student.id > 0 && !student.anonymous).map((student) => student.id));
 }
 
-/** Last sessions for the frozen students on this page and podium, in any view, so their badge can show a date. A page is at most about 28 requests, cached for 60 days. */
-export async function shownSeen(view: ReturnType<typeof listPage>): Promise<ReadonlyMap<number, string | null>> {
-  if (view.seen) return view.seen;
-  const frozen = [...view.listed, ...view.podium].filter((student): student is Ranked => 'rank' in student && !!student.frozen && !student.anonymous && student.id > 0);
-  return loadLastSeen([...new Set(frozen.map((student) => student.id))], 10_000);
-}
-
 /** Signed 42 Intra photo links for the people shown. */
 export function avatarsFor(people: { id: number; photo?: string | null }[]) {
   // Anonymous students have negative ids and no photo: nothing to look up.
@@ -86,7 +79,7 @@ export function avatarsFor(people: { id: number; photo?: string | null }[]) {
   return photoReferences(real);
 }
 
-export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string, seen: ReadonlyMap<number, string | null> | undefined = view.seen): RankRowData[] {
+export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string): RankRowData[] {
   const hackers = hackerLogins();
   const campus = (ids: number[]) => ids.map((id) => campusName(dataset, id)).join(' · ');
   const lostRow = (student: BlackholedStudent): RankRowData => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: hackers.has(student.login.toLowerCase()), blackholedAt: student.blackholedAt });
@@ -96,6 +89,6 @@ export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPag
     kind: 'ranked', id: student.id, login: 'Anonymous student', level: 0, year: null, campus: '', src: null, hacker: false, rank: student.rank, mine: false, alumni: false, frozen: false, anonymous: true,
   } as RankRowData : ({
     kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreEntryYear, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
-    hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen, ...(student.frozen && seen?.get(student.id) ? { lastSeen: seen.get(student.id)! } : {}),
+    hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen, ...(student.frozen && view.seen?.get(student.id) ? { lastSeen: view.seen.get(student.id)! } : {}),
   } as RankRowData));
 }
