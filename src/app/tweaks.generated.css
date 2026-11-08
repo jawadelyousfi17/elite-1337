@@ -455,6 +455,9 @@ html[data-tw-surface]:not(:has(.landing)) .ann-button:hover,html[data-tw-surface
 html[data-tw-surface]:not(:has(.landing)) .ann-count{background:#cafbd2!important}
 html[data-tw-surface]:not(:has(.landing)) .ann-panel-inner{background:var(--tw-card)!important}
 html[data-tw-surface]:not(:has(.landing)) .ann-cta{background:#cafbd2!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-for-modes{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-for-modes button{background:transparent!important}
+html[data-tw-surface]:not(:has(.landing)) .xp-for-modes button[aria-pressed=true]{background:#f2f2f2!important}
 html[data-tw-surface]:not(:has(.landing)) .xp-viewing button{background:none!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
@@ -796,6 +799,8 @@ html[data-tw-radius] .ann-button{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .ann-count{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .ann-panel-inner{border-radius:calc(23px * var(--tw-r))!important}
 html[data-tw-radius] .ann-cta{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .xp-for-modes{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .xp-for-modes button{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-radius] .race-vs-spin{border-radius:50%!important}
 html[data-tw-radius] :is([data-slot=button],[data-slot=badge]).rounded-full{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
@@ -1292,6 +1297,10 @@ html[data-tw-light]:not(:has(.landing)) .ann-button:hover,html[data-tw-light]:no
 html[data-tw-light]:not(:has(.landing)) .ann-panel-inner{background:#ffffff!important;color:#141414!important;border:1px solid #00000014!important}
 html[data-tw-light]:not(:has(.landing)) .ann-item+.ann-item{border-top:1px solid #0000000f!important}
 html[data-tw-light]:not(:has(.landing)) .ann-body p{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .xp-for-modes{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .xp-for-modes button{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .xp-custom-level label{color:#3d3d3d!important}
+html[data-tw-light]:not(:has(.landing)) .xp-custom-level label span{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-viewing{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .xp-viewing button{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .race-vs-spin{border:2px solid #0000002e!important}
@@ -1459,6 +1468,7 @@ html:not([data-tw-light]):not(:has(.landing)) .menu-new{background:#a7d8b1!impor
 html:not([data-tw-light]):not(:has(.landing)) .ann-button:focus-visible{outline:3px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ann-count{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .ann-cta{background:#a7d8b1!important}
+html:not([data-tw-light]):not(:has(.landing)) .xp-for-modes button:focus-visible{outline:2px solid #a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .xp-viewing b{color:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .race-vs-spin{border-top-color:#a7d8b1!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */

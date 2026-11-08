@@ -11,8 +11,8 @@ import { CoalitionMark } from '@/components/coalition-marks';
 import { XpViewTabs, type XpView } from '@/components/xp-view-tabs';
 
 const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
-// Intra shows levels cut to two decimals, not rounded.
-const lvl = (value: number) => (Math.floor(value * 100) / 100).toFixed(2);
+// Intra truncates levels; ignore floating-point noise at an exact hundredth.
+const lvl = (value: number) => (Math.floor(value * 100 + 1e-9) / 100).toFixed(2);
 type Picked = { slug: string; mark: number; boost: boolean };
 
 /**
@@ -20,7 +20,7 @@ type Picked = { slug: string; mark: number; boost: boolean };
  * in the page: the Common Core one arrives with it, the slow Advanced one streams in after, so switching between them
  * never reloads the page or clears the plan. `null` means a list is unavailable right now.
  */
-export function XpCalculator({ core, advanced: advancedList, view: initialView, level, done, skipped, peers, scope, coalition }: { core: XpOption[] | null; advanced: Promise<XpOption[] | null>; view: XpView; level: number | null; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
+export function XpCalculator({ core, advanced: advancedList, view: initialView, level, custom = false, done, skipped, peers, scope, coalition }: { core: XpOption[] | null; advanced: Promise<XpOption[] | null>; view: XpView; level: number | null; custom?: boolean; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
   const other = useMemo(() => new Set(skipped), [skipped]);
   const [view, setView] = useState(initialView);
   const [advanced, setAdvanced] = useState<XpOption[] | null | undefined>(undefined);
@@ -31,7 +31,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
   }, [advancedList]);
   const bySlug = useMemo(() => new Map([...core ?? [], ...advanced ?? []].map((project) => [project.slug, project])), [core, advanced]);
   const [picked, setPicked] = useState<Picked[]>([]);
-  // The starting level is the student's real one from the rankings; it is not editable.
+  // Custom plans can change their starting level while keeping the selected projects and marks.
   const start = level ?? 0;
   // The #1 coalition's bonus is on by default; 42 does not publish it, so 4.2% is an estimate the student can change.
   const [boosted, setBoosted] = useState(coalition?.rank === 1);
@@ -53,7 +53,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     <div className="xp-hero" aria-live="polite">
       {final > start && <em key={lvl(final)} className="xp-hero-gain">+{(final - start).toFixed(2)}</em>}
       <div className="xp-hero-levels">
-        <div className="xp-hero-from"><strong aria-label={`Level now ${lvl(start)}`}>{lvl(start)}</strong></div>
+        <div className="xp-hero-from"><strong aria-label={`${custom ? 'Starting level' : 'Level now'} ${lvl(start)}`}>{lvl(start)}</strong></div>
         <span className="xp-hero-arrow" aria-hidden="true"><ArrowRight size={22} weight="bold"/></span>
         <div className="xp-hero-to">
           <strong><CountUp value={final}/></strong>
@@ -65,6 +65,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     </div>
 
     {level === null && <p className="xp-note">Your level is not in the rankings yet, so this starts from level 0.</p>}
+    {custom && <p className="xp-note">Custom plan from level {lvl(start)}. Each project adds its full XP.</p>}
 
     {coalition && <section className="xp-panel xp-coalition" aria-label="Coalition">
       <h3>Coalition</h3>
@@ -87,7 +88,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     {picked.length > 0 && <section className="xp-panel" aria-label="Level path">
       <h3>Level path</h3>
       <ol className="xp-path">
-        <li className="is-start"><i aria-hidden="true"/><span><b>Now</b></span><strong>{lvl(start)}</strong></li>
+        <li className="is-start"><i aria-hidden="true"/><span><b>{custom ? 'Start' : 'Now'}</b></span><strong>{lvl(start)}</strong></li>
         {picked.map((item, index) => {
           const level = steps[index]?.level ?? start, before = index ? steps[index - 1]?.level ?? start : start, last = index === picked.length - 1;
           return <li key={item.slug} className={cn(last && 'is-last')} style={{ '--xp-dot': TONES[index % TONES.length].accent, '--xp-dot-light': TONES[index % TONES.length].ink } as React.CSSProperties}>

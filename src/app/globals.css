@@ -2185,8 +2185,22 @@ html:not([data-floating-new]) .menu-new{display:none}
 html[data-tw-light]:not(:has(.landing)) .xp-hero-total b{color:#1a7a35}
 html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-gain{background:#fff!important;color:#141414!important}
 /* XP calculator: calculate for another student, per-project coalition switch */
-.xp-for{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px 16px;min-width:0}
+.xp-for{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0}
 .xp-for .race-vs{width:min(340px,100%)}
+/* Custom XP starting level */
+.xp-for-modes{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:#202020}
+.xp-for-modes button{padding:7px 12px;border:0;border-radius:999px;background:transparent;color:#9a9a9a;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.xp-for-modes button[aria-pressed=true]{background:#f2f2f2;color:#141414}
+.xp-for-modes button:focus-visible{outline:2px solid #cafbd2;outline-offset:2px}
+.xp-for-modes button:disabled,.xp-custom-field button:disabled{opacity:.5;cursor:wait}
+.xp-custom-level{display:flex;flex-direction:column;gap:7px;width:min(340px,100%)}
+.xp-custom-level label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#d8d8d8;font-size:13px;font-weight:600}
+.xp-custom-level label span{color:#8a8a8a;font-size:12px;font-weight:500}
+.xp-custom-field input{flex:1;width:0}
+.xp-custom-field button{flex-shrink:0}
+.xp-level-error{margin:0;color:#ffb4a8;font-size:12px;line-height:1.5}
+html[data-tw-light]:not(:has(.landing)) .xp-level-error{color:#9f2c20}
+html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-for-modes button[aria-pressed=true]{background:#141414!important;color:#f2f2f2!important}
 .xp-viewing{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:#9a9a9a}
 .xp-head .xp-viewing{margin:0}
 .xp-head h1{margin:0}
@@ -2198,7 +2212,7 @@ html[data-tw-light][data-tw-surface]:not(:has(.landing)) .xp-mark-gain{backgroun
 .xp-viewing .race-vs-spin{width:14px;height:14px}
 /* the calculator dims while another student's data loads */
 .xp:has(.xp-for[data-pending]) .xp-calc{opacity:.4;pointer-events:none;transition:opacity .2s}
-@media(max-width:700px){.xp-for{justify-content:flex-start;width:100%}.xp-for .race-vs{width:100%}}
+@media(max-width:700px){.xp-for{align-items:flex-start;width:100%}.xp-for .race-vs,.xp-custom-level{width:100%}}
 @media(prefers-reduced-motion:reduce){.race-vs-spin{animation-duration:2.4s}}
 html[data-tw-light]:not(:has(.landing)) .xp-viewing b{color:#1a7a35}
 html[data-tw-light]:not(:has(.landing)) :is(.xp-viewing button){color:#141414}
