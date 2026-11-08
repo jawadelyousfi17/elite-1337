@@ -51,9 +51,8 @@ async function render(query: Record<string, string | string[] | undefined>) {
 describe('XP calculator sources', () => {
   it('uses a custom level with full XP and no personal progress or extra profile reads', async () => {
     const { calculator, picker } = await render({ level: '10.89', user: 'other' });
-    expect(calculator.key).toBe('custom');
     expect(calculator.props).toMatchObject({ level: 10.89, custom: true, done: {}, skipped: [], peers: null, scope: null, coalition: null });
-    expect(picker.props).toMatchObject({ customLevel: 10.89, invalidLevel: false, viewing: null });
+    expect(picker.props).toMatchObject({ custom: true, viewing: null });
     expect(loadRankingDataset).not.toHaveBeenCalled();
     expect(loadJourney).not.toHaveBeenCalled();
     expect(loadOwnCoalition).not.toHaveBeenCalled();
@@ -67,6 +66,14 @@ describe('XP calculator sources', () => {
     expect(await calculator.props.advanced).toMatchObject([{ slug: 'advanced-project' }]);
   });
 
+  it('keeps the selected projects when editing a student’s starting level', async () => {
+    for (const query of [{}, { user: 'other' }]) {
+      const before = await render(query), after = await render({ ...query, level: '10.89' });
+      expect(after.calculator.key).toBe(before.calculator.key);
+      expect(after.calculator.props).toMatchObject({ custom: true, done: {}, coalition: null });
+    }
+  });
+
   it('keeps a custom plan mounted when its starting level changes', async () => {
     const first = await render({ level: '10.89' }), second = await render({ level: '11.25' });
     expect(second.calculator.key).toBe(first.calculator.key);
@@ -76,14 +83,15 @@ describe('XP calculator sources', () => {
   it.each(['', 'invalid', '-1', '30.01', ['10', '20']])('shows invalid custom URLs as level zero with an error: %s', async (level) => {
     const { calculator, picker } = await render({ level });
     expect(calculator.props).toMatchObject({ level: 0, custom: true, done: {} });
-    expect(picker.props).toMatchObject({ customLevel: 0, invalidLevel: true });
+    expect(calculator.props.invalidLevel).toBe(true);
+    expect(picker.props.custom).toBe(true);
     expect(loadJourney).not.toHaveBeenCalled();
   });
 
   it.each([['me', {}, 900000001, 6.5], ['other', { user: 'other' }, 900000002, 12.5]] as const)('preserves %s progress and coalition', async (_name, query, id, level) => {
     const { calculator, picker } = await render(query);
     expect(calculator.props).toMatchObject({ custom: false, level, done: { '42cursus-libft': 100 }, coalition: { rank: 1 } });
-    expect(picker.props.customLevel).toBeNull();
+    expect(picker.props.custom).toBe(false);
     expect(loadJourney).toHaveBeenCalledWith(id);
     expect(loadOwnCoalition).toHaveBeenCalledWith(id, 16);
     expect(calculator.props.core?.map((project) => project.slug)).toEqual(['42cursus-libft', 'so_long']);

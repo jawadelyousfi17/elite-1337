@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { chainLevels, levelToXp, xpToLevel, type XpCoalition, type XpOption } from '@/lib/xp-math';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { chainLevels, MAX_XP_LEVEL, type XpCoalition, type XpOption } from '@/lib/xp-math';
+import { customLevelSchema } from '@/lib/xp-custom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ArrowDown, ArrowRight, ArrowUp, Check, Cohort, Plus, Search, X } from '@/components/icons';
+import { ArrowDown, ArrowRight, ArrowUp, Check, Cohort, Pencil, Plus, Search, X } from '@/components/icons';
 import { matchesSearch } from '@/lib/search';
 import { cn } from '@/lib/utils';
-import { Slider, Switch } from 'radix-ui';
+import { Slider, Switch, Tooltip } from 'radix-ui';
 import { CoalitionMark } from '@/components/coalition-marks';
 import { XpViewTabs, type XpView } from '@/components/xp-view-tabs';
 
@@ -14,13 +16,36 @@ const fmt = (value: number) => Math.round(value).toLocaleString('en-US');
 // Intra truncates levels; ignore floating-point noise at an exact hundredth.
 const lvl = (value: number) => (Math.floor(value * 100 + 1e-9) / 100).toFixed(2);
 type Picked = { slug: string; mark: number; boost: boolean };
+const levelHint = `Enter a level from 0 to ${MAX_XP_LEVEL}, with up to two decimal places.`;
 
 /**
  * Levels after one or more projects, in order; projects not validated yet come first in the picker. Both lists live
  * in the page: the Common Core one arrives with it, the slow Advanced one streams in after, so switching between them
  * never reloads the page or clears the plan. `null` means a list is unavailable right now.
  */
-export function XpCalculator({ core, advanced: advancedList, view: initialView, level, custom = false, done, skipped, peers, scope, coalition }: { core: XpOption[] | null; advanced: Promise<XpOption[] | null>; view: XpView; level: number | null; custom?: boolean; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
+export function XpCalculator({ core, advanced: advancedList, view: initialView, level, custom = false, invalidLevel = false, done, skipped, peers, scope, coalition }: { core: XpOption[] | null; advanced: Promise<XpOption[] | null>; view: XpView; level: number | null; custom?: boolean; invalidLevel?: boolean; done: Record<string, number>; skipped: string[]; peers: number[] | null; scope: string | null; coalition: XpCoalition | null }) {
+  const router = useRouter(), searchParams = useSearchParams();
+  const [levelPending, changeLevel] = useTransition();
+  const [editing, setEditing] = useState(invalidLevel);
+  const [levelTip, setLevelTip] = useState(false);
+  const [draft, setDraft] = useState(lvl(level ?? 0));
+  const [levelError, setLevelError] = useState<string | null>(invalidLevel ? `${levelHint} Using level 0 for now.` : null);
+  const levelInput = useRef<HTMLInputElement>(null), editButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    setDraft(lvl(level ?? 0));
+    setEditing(invalidLevel);
+    setLevelError(invalidLevel ? `${levelHint} Using level 0 for now.` : null);
+  }, [level, invalidLevel]);
+  useEffect(() => { if (editing) { levelInput.current?.focus(); levelInput.current?.select(); } }, [editing]);
+  const saveLevel = () => {
+    if (!editing || levelPending) return;
+    const parsed = customLevelSchema.safeParse(draft);
+    if (!parsed.success) { setLevelError(levelHint); return; }
+    setLevelError(null); setEditing(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('level', String(parsed.data));
+    changeLevel(() => router.push(`/xp?${params}`, { scroll: false }));
+  };
   const other = useMemo(() => new Set(skipped), [skipped]);
   const [view, setView] = useState(initialView);
   const [advanced, setAdvanced] = useState<XpOption[] | null | undefined>(undefined);
@@ -30,11 +55,15 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     return () => { live = false; };
   }, [advancedList]);
   const bySlug = useMemo(() => new Map([...core ?? [], ...advanced ?? []].map((project) => [project.slug, project])), [core, advanced]);
-  const [picked, setPicked] = useState<Picked[]>([]);
+  const [selected, setPicked] = useState<Picked[]>([]);
+  // Returning to a student can narrow the available projects; keep missing entries out of the calculation.
+  const picked = useMemo(() => selected.filter((item) => bySlug.has(item.slug)), [selected, bySlug]);
   // Custom plans can change their starting level while keeping the selected projects and marks.
   const start = level ?? 0;
   // The #1 coalition's bonus is on by default; 42 does not publish it, so 4.2% is an estimate the student can change.
-  const [boosted, setBoosted] = useState(coalition?.rank === 1);
+  const [bonusEnabled, setBoosted] = useState(coalition?.rank === 1);
+  useEffect(() => { setBoosted(coalition?.rank === 1); }, [coalition?.name, coalition?.rank]);
+  const boosted = !!coalition && bonusEnabled;
   const [percent, setPercent] = useState('4.2');
   const bonus = boosted ? Math.min(Math.max(Number(percent) || 0, 0), 100) : 0;
 
@@ -53,12 +82,29 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     <div className="xp-hero" aria-live="polite">
       {final > start && <em key={lvl(final)} className="xp-hero-gain">+{(final - start).toFixed(2)}</em>}
       <div className="xp-hero-levels">
-        <div className="xp-hero-from"><strong aria-label={`${custom ? 'Starting level' : 'Level now'} ${lvl(start)}`}>{lvl(start)}</strong></div>
+        <div className="xp-hero-from">
+          <form className="xp-start-editor" aria-label="Edit starting level" aria-busy={levelPending} onSubmit={(event) => { event.preventDefault(); saveLevel(); }} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) saveLevel(); }}>
+            <span className="xp-start-number">
+              <strong className={cn(editing && 'is-editing')} aria-hidden={editing || undefined} aria-label={editing ? undefined : `${custom ? 'Starting level' : 'Level now'} ${lvl(start)}`}>{editing ? draft || '0.00' : lvl(start)}</strong>
+              {editing && <input ref={levelInput} type="text" inputMode="decimal" maxLength={6} value={draft} onChange={(event) => { setDraft(event.target.value); setLevelError(null); }} aria-label="Starting level" aria-invalid={!!levelError} aria-describedby={levelError ? 'xp-level-error' : undefined} onKeyDown={(event) => {
+                if (event.key !== 'Escape') return;
+                event.preventDefault(); setDraft(lvl(start)); setLevelError(null); setEditing(false); editButton.current?.focus();
+              }}/>}
+            </span>
+            <Tooltip.Provider delayDuration={250}>
+              <Tooltip.Root open={!editing && levelTip} onOpenChange={setLevelTip}>
+                <Tooltip.Trigger asChild><button ref={editButton} type={editing ? 'submit' : 'button'} className="xp-level-edit" aria-label={editing ? 'Save starting level' : 'Custom level'} disabled={levelPending} onClick={(event) => { if (!editing) { event.preventDefault(); setDraft(lvl(start)); setEditing(true); } }}>{editing ? <Check size={15}/> : <Pencil size={15}/>}</button></Tooltip.Trigger>
+                <Tooltip.Portal><Tooltip.Content className="xp-level-tip" side="top" sideOffset={6}>Custom level<Tooltip.Arrow/></Tooltip.Content></Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </form>
+        </div>
         <span className="xp-hero-arrow" aria-hidden="true"><ArrowRight size={22} weight="bold"/></span>
         <div className="xp-hero-to">
           <strong><CountUp value={final}/></strong>
         </div>
       </div>
+      {levelError && <p id="xp-level-error" className="xp-level-error" role="alert">{levelError}</p>}
       {picked.length > 0 && <p className="xp-hero-total" aria-label={`Total gained ${fmt(totalGain)} XP from ${picked.length} projects`}><b>+{fmt(totalGain)} XP</b><span>from {picked.length} {picked.length === 1 ? 'project' : 'projects'}</span></p>}
       {peers && scope && <Rank peers={peers} from={start} to={final} scope={scope}/>}
       <div className="xp-bar" role="img" aria-label={`${Math.round(final % 1 * 100)}% of the way to level ${Math.floor(final) + 1}`}><i style={{ width: `${final % 1 * 100}%` }}/></div>

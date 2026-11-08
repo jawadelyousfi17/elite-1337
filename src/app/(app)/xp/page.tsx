@@ -68,8 +68,8 @@ export default async function XpPage({ searchParams }: { searchParams: Promise<R
   return <main className="shell xp">
     <header className="of-head xp-head">
       <h1>XP calculator</h1>
-      <XpFor viewing={other?.login ?? null} missing={wanted && early && !other ? wanted : null} customLevel={custom ? customLevel : null} invalidLevel={custom && !parsedLevel.success}/>
+      <XpFor viewing={other?.login ?? null} missing={wanted && early && !other ? wanted : null} custom={custom}/>
     </header>
-    <XpCalculator key={custom ? 'custom' : own?.id ?? 'me'} core={core} advanced={advanced} view={view} level={level} custom={custom} done={done} skipped={skipped} peers={peers} scope={scope} coalition={coalition}/>
+    <XpCalculator key={wanted.toLowerCase() || user.id} core={core} advanced={advanced} view={view} level={level} custom={custom} invalidLevel={custom && !parsedLevel.success} done={done} skipped={skipped} peers={peers} scope={scope} coalition={coalition}/>
   </main>;
 }
