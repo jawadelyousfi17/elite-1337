@@ -1689,6 +1689,7 @@ main[data-pending]{cursor:progress}
 .pl-row>.pl-ext,html[data-tw-surface]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-light]:not(:has(.landing)) .pl-row>.pl-ext,html[data-tw-radius] .pl-row>.pl-ext{margin:0 0 0 auto;width:auto;height:auto;background:none!important;border:0;border-radius:0!important}
 .fz-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:#bff3f0;color:#0b3a38;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;vertical-align:middle;white-space:nowrap}
 .fz-badge{box-sizing:border-box;height:20px;padding:0 8px;font-size:11px;line-height:1}
+.fz-badge.pl-anon-tip{border-bottom:0;z-index:2}
 .fz-since{gap:4px;margin-left:-5px;letter-spacing:.04em;background:#7fe0d9;color:#062f2d}
 html[data-tw-light]:not(:has(.landing)) .fz-since{background:#7fe0d9!important;color:#062f2d!important}
 h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
@@ -2100,6 +2101,17 @@ html[data-tw-light]:not(:has(.landing)) :is(.hm-contact a,.hm-contact b){color:#
 html[data-tw-light]:not(:has(.landing)) .hm-rules{color:#3d3d3d!important}
 html[data-tw-light]:not(:has(.landing)) :is(.hm-rules a,.hm-rules b){color:#141414!important}
 .pl-row.is-anonymous{opacity:.85}
+.avatar-icon{display:grid;place-items:center}
+/* Anonymous student note: same white bubble and arrow as the GitHub hover tip, lifted above the next card. */
+.pl-anon-tip{position:relative;cursor:default;outline:none;border-bottom:1px dotted currentColor}
+.pl-anon-tip::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;z-index:60;width:230px;padding:8px 12px;border-radius:14px;background:#fff;color:#0a0a0a;font-size:12px;font-weight:600;line-height:1.4;letter-spacing:0;text-align:center;white-space:normal;box-shadow:0 6px 20px #0004;pointer-events:none;opacity:0;transform:translate(-50%,-4px);transition:opacity .15s,transform .15s}
+.pl-anon-tip::before{content:'';position:absolute;top:calc(100% + 6px);left:50%;z-index:61;width:8px;height:8px;margin-left:-4px;background:#fff;transform:rotate(45deg);opacity:0;transition:opacity .15s;pointer-events:none}
+@media(hover:hover){.pl-anon-tip:hover::after{opacity:1;transform:translate(-50%,0)}.pl-anon-tip:hover::before{opacity:1}}
+.pl-anon-tip:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+.pl-anon-tip:focus-visible::before{opacity:1}
+@media(hover:none){.pl-anon-tip:focus::after{opacity:1;transform:translate(-50%,0)}.pl-anon-tip:focus::before{opacity:1}.pl-row:has(.pl-anon-tip:focus),.pl-podium-item:has(.pl-anon-tip:focus){position:relative;z-index:50}}
+.pl-row:has(.pl-anon-tip:hover),.pl-row:has(.pl-anon-tip:focus-visible),.pl-podium-item:has(.pl-anon-tip:hover),.pl-podium-item:has(.pl-anon-tip:focus-visible){position:relative;z-index:50}
+@media(prefers-reduced-motion:reduce){.pl-anon-tip::after{transition:none}}
 .pl-row.is-anonymous .pl-copy strong{color:#b0b0b0;font-weight:500}
 .st-leader-anon{display:flex;align-items:center;gap:12px;padding:10px 12px;color:#b0b0b0}
 .dn-art{width:min(200px,60vw);height:auto}

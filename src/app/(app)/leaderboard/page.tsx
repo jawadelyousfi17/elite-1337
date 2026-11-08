@@ -3,6 +3,7 @@ import { KiwiNote } from '@/components/kiwi-guide';
 import Link from 'next/link';
 import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
+import { AnonymousAvatar, AnonymousTip } from '@/components/anonymous-tip';
 import { Campus, Cohort, Hourglass, Reverse, RotateCcw, X } from '@/components/icons';
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
@@ -77,8 +78,8 @@ const cohorts = (students: { commonCoreEntryYear: string | null }[]) => [...new 
 function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
   // A student who asked to be removed keeps their place on the podium, with no name, level or link.
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-runner" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties} aria-label={`Rank ${student.rank}, anonymous student`}>
-    <div className="pl-runner-portrait"><Avatar login="?" name="?" src={null} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>Anonymous</strong>
+    <div className="pl-runner-portrait"><AnonymousAvatar size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
+    <strong><AnonymousTip>Anonymous</AnonymousTip></strong>
   </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
@@ -90,10 +91,10 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
 function Winner({ student, src }: { student: Ranked; src?: string }) {
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-winner" aria-label={`Rank ${student.rank}, anonymous student`}>
     <div className="pl-winner-portrait">
-      <Avatar login="?" name="?" src={null} size={96}/>
+      <AnonymousAvatar size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>Anonymous</h2>
+    <h2><AnonymousTip>Anonymous</AnonymousTip></h2>
   </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-winner-portrait">
