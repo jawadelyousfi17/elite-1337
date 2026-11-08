@@ -63,7 +63,7 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
   // The #1 coalition's bonus is on by default; 42 does not publish it, so 4.2% is an estimate the student can change.
   const [bonusEnabled, setBoosted] = useState(coalition?.rank === 1);
   useEffect(() => { setBoosted(coalition?.rank === 1); }, [coalition?.name, coalition?.rank]);
-  const boosted = !!coalition && bonusEnabled;
+  const boosted = (custom || !!coalition) && bonusEnabled;
   const [percent, setPercent] = useState('4.2');
   const bonus = boosted ? Math.min(Math.max(Number(percent) || 0, 0), 100) : 0;
 
@@ -113,9 +113,9 @@ export function XpCalculator({ core, advanced: advancedList, view: initialView, 
     {level === null && <p className="xp-note">Your level is not in the rankings yet, so this starts from level 0.</p>}
     {custom && <p className="xp-note">Custom plan from level {lvl(start)}. Each project adds its full XP.</p>}
 
-    {coalition && <section className="xp-panel xp-coalition" aria-label="Coalition">
+    {(custom || coalition) && <section className="xp-panel xp-coalition" aria-label="Coalition">
       <h3>Coalition</h3>
-      <p className="xp-coalition-name"><i style={coalition.color ? { background: coalition.color } : undefined} aria-hidden="true"><CoalitionMark name={coalition.name}/></i><b>{coalition.name}</b><span>#{coalition.rank} of {coalition.total}</span></p>
+      {coalition && <p className="xp-coalition-name"><i style={coalition.color ? { background: coalition.color } : undefined} aria-hidden="true"><CoalitionMark name={coalition.name}/></i><b>{coalition.name}</b><span>#{coalition.rank} of {coalition.total}</span></p>}
       <div className="xp-bonus">
         <Switch.Root id="xp-bonus" className="xp-switch" checked={boosted} onCheckedChange={setBoosted}><Switch.Thumb className="xp-switch-thumb"/></Switch.Root>
         <label htmlFor="xp-bonus">Coalition bonus</label>
