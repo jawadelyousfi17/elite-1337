@@ -6,7 +6,6 @@ import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
 import { ArrowUpRight, Hourglass } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { daysAgo } from '@/lib/time';
 
 /** One leaderboard row as plain data, so the server page and the infinite list render it the same way. */
 export type RankRowData = { id: number; login: string; level: number; year: string | null; campus: string; src: string | null; hacker: boolean }
@@ -37,7 +36,7 @@ export function RankRow({ row }: { row: RankRowData }) {
   return <div className={cn('pl-row', ranked ? row.mine && 'is-mine' : 'is-lost')} style={{ '--pastel': ranked ? pastel(row.rank) : '#3a3a3a' } as React.CSSProperties}>
     <span className="pl-avatar"><Avatar login={row.login} src={row.src} size={45}/></span>
     <span className="pl-copy">
-      <strong><Link href={appHref(row.login)} {...newTab} className="pl-row-link">{row.login}<span className="sr-only"> (opens in a new tab)</span></Link>{ranked && row.alumni && <AlumniBadge/>}{ranked && row.frozen && <FrozenBadge since={row.lastSeen ? daysAgo(row.lastSeen) : undefined} date={row.lastSeen ? shortDate(row.lastSeen) : undefined}/>}{row.hacker && <HackerBadge/>}{ranked && row.mine && <em>You</em>}</strong>
+      <strong><Link href={appHref(row.login)} {...newTab} className="pl-row-link">{row.login}<span className="sr-only"> (opens in a new tab)</span></Link>{ranked && row.alumni && <AlumniBadge/>}{ranked && row.frozen && <FrozenBadge lastSeen={row.lastSeen}/>}{row.hacker && <HackerBadge/>}{ranked && row.mine && <em>You</em>}</strong>
       <span><b>Level {row.level.toFixed(2)}</b> · {row.year ?? '?'} · {row.campus}</span>
     </span>
     <span className="pl-ext" aria-hidden="true"><ArrowUpRight size={12} weight="bold"/></span>

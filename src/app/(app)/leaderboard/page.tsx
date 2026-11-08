@@ -14,7 +14,7 @@ import { requireStudent } from '@/lib/guard';
 import { loadRankingDataset } from '@/lib/dataset';
 import { DatasetState } from '@/components/dataset-state';
 import { getStudentProfile } from '@/lib/student-overview';
-import { ALL, avatarsFor, frozenSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
+import { ALL, avatarsFor, frozenSeen, shownSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
 
@@ -36,7 +36,8 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   const { blackholedMode, alumniMode, frozenMode, total, pages, podium, showWinner } = view;
   const winner = podium[0];
   const avatars = await avatarsFor([...(blackholedMode ? view.lostRows : view.listed), ...podium]);
-  const rows = rowData(dataset, view, avatars, user.id);
+  const seen = await shownSeen(view);
+  const rows = rowData(dataset, view, avatars, user.id, seen);
   const query = new URL(href({ ...filters, page: 1 }), 'http://local').searchParams.toString();
 
   const scopes = [
@@ -56,9 +57,9 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
       <section className="pl-hero" aria-labelledby="pl-title">
         <h1 id="pl-title">Leaderboard</h1>
         {showWinner && <div className="pl-podium">
-          {podium[1] ? <RunnerUp student={podium[1]} src={avatars[podium[1].id]}/> : <span/>}
-          <Winner student={winner} src={avatars[winner.id]}/>
-          {podium[2] ? <RunnerUp student={podium[2]} src={avatars[podium[2].id]}/> : <span/>}
+          {podium[1] ? <RunnerUp student={podium[1]} src={avatars[podium[1].id]} seen={seen.get(podium[1].id)}/> : <span/>}
+          <Winner student={winner} src={avatars[winner.id]} seen={seen.get(winner.id)}/>
+          {podium[2] ? <RunnerUp student={podium[2]} src={avatars[podium[2].id]} seen={seen.get(podium[2].id)}/> : <span/>}
         </div>}
       </section>
 
@@ -75,7 +76,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
 
 const cohorts = (students: { commonCoreEntryYear: string | null }[]) => [...new Set(students.map((student) => student.commonCoreEntryYear).filter((year): year is string => !!year))].sort().reverse();
 
-function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
+function RunnerUp({ student, src, seen }: { student: Ranked; src?: string; seen?: string | null }) {
   // A student who asked to be removed keeps their place on the podium, with no name, level or link.
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-runner" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties} aria-label={`Rank ${student.rank}, anonymous student`}>
     <div className="pl-runner-portrait"><AnonymousAvatar size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
@@ -83,12 +84,12 @@ function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
   </div></span>;
   return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
     <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge lastSeen={seen ?? undefined}/>}
     <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
   </Link></span>;
 }
 
-function Winner({ student, src }: { student: Ranked; src?: string }) {
+function Winner({ student, src, seen }: { student: Ranked; src?: string; seen?: string | null }) {
   if (student.anonymous) return <span className="pl-podium-item"><div className="pl-winner" aria-label={`Rank ${student.rank}, anonymous student`}>
     <div className="pl-winner-portrait">
       <AnonymousAvatar size={96}/>
@@ -101,7 +102,7 @@ function Winner({ student, src }: { student: Ranked; src?: string }) {
       <Avatar login={student.login} src={src} size={96}/>
       <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
     </div>
-    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge/>}
+    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge lastSeen={seen ?? undefined}/>}
     <span className="pl-pill">Level {student.level.toFixed(2)}</span>
   </Link></span>;
 }
