@@ -9,7 +9,7 @@ describe('parseCardStyle', () => {
     expect(parse('t=abc&v=3')).toEqual(DEFAULT_STYLE);
   });
   it('reads every choice', () => {
-    expect(parse('theme=forest&accent=sky&font=courier&art=blocks&logo=0')).toEqual({ theme: 'forest', accent: 'sky', font: 'courier', art: 'blocks', logo: false });
+    expect(parse('theme=forest&accent=sky&font=courier&art=blocks&logo=0')).toEqual({ theme: 'forest', accent: 'sky', font: 'courier', art: 'blocks', logo: false, crt: false });
   });
   it('falls back to the default for unknown or hostile values', () => {
     expect(parse('theme=neon&accent=%3Cscript%3E&font=comic&art=emoji')).toEqual(DEFAULT_STYLE);
@@ -24,7 +24,7 @@ describe('styleQuery', () => {
     expect(styleQuery({ ...DEFAULT_STYLE, theme: 'plum', logo: false })).toBe('&theme=plum&logo=0');
   });
   it('round-trips through parseCardStyle', () => {
-    const style: CardStyle = { theme: 'midnight', accent: 'peach', font: 'lucida', art: 'blocks', logo: false };
+    const style: CardStyle = { theme: 'midnight', accent: 'peach', font: 'lucida', art: 'blocks', logo: false, crt: false };
     expect(parse(styleQuery(style).slice(1))).toEqual(style);
   });
 });

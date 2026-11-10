@@ -4,6 +4,7 @@ import sharp from 'sharp';
 import { decode } from 'jpeg-js';
 import { singleFlight } from './single-flight';
 import { fortyTwoApi } from './fortytwo-api';
+import { fetchImageBytes, parseImageUrl } from './safe-image-fetch';
 import { ART_COLS, ART_ROWS, lumaFromRgba } from './card-art';
 
 /** Gray cells through sharp (any common format); the pixels are shrunk first so a big upload stays cheap. */
@@ -37,3 +38,11 @@ export const loadCardLuma = singleFlight(unstable_cache(async (userId: number, p
   const cells = await imageToCells(bytes);
   return cells ? Buffer.from(cells).toString('base64') : null;
 }, ['1337-card-luma-v4', String(ART_COLS * ART_ROWS)], { revalidate: 2_592_000 }));
+
+/** The GitHub avatar of any public username as gray cells, cached a day. Only github.com hosts are fetched, through the SSRF-safe downloader. */
+export const loadGithubLuma = singleFlight(unstable_cache(async (login: string): Promise<string | null> => {
+  const url = parseImageUrl(`https://github.com/${login}.png?size=240`, ['github.com', 'avatars.githubusercontent.com']);
+  if (!url) return null;
+  const cells = await imageToCells(await fetchImageBytes(url, ['github.com', 'avatars.githubusercontent.com']));
+  return cells ? Buffer.from(cells).toString('base64') : null;
+}, ['1337-github-luma-v1', String(ART_COLS * ART_ROWS)], { revalidate: 86_400 }));

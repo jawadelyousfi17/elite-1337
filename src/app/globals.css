@@ -2297,3 +2297,18 @@ button.credit-face img{display:block;width:28px;height:28px;border-radius:50%;ob
 .cd .pc-head{order:1}.cd .cd-drop,.cd .pl-searchbar{order:3}.cd .cd-status{order:4}.cd .cd-preview{order:5}.cd .cd-tweaks{order:6}.cd .cd-title{order:7}.cd .cd-sub{order:8}.cd .cd-code{order:9}
 .cd .cd-preview{margin-bottom:12px}
 }
+
+/* Public GitHub card page. */
+.gh-top{display:flex;align-items:center;padding-top:18px}
+.gh-home{font-weight:700;font-size:18px;color:var(--text);text-decoration:none}
+.gh-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.gh-field{display:grid;gap:5px;min-width:0}
+.gh-field span{font-size:12px;color:#9a9a9a;padding-left:12px}
+.gh-field input{height:44px;min-width:0;padding:0 14px;border-radius:14px;border:2px solid transparent;background:#202020;color:var(--text);font-size:14px;outline:0}
+.gh-field input:focus-visible{border-color:var(--mint)}
+.gh-field input::placeholder{color:#6f6f6f}
+.gh-section{display:grid;gap:8px;margin-top:6px}
+.gh-section h2{margin:6px 0 0;font-size:15px;font-weight:600;color:var(--text)}
+.gh-empty{display:grid;place-items:center;aspect-ratio:985/530;background:#202020;color:#9a9a9a;font-size:14px;text-align:center;padding:16px}
+@media(max-width:900px){.cd .gh-fields{order:6}}
+@media(max-width:700px){.gh-fields{grid-template-columns:1fr}}

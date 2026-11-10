@@ -1,5 +1,5 @@
 /** The look of a rank card. Choices travel in the card link (`&theme=…`), so nothing about them is stored. */
-export const THEMES = ['auto', 'dark', 'light', 'black', 'midnight', 'forest', 'plum'] as const;
+export const THEMES = ['auto', 'dark', 'light', 'black', 'midnight', 'forest', 'plum', 'phosphor', 'amber', 'c64'] as const;
 export const ACCENTS = ['lilac', 'mint', 'lime', 'sky', 'peach', 'lemon'] as const;
 export const FONTS = ['system', 'courier', 'menlo', 'lucida'] as const;
 export const ARTS = ['ascii', 'blocks'] as const;
@@ -7,9 +7,9 @@ export type CardTheme = (typeof THEMES)[number];
 export type CardAccent = (typeof ACCENTS)[number];
 export type CardFont = (typeof FONTS)[number];
 export type CardArt = (typeof ARTS)[number];
-export type CardStyle = { theme: CardTheme; accent: CardAccent; font: CardFont; art: CardArt; logo: boolean };
+export type CardStyle = { theme: CardTheme; accent: CardAccent; font: CardFont; art: CardArt; logo: boolean; crt: boolean };
 
-export const DEFAULT_STYLE: CardStyle = { theme: 'auto', accent: 'lilac', font: 'system', art: 'ascii', logo: true };
+export const DEFAULT_STYLE: CardStyle = { theme: 'auto', accent: 'lilac', font: 'system', art: 'ascii', logo: true, crt: false };
 
 /** Each accent has a bright variant for dark cards and a deeper one for the light card, like the site's Tweaks. */
 export const ACCENT_COLORS: Record<CardAccent, { dark: string; light: string }> = {
@@ -28,7 +28,7 @@ export const FONT_STACKS: Record<CardFont, string> = {
   lucida: "'Lucida Console','Lucida Sans Typewriter',Monaco,'DejaVu Sans Mono',monospace",
 };
 export const FONT_LABELS: Record<CardFont, string> = { system: 'System', courier: 'Courier', menlo: 'Menlo', lucida: 'Lucida' };
-export const THEME_LABELS: Record<CardTheme, string> = { auto: 'Auto', dark: 'Dark', light: 'Light', black: 'Black', midnight: 'Midnight', forest: 'Forest', plum: 'Plum' };
+export const THEME_LABELS: Record<CardTheme, string> = { auto: 'Auto', dark: 'Dark', light: 'Light', black: 'Black', midnight: 'Midnight', forest: 'Forest', plum: 'Plum', phosphor: 'Phosphor', amber: 'Amber', c64: 'C64' };
 
 const pick = <T extends string>(options: readonly T[], value: string | null | undefined, fallback: T): T => options.find((option) => option === value) ?? fallback;
 
@@ -37,7 +37,7 @@ export function parseCardStyle(params: URLSearchParams): CardStyle {
   return {
     theme: pick(THEMES, params.get('theme'), DEFAULT_STYLE.theme), accent: pick(ACCENTS, params.get('accent'), DEFAULT_STYLE.accent),
     font: pick(FONTS, params.get('font'), DEFAULT_STYLE.font), art: pick(ARTS, params.get('art'), DEFAULT_STYLE.art),
-    logo: params.get('logo') !== '0',
+    logo: params.get('logo') !== '0', crt: params.get('crt') === '1',
   };
 }
 
@@ -49,5 +49,6 @@ export function styleQuery(style: CardStyle): string {
   if (style.font !== DEFAULT_STYLE.font) parts.push(`font=${style.font}`);
   if (style.art !== DEFAULT_STYLE.art) parts.push(`art=${style.art}`);
   if (!style.logo) parts.push('logo=0');
+  if (style.crt) parts.push('crt=1');
   return parts.length ? `&${parts.join('&')}` : '';
 }

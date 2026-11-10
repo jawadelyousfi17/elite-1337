@@ -1,9 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ArrowRight, GitHub, LinkIcon, Palette, Picture, Sun, TextAa, Upload, UserRound } from '@/components/icons';
+import { ArrowRight, GitHub, LinkIcon, Upload, UserRound } from '@/components/icons';
+import { CardTweaks } from '@/components/card-tweaks';
 import { CodeBlock } from '@/components/code-block';
-import { ACCENTS, ACCENT_COLORS, ARTS, DEFAULT_STYLE, FONTS, FONT_LABELS, THEMES, THEME_LABELS, styleQuery, type CardStyle } from '@/lib/card-style';
+import { DEFAULT_STYLE, styleQuery, type CardStyle } from '@/lib/card-style';
 import { lumaFromRgba } from '@/lib/card-art';
 import { chooseGithubPicture, chooseIntraPhoto, chooseLinkPicture, chooseUploadedPicture, type PictureResult } from '@/app/(app)/card/actions';
 import { cn } from '@/lib/utils';
@@ -93,17 +94,7 @@ export function CardPicture({ path, current, origin }: { path: string; current: 
         <input value={text} onChange={(event) => setText(event.target.value)} maxLength={choice === 'github' ? 40 : 500} placeholder={choice === 'github' ? 'GitHub username' : 'https://…/photo.jpg'} aria-label={choice === 'github' ? 'GitHub username' : 'Image link'} spellCheck={false} autoCapitalize="none" autoComplete="off" required/>
         <button type="submit" className="pl-searchbar-go" aria-label="Save" disabled={pending}><ArrowRight size={20} weight="bold"/></button>
       </form>}
-      <div className="pl-groups cd-tweaks">
-        <div className="pl-chip-group" role="group" aria-label="Theme"><span className="pl-chip-label"><Sun size={17}/>Theme</span>
-          <div className="pl-chips">{THEMES.map((id) => <button key={id} type="button" className="pl-chip is-mint" data-active={style.theme === id || undefined} aria-pressed={style.theme === id} onClick={() => tweak('theme', id)}>{THEME_LABELS[id]}</button>)}</div></div>
-        <div className="pl-chip-group" role="group" aria-label="Color"><span className="pl-chip-label"><Palette size={17}/>Color</span>
-          <div className="pl-chips">{ACCENTS.map((id) => <button key={id} type="button" className={cn('cd-swatch', style.accent === id && 'is-active')} style={{ '--swatch': ACCENT_COLORS[id].dark } as React.CSSProperties} aria-pressed={style.accent === id} aria-label={id} title={id} onClick={() => tweak('accent', id)}/>)}</div></div>
-        <div className="pl-chip-group" role="group" aria-label="Font"><span className="pl-chip-label"><TextAa size={17}/>Font</span>
-          <div className="pl-chips">{FONTS.map((id) => <button key={id} type="button" className="pl-chip is-mint" data-active={style.font === id || undefined} aria-pressed={style.font === id} onClick={() => tweak('font', id)}>{FONT_LABELS[id]}</button>)}</div></div>
-        <div className="pl-chip-group" role="group" aria-label="Picture style"><span className="pl-chip-label"><Picture size={17}/>Picture style</span>
-          <div className="pl-chips">{ARTS.map((id) => <button key={id} type="button" className="pl-chip is-mint" data-active={style.art === id || undefined} aria-pressed={style.art === id} onClick={() => tweak('art', id)}>{id === 'ascii' ? 'ASCII' : 'Blocks'}</button>)}
-            <button type="button" className="pl-chip is-mint" data-active={style.logo || undefined} aria-pressed={style.logo} onClick={() => tweak('logo', !style.logo)}>1337 logo</button></div></div>
-      </div>
+      <CardTweaks style={style} onChange={tweak}/>
       <p className={cn('cd-status', status && (status.ok ? 'is-ok' : 'is-error'))} role="status" aria-live="polite">{status?.message}</p>
     </aside>
     <section className="pl-list" aria-label="Rank card">
