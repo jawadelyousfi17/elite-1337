@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Instrument_Sans } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { TopBar } from '@/components/top-bar';
 
 const font = Instrument_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-sans' });
@@ -15,5 +16,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { colorScheme: 'light', themeColor: '#f6f7f9' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en" className={font.variable}><body><TopBar/>{children}</body></html>;
+  return <html lang="en" className={font.variable}><body><TopBar/>{children}<Analytics/></body></html>;
 }
