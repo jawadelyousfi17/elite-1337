@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { demoAvatar, isDemo } from './demo';
 import sharp from 'sharp';
 import { decode } from 'jpeg-js';
 import { singleFlight } from './single-flight';
@@ -31,7 +32,7 @@ export async function imageToCells(bytes: Uint8Array): Promise<Uint8Array | null
 }
 
 export const loadCardLuma = singleFlight(unstable_cache(async (userId: number, path: string): Promise<string | null> => {
-  const bytes = await fortyTwoApi.cdnPhoto(path);
+  const bytes = isDemo() ? new TextEncoder().encode(demoAvatar(userId)) : await fortyTwoApi.cdnPhoto(path);
   if (!bytes) throw new Error('photo not available from the CDN');
   const cells = await imageToCells(bytes);
   return cells ? Buffer.from(cells).toString('base64') : null;

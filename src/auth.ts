@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import type { OAuthConfig } from 'next-auth/providers';
 import { z } from 'zod';
 import { isAnonymized } from '@/lib/anonymous';
+import { DEMO_USER, isDemo } from '@/lib/demo';
 
 type FortyTwoProfile = Record<string, unknown>;
 const identitySchema = z.object({ id: z.number().int().positive(), login: z.string().min(1) });
@@ -34,7 +35,7 @@ const provider: OAuthConfig<FortyTwoProfile> = {
     return { id: String(user.id), name: user.login, email: null, image: null, login: user.login };
   }
 };
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const real = NextAuth({
   providers: [provider], session: { strategy: 'jwt', maxAge: 60 * 60 * 24 * 7 },
   pages: { signIn: '/', error: '/denied' },
   callbacks: {
@@ -47,3 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, token }) { session.user.id = String(token.fortyTwoId); session.user.login = String(token.login); return session; }
   }
 });
+
+export const { handlers, signIn, signOut } = real;
+/** In demo mode everyone is the made-up student, so the app opens without a 42 sign-in. */
+export const auth = (isDemo() ? async () => ({ user: { ...DEMO_USER, name: DEMO_USER.login }, expires: new Date(Date.now() + 86_400_000).toISOString() }) : real.auth) as typeof real.auth;

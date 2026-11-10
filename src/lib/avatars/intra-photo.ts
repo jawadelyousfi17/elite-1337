@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { isDemo } from '../demo';
 
 export const INTRA_CDN = 'https://cdn.intra.42.fr';
 export const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
@@ -27,6 +28,7 @@ function signature(userId: number, path: string) {
 }
 
 export function intraPhotoUrl(userId: number, path: string | null | undefined): string | null {
+  if (isDemo()) return `/api/photos/${userId}?demo=1`;
   if (!validPhotoPath(path) || !process.env.AUTH_SECRET) return null;
   return `/api/photos/${userId}?p=${encodeURIComponent(path)}&s=${signature(userId, path)}`;
 }

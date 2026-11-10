@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { singleFlight } from './single-flight';
 import { z } from 'zod';
 import { fortyTwoApi, IncompletePopulationError } from './fortytwo-api';
+import { isDemo } from './demo';
 
 const profileSchema = z.object({
   wallet: z.number().nullish(),
@@ -29,6 +30,7 @@ function checkedId(id: string) {
 }
 
 export const getStudentProfile = singleFlight(unstable_cache(async (id: string) => {
+  if (isDemo()) return { wallet: 420, correction_point: 7, pool_year: '2023', pool_month: 'july', campus_users: [{ campus_id: 21, is_primary: true }] } satisfies StudentProfileSummary;
   return (await fortyTwoApi.request(`users/${checkedId(id)}`, profileSchema)).data;
 }, ['42-student-profile-v1'], { revalidate: 600 }));
 

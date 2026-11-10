@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 import { checkedUserId, photoContentType, validPhotoSignature } from '@/lib/avatars/intra-photo';
 import { fortyTwoApi } from '@/lib/fortytwo-api';
+import { demoAvatar, isDemo } from '@/lib/demo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -11,6 +12,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ use
   const session = await auth();
   if (!session?.user?.id) return new Response(null, { status: 401, headers: noStore });
   const userId = checkedUserId((await context.params).userId);
+  if (isDemo() && userId) return new Response(demoAvatar(userId), { headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'private, max-age=3600', 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'" } });
   const path = request.nextUrl.searchParams.get('p') ?? '';
   const signature = request.nextUrl.searchParams.get('s') ?? '';
   if (!userId || !validPhotoSignature(userId, path, signature)) return new Response(null, { status: 404, headers: noStore });

@@ -5,6 +5,7 @@ import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus
 import { commonCoreCohort } from './cohorts';
 import { classifyPopulation, type StudentRank } from './ranking';
 import { maskAnonymous } from './anonymous';
+import { demoDataset, isDemo } from './demo';
 
 export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreCohort: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean };
 export type RankingDataset = { students: StudentRank[]; blackholed: BlackholedStudent[]; acceptedUserIds: number[]; campuses: ApiCampus[]; fetchedAt: string; complete: true };
@@ -39,6 +40,7 @@ const campusInfo = singleFlight(unstable_cache(async (campusId: number) => forty
  */
 let built: { stamp: string; data: RankingDataset } | undefined;
 async function fetchCompleteDataset(): Promise<RankingDataset> {
+  if (isDemo()) return demoDataset();
   const ids = campusIds(), curriculum = cursusId();
   const [campuses, loaded] = await Promise.all([
     Promise.all(ids.map((id) => campusInfo(id))),
