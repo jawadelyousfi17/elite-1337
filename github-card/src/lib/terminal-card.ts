@@ -9,7 +9,7 @@ export const FULL: Layout = { w: 985, h: 530, artX: 22, artTop: 24, cellW: 4.5, 
 export const escape = (value: string) => value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 
 /** The 1337 logo (a square with the digits cut out), 2000 units wide; its path is stored upside down, so it is flipped when drawn. */
-const LOGO_PATH = 'M0 1000 l0 -1000 1000 0 1000 0 0 1000 0 1000 -1000 0 -1000 0 0 -1000z m500 20 l0 -150 23 0 c29 0 37 -7 30 -26 -4 -10 -24 -14 -74 -14 -62 0 -69 2 -69 20 0 15 7 20 25 20 l25 0 0 130 0 130 -35 0 c-31 0 -35 -3 -35 -25 0 -16 -6 -25 -15 -25 -11 0 -15 12 -15 45 l0 45 70 0 70 0 0 -150z m430 -20 l0 -170 -100 0 c-93 0 -100 1 -100 20 0 18 7 20 80 20 l80 0 0 55 0 55 -75 0 c-68 0 -75 2 -75 20 0 17 8 19 73 22 l72 3 3 53 3 52 -80 0 c-74 0 -81 2 -81 20 0 19 7 20 100 20 l100 0 0 -170z m358 -2 l2 -168 -105 0 c-98 0 -105 1 -105 20 0 18 7 20 80 20 l80 0 0 55 0 54 -72 3 c-60 2 -73 6 -76 21 -3 15 6 17 72 17 l76 0 0 55 0 55 -80 0 c-74 0 -80 2 -80 20 0 20 5 21 103 18 l102 -3 3 -167z m352 2 c0 -163 -1 -170 -20 -170 -19 0 -20 7 -20 150 l0 150 -65 0 -65 0 0 -40 c0 -33 -3 -40 -20 -40 -18 0 -20 7 -20 60 l0 60 105 0 105 0 0 -170z';
+export const LOGO_PATH = 'M0 1000 l0 -1000 1000 0 1000 0 0 1000 0 1000 -1000 0 -1000 0 0 -1000z m500 20 l0 -150 23 0 c29 0 37 -7 30 -26 -4 -10 -24 -14 -74 -14 -62 0 -69 2 -69 20 0 15 7 20 25 20 l25 0 0 130 0 130 -35 0 c-31 0 -35 -3 -35 -25 0 -16 -6 -25 -15 -25 -11 0 -15 12 -15 45 l0 45 70 0 70 0 0 -150z m430 -20 l0 -170 -100 0 c-93 0 -100 1 -100 20 0 18 7 20 80 20 l80 0 0 55 0 55 -75 0 c-68 0 -75 2 -75 20 0 17 8 19 73 22 l72 3 3 53 3 52 -80 0 c-74 0 -81 2 -81 20 0 19 7 20 100 20 l100 0 0 -170z m358 -2 l2 -168 -105 0 c-98 0 -105 1 -105 20 0 18 7 20 80 20 l80 0 0 55 0 54 -72 3 c-60 2 -73 6 -76 21 -3 15 6 17 72 17 l76 0 0 55 0 55 -80 0 c-74 0 -80 2 -80 20 0 20 5 21 103 18 l102 -3 3 -167z m352 2 c0 -163 -1 -170 -20 -170 -19 0 -20 7 -20 150 l0 150 -65 0 -65 0 0 -40 c0 -33 -3 -40 -20 -40 -18 0 -20 7 -20 60 l0 60 105 0 105 0 0 -170z';
 
 type Mode = 'dark' | 'light';
 /** 80s monitors draw everything in one color: `main` for text, `dim` for the quiet parts, `bright` for labels and highlights. */
@@ -70,6 +70,6 @@ export function renderTerminalCard(label: string, rows: Segment[][], theme: Card
 <style>${styleSheet(theme, accent, crt)}</style>${crt ? `\n${CRT_DEFS}` : ''}
 <rect class="bg" x=".5" y=".5" width="${l.w - 1}" height="${h - 1}" rx="10"/>
 ${crt ? `<g filter="url(#gl)">${body}</g>` : body}
-${logo ? `<g transform="translate(${l.w - 62} ${h - 60}) scale(.02)"><path class="lg" transform="translate(0 2000) scale(1 -1)" d="${LOGO_PATH}"/></g>` : ''}${crt ? `\n<rect x=".5" y=".5" width="${l.w - 1}" height="${h - 1}" rx="10" fill="url(#sl)"/><rect x=".5" y=".5" width="${l.w - 1}" height="${h - 1}" rx="10" fill="url(#vg)"/>` : ''}
+${logo ? `<g transform="translate(${l.rows > 12 ? `${l.w - 58} 10` : `${l.w - 62} ${h - 60}`}) scale(${l.rows > 12 ? '.019' : '.02'})"><path class="lg" transform="translate(0 2000) scale(1 -1)" d="${LOGO_PATH}"/></g>` : ''}${crt ? `\n<rect x=".5" y=".5" width="${l.w - 1}" height="${h - 1}" rx="10" fill="url(#sl)"/><rect x=".5" y=".5" width="${l.w - 1}" height="${h - 1}" rx="10" fill="url(#vg)"/>` : ''}
 </svg>`;
 }

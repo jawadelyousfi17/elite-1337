@@ -28,8 +28,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ fil
   const profile = found?.status === 'ok' ? found.profile : null;
   const login = profile?.login ?? match[1];
   const [luma, activity] = await Promise.all([withTimeout(loadGithubLuma(login.toLowerCase()).catch(() => null), 10_000, null), profile ? loadActivity(login) : null]);
-  // The 1337 logo sits over the last lines of text, so here it is opt-in (`logo=1`).
-  const style = { ...parseCardStyle(params), logo: params.get('logo') === '1' };
+  const style = parseCardStyle(params);
   const svg = renderTerminalCard(`${login} on GitHub`, githubLines(login, parseCardText(params), profile, Date.now(), activity), style.theme, luma ? new Uint8Array(Buffer.from(luma, 'base64')) : null, style, FULL);
   // A card drawn without GitHub's answer or the avatar is short-lived so the real one replaces it soon.
   return new Response(svg, { headers: headers(profile && luma ? 3600 : 120) });

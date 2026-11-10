@@ -130,7 +130,8 @@ export function githubLines(login: string, text: CardText, github: GithubProfile
   const contact = [row('Email', text.email), row('Website', text.web), row('LinkedIn', text.linkedin), row('Discord', text.discord), row('X', text.x)].filter((entry): entry is Segment[] => !!entry);
   const head = `${login}@github `;
   const rows: (Segment[] | null)[] = [
-    [['t', head], ['d', '─'.repeat(Math.max(3, COLS - head.length - 3))], ['d', '.-—']],
+    // Seven columns are left free at the right end for the 1337 logo.
+    [['t', head], ['d', '─'.repeat(Math.max(3, COLS - head.length - 3 - 7))], ['d', '.-—']],
     row('Name', text.name ?? github?.name ?? login),
     row('OS', text.os),
     row('Uptime', github ? uptime(github.createdAt, now) : null),
@@ -151,7 +152,7 @@ export function githubLines(login: string, text: CardText, github: GithubProfile
       ...(activity?.added != null && activity.removed != null ? [linesRow(activity.added, activity.removed)] : []),
       ...github.languages.slice(0, 1).map((language) => pair(language.name, `${bar(language.share)} ${Math.round(language.share * 100)}%`, 'v', COLS)),
     ] : [pair('Profile', `github.com/${login}`, 'v', COLS)]),
-    [['c', text.fun ? `// ${text.fun}` : '// Made with GitHub Card']],
+    [['c', text.fun ? `// ${text.fun}` : '// Make yours at github-card.elite-1337.app']],
   ];
   const filled = rows.filter((entry): entry is Segment[] => !!entry);
   // A card with every field has one row too many: the top-language bar goes first, since Languages.Programming already names the languages.

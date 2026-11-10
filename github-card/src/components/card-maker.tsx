@@ -53,7 +53,7 @@ function Snippet({ tabs }: { tabs: { id: string; label: string; value: string }[
 export function CardMaker({ siteUrl }: { siteUrl: string }) {
   const [input, setInput] = useState('');
   const [text, setText] = useState<CardText>({});
-  const [style, setStyle] = useState<CardStyle>({ ...DEFAULT_STYLE, logo: false });
+  const [style, setStyle] = useState<CardStyle>(DEFAULT_STYLE);
   const [origin, setOrigin] = useState(siteUrl.replace(/\/$/, ''));
   const [tab, setTab] = useState('basics');
   const [submitted, setSubmitted] = useState('');
@@ -72,8 +72,7 @@ export function CardMaker({ siteUrl }: { siteUrl: string }) {
     if (!GITHUB_LOGIN.test(typed)) { setNote('Enter a GitHub username, like octocat.'); return; }
     setNote(null); setInput(typed); setSubmitted(typed);
   };
-  // The 1337 logo is opt-in on this card (`logo=1`), because it sits over the last lines of text.
-  const query = `${styleQuery({ ...style, logo: true })}${style.logo ? '&logo=1' : ''}${textQuery(text)}`.slice(1);
+  const query = `${styleQuery(style)}${textQuery(text)}`.slice(1);
   const path = valid ? `/api/gh/${login}.svg${query ? `?${query}` : ''}` : null;
   // The preview waits for a pause in typing, so each keystroke does not draw a card.
   useEffect(() => { const timer = setTimeout(() => { setShown(path); setFailed(false); }, 450); return () => clearTimeout(timer); }, [path]);
@@ -83,11 +82,12 @@ export function CardMaker({ siteUrl }: { siteUrl: string }) {
   const user = (src: string | null) => src?.split('?')[0] ?? null;
   const fetching = loading && user(path) !== user(loadedSrc);
   const url = `${origin}${path ?? `/api/gh/your-username.svg${query ? `?${query}` : ''}`}`;
-  const profile = `https://github.com/${valid ? login : ''}`;
+  // Clicking the card in a README opens this site, so anyone who likes it can make their own.
+  const home = `${origin || 'https://github-card.elite-1337.app'}/`;
 
   const filled = (keys: (keyof CardText)[]) => keys.some((key) => text[key]);
   // The bar starts at step 1: a username, then a card, then your details, then your look.
-  const steps = [true, valid, filled(SECTIONS.flatMap((section) => section.fields.map((field) => field.key))), JSON.stringify(style) !== JSON.stringify({ ...DEFAULT_STYLE, logo: false })];
+  const steps = [true, valid, filled(SECTIONS.flatMap((section) => section.fields.map((field) => field.key))), JSON.stringify(style) !== JSON.stringify(DEFAULT_STYLE)];
 
   return <div className="gc-grid">
     <section className="gc-panel gc-top">
@@ -114,13 +114,13 @@ export function CardMaker({ siteUrl }: { siteUrl: string }) {
       <h2>Add it to your README</h2>
       <p className="gc-sub">Paste one of these in the README of your profile repository, the one named after your username.</p>
       <Snippet tabs={[
-        { id: 'md', label: 'Markdown', value: `[![${valid ? login : 'GitHub'} card](${url})](${profile})` },
-        { id: 'html', label: 'HTML', value: `<a href="${profile}"><img src="${url}" alt="GitHub card" width="985"></a>` },
+        { id: 'md', label: 'Markdown', value: `[![${valid ? login : 'GitHub'} card](${url})](${home})` },
+        { id: 'html', label: 'HTML', value: `<a href="${home}"><img src="${url}" alt="GitHub card" width="985"></a>` },
       ]}/>
     </section>
     <div className="gc-panel gc-form">
       <div className="gc-tabs" role="tablist" aria-label="Card details">
-        {[...SECTIONS.map(({ id, title, fields }) => ({ id, title, used: fields.some(({ key }) => text[key]) })), { id: 'look', title: 'Look', used: JSON.stringify(style) !== JSON.stringify({ ...DEFAULT_STYLE, logo: false }) }].map(({ id, title, used }) =>
+        {[...SECTIONS.map(({ id, title, fields }) => ({ id, title, used: fields.some(({ key }) => text[key]) })), { id: 'look', title: 'Look', used: JSON.stringify(style) !== JSON.stringify(DEFAULT_STYLE) }].map(({ id, title, used }) =>
           <button key={id} type="button" role="tab" id={`tab-${id}`} aria-selected={tab === id} aria-controls="gc-tabpanel" className="gc-tab" onClick={() => setTab(id)}>{title}{used && <i className="gc-dot" aria-label="filled in"/>}</button>)}
       </div>
       <div id="gc-tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`}>

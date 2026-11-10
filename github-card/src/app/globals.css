@@ -4,7 +4,15 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-
 button,input{font:inherit;color:inherit}
 a{color:var(--accent-dark)}
 :focus-visible{outline:3px solid rgba(244,81,30,.35);outline-offset:2px}
-.gc-shell{max-width:1180px;margin:0 auto;padding:40px 16px 56px}
+.gc-bar{background:#fff;border-bottom:1px solid var(--line)}
+.gc-bar-in{max-width:1180px;margin:0 auto;height:60px;padding:0 16px;display:flex;align-items:center;justify-content:space-between}
+.gc-brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:600;font-size:17px;letter-spacing:-.01em}
+.gc-brand svg{display:block;fill:var(--ink)}
+.gc-star{display:flex;align-items:center;gap:8px;height:38px;padding:0 6px 0 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;transition:background .15s,border-color .15s}
+.gc-star:hover{background:#fafbfc;border-color:#bfc5ce}
+.gc-stars{padding:3px 8px;border-radius:4px;background:var(--soft);font-size:13px;font-variant-numeric:tabular-nums}
+.gc-star:not(:has(.gc-stars)){padding-right:12px}
+.gc-shell{max-width:1180px;margin:0 auto;padding:28px 16px 56px}
 .gc-grid{display:grid;grid-template-columns:minmax(0,480px) minmax(0,1fr);grid-template-areas:"top preview" "form preview" "foot foot";gap:20px 28px;align-items:start}
 .gc-panel{background:var(--panel);border-radius:14px;padding:28px 30px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 14px 36px rgba(16,24,40,.07)}
 .gc-top{grid-area:top}

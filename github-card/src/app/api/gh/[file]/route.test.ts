@@ -26,8 +26,8 @@ describe('GET /api/gh/[file]', () => {
     expect(response.headers.get('content-type')).toContain('image/svg+xml');
     expect(response.headers.get('content-security-policy')).toContain("default-src 'none'");
     expect(body).toContain('Compilers');
-    expect(body).not.toContain('scale(.02)');
-    expect(await (await call('ada.svg', '?logo=1')).text()).toContain('scale(.02)');
+    expect(body).toContain('scale(.019)');
+    expect(await (await call('ada.svg', '?logo=0')).text()).not.toContain('scale(.019)');
     expect(Number(/max-age=(\d+)/.exec(response.headers.get('cache-control')!)![1])).toBeLessThanOrEqual(300);
   });
 });
