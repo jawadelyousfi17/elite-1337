@@ -7,7 +7,6 @@ import { ART_COLS, ART_ROWS } from '@/lib/card-art';
 import { chooseGithubPicture, chooseIntraPhoto, chooseLinkPicture, chooseUploadedPicture } from './actions';
 
 vi.mock('@/auth', () => ({ auth: vi.fn() }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/lib/card-art-store', async (original) => ({ ...(await original<typeof import('@/lib/card-art-store')>()), saveCardArt: vi.fn(), clearCardArt: vi.fn() }));
 vi.mock('@/lib/card-photo', () => ({ imageToCells: vi.fn() }));
 vi.mock('@/lib/safe-image-fetch', async (original) => ({ ...(await original<typeof import('@/lib/safe-image-fetch')>()), fetchImageBytes: vi.fn() }));

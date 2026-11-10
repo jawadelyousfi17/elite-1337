@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { clearCardArt, saveCardArt, validCells, type CardArtSource, type SaveResult } from '@/lib/card-art-store';
 import { imageToCells } from '@/lib/card-photo';
@@ -17,7 +16,7 @@ async function studentId(): Promise<number | null> {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 function finish(result: SaveResult, done: string): PictureResult {
-  if (result === 'saved') { revalidatePath('/card'); return { ok: true, message: done }; }
+  if (result === 'saved') return { ok: true, message: done };
   if (result === 'limited') return fail('Slow down a little, try again in a few seconds.');
   if (result === 'unavailable') return fail('Could not save right now, try again in a minute.');
   return fail('That picture could not be used.');

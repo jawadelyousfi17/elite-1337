@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 import { ArrowRight, GitHub, LinkIcon, Palette, Picture, Sun, TextAa, Upload, UserRound } from '@/components/icons';
 import { CodeBlock } from '@/components/code-block';
 import { ACCENTS, ACCENT_COLORS, ARTS, DEFAULT_STYLE, FONTS, FONT_LABELS, THEMES, THEME_LABELS, styleQuery, type CardStyle } from '@/lib/card-style';
@@ -36,11 +35,11 @@ async function fileToCells(file: File): Promise<string> {
 
 /** The picture picker (left) and the card with its snippets (right). Saving refreshes the card at once. */
 export function CardPicture({ path, current, origin }: { path: string; current: CurrentPicture; origin: string }) {
-  const router = useRouter();
   const [choice, setChoice] = useState<Choice>(current ? current.source : 'intra');
   const [version, setVersion] = useState(0);
   const [status, setStatus] = useState<PictureResult | null>(null);
-  const [pending, start] = useTransition();
+  const [pending, setPending] = useState(false);
+  const busy = useRef(false);
   const [text, setText] = useState('');
   const [over, setOver] = useState(false);
   const [style, setStyle] = useState<CardStyle>(DEFAULT_STYLE);
@@ -48,14 +47,17 @@ export function CardPicture({ path, current, origin }: { path: string; current: 
   const url = `${origin}${path}${extra}`;
   const tweak = <K extends keyof CardStyle>(key: K, value: CardStyle[K]) => setStyle((previous) => ({ ...previous, [key]: value }));
 
-  const run = (job: () => Promise<PictureResult>) => start(async () => {
-    setStatus(null);
+  /** One save at a time. The busy flag always clears, so the controls can never get stuck. */
+  const run = async (job: () => Promise<PictureResult>) => {
+    if (busy.current) return;
+    busy.current = true; setPending(true); setStatus(null);
     try {
       const result = await job();
       setStatus(result);
-      if (result.ok) { setVersion((value) => value + 1); router.refresh(); }
+      if (result.ok) setVersion((value) => value + 1);
     } catch { setStatus({ ok: false, message: 'Something went wrong, try again.' }); }
-  });
+    finally { busy.current = false; setPending(false); }
+  };
   const pick = (next: Choice) => {
     setChoice(next); setStatus(null); setText('');
     if (next === 'intra') run(chooseIntraPhoto);
@@ -77,7 +79,7 @@ export function CardPicture({ path, current, origin }: { path: string; current: 
         <h1>Rank card</h1>
         <p>Show your rank on your GitHub profile. It updates by itself.</p>
         <nav className="fa-tabs pc-tabs" aria-label="Card picture">
-          {TABS.map(({ id, label, Icon }) => <button key={id} type="button" className={cn('fa-tab', choice === id && 'is-picked')} aria-pressed={choice === id} disabled={pending} onClick={() => pick(id)}><Icon size={18}/>{label}</button>)}
+          {TABS.map(({ id, label, Icon }) => <button key={id} type="button" className={cn('fa-tab', choice === id && 'is-picked')} aria-pressed={choice === id} onClick={() => pick(id)}><Icon size={18}/>{label}</button>)}
         </nav>
       </section>
       {choice === 'upload' && <label className={cn('cd-drop', over && 'is-over')} onDragEnter={() => setOver(true)} onDragLeave={() => setOver(false)} onDrop={() => setOver(false)}>
