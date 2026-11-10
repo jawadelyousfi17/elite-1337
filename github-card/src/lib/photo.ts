@@ -1,0 +1,39 @@
+import { unstable_cache } from 'next/cache';
+import sharp from 'sharp';
+import { decode } from 'jpeg-js';
+import { singleFlight } from './single-flight';
+import { fetchImageBytes, parseImageUrl } from './safe-image-fetch';
+import { ART_COLS, ART_ROWS, lumaFromRgba } from './card-art';
+
+/** Gray cells through sharp (any common format); the pixels are shrunk first so a big upload stays cheap. */
+async function viaSharp(bytes: Uint8Array): Promise<Uint8Array> {
+  const raw = await sharp(Buffer.from(bytes), { limitInputPixels: 24_000_000 }).rotate().flatten({ background: '#161b22' })
+    .resize(640, 640, { fit: 'inside', withoutEnlargement: true }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  return lumaFromRgba(raw.data, raw.info.width, raw.info.height);
+}
+/** A pure-JavaScript JPEG decoder, used if the native one is not available on the server. */
+function viaJpegJs(bytes: Uint8Array): Uint8Array {
+  const image = decode(bytes, { useTArray: true, maxMemoryUsageInMB: 64 });
+  return lumaFromRgba(image.data, image.width, image.height);
+}
+
+/**
+ * Turns image bytes into ART_COLS x ART_ROWS gray cells (sharp first, a pure-JavaScript JPEG decoder if that fails), or
+ * null. `loadCardLuma` does it for a student's 42 photo as base64 for the card's ASCII portrait, or null when it cannot be used. The CDN is not the 42 API, so this costs no request budget; a photo path changes with the photo, so a result is
+ * cached for a month. A failed download throws and is NOT cached (a hiccup must not hide the photo for a month).
+ */
+export async function imageToCells(bytes: Uint8Array): Promise<Uint8Array | null> {
+  for (const attempt of [viaSharp, async (data: Uint8Array) => viaJpegJs(data)]) {
+    try { return await attempt(bytes); }
+    catch (error) { console.error('rank card photo decode failed:', error instanceof Error ? error.message.slice(0, 120) : 'unknown error'); }
+  }
+  return null;
+}
+
+/** The GitHub avatar of any public username as gray cells, cached a day. Only github.com hosts are fetched, through the SSRF-safe downloader. */
+export const loadGithubLuma = singleFlight(unstable_cache(async (login: string): Promise<string | null> => {
+  const url = parseImageUrl(`https://github.com/${login}.png?size=240`, ['github.com', 'avatars.githubusercontent.com']);
+  if (!url) return null;
+  const cells = await imageToCells(await fetchImageBytes(url, ['github.com', 'avatars.githubusercontent.com']));
+  return cells ? Buffer.from(cells).toString('base64') : null;
+}, ['1337-github-luma-v1', String(ART_COLS * ART_ROWS)], { revalidate: 86_400 }));
