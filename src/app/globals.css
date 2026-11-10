@@ -1694,6 +1694,9 @@ main[data-pending]{cursor:progress}
 .fz-badge.pl-anon-tip{border-bottom:0;z-index:2}
 .fz-since{gap:4px;margin-left:-5px;letter-spacing:.04em;background:#7fe0d9;color:#062f2d}
 html[data-tw-light]:not(:has(.landing)) .fz-since{background:#7fe0d9!important;color:#062f2d!important}
+
+.fz-days{display:none}
+@media(max-width:700px){.fz-long{display:none}.fz-days{display:inline}.fz-word{display:none}.fz-badge:not(.fz-since){padding:0 6px}}
 h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 
 /* Navbar GitHub hover tip. */

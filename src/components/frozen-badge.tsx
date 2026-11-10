@@ -13,7 +13,7 @@ export function FrozenBadge({ id, lastSeen }: { id: number; lastSeen?: string })
   useEffect(() => { if (!lastSeen) requestSeen(id); }, [id, lastSeen]);
   const at = lastSeen ?? live ?? undefined;
   return <>
-    <span className="fz-badge"><Snowflake size={12} weight="bold"/>FROZEN</span>
-    {at && <span className="fz-badge fz-since pl-anon-tip" tabIndex={0} data-tip={`Approximately ${shortDate(at)}`}><Calendar size={12} weight="bold"/>{daysAgo(at)}</span>}
+    <span className="fz-badge"><Snowflake size={12} weight="bold"/><span className="fz-word">FROZEN</span></span>
+    {at && <span className="fz-badge fz-since pl-anon-tip" tabIndex={0} data-tip={`Approximately ${shortDate(at)}`}><Calendar size={12} weight="bold"/><span className="fz-long">{daysAgo(at)}</span><span className="fz-days">{daysAgo(at, Date.now(), true)}</span></span>}
   </>;
 }

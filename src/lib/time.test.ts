@@ -22,6 +22,7 @@ describe('daysAgo', () => {
     expect(daysAgo(before(9 * day), now)).toBe('9 days ago');
     expect(daysAgo(before(35 * day), now)).toBe('1 month 5 days ago');
     expect(daysAgo(before(60 * day), now)).toBe('2 months ago');
+    expect(daysAgo(before(60 * day), now, true)).toBe('60 days ago');
     expect(daysAgo(before(125 * day), now)).toBe('4 months 5 days ago');
     expect(daysAgo(before(430 * day), now)).toBe('1 year 2 months ago');
   });
