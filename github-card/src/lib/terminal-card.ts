@@ -4,7 +4,7 @@ import { ACCENT_COLORS, DEFAULT_STYLE, FONT_STACKS, type CardAccent, type CardAr
 /** Where things sit on a card: the compact rank card and the tall profile card share one renderer. */
 export type Layout = { w: number; h: number; artX: number; artTop: number; cellW: number; cellH: number; artFont: number; textX: number; cols: number; charW: number; font: number; line: number; top: number; rows: number; minH?: number };
 export const COMPACT: Layout = { w: 840, h: 320, artX: 22, artTop: 20, cellW: 3.75, cellH: 7, artFont: 6.25, textX: 356, cols: 60, charW: 7.4, font: 12.3, line: 22, top: 40, rows: 12 };
-export const FULL: Layout = { w: 985, h: 530, artX: 22, artTop: 24, cellW: 4.5, cellH: 9, artFont: 7.5, textX: 410, cols: 66, charW: 8.4, font: 14, line: 22, top: 38, rows: 22, minH: 408 };
+export const FULL: Layout = { w: 985, h: 530, artX: 22, artTop: 24, cellW: 4.5, cellH: 9, artFont: 7.5, textX: 410, cols: 66, charW: 8.4, font: 14, line: 22, top: 38, rows: 24, minH: 408 };
 
 export const escape = (value: string) => value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 
@@ -13,7 +13,7 @@ const LOGO_PATH = 'M0 1000 l0 -1000 1000 0 1000 0 0 1000 0 1000 -1000 0 -1000 0 
 
 type Mode = 'dark' | 'light';
 /** 80s monitors draw everything in one color: `main` for text, `dim` for the quiet parts, `bright` for labels and highlights. */
-const crtInk = (main: string, dim: string, bright: string) => `.lg{fill:${main}}.art{fill:${main}}.v{fill:${main}}.d{fill:${dim}}.t{fill:${main}}.c{fill:${dim}}.g{fill:${bright}}.z{fill:${main}}.p{fill:${main}}.k{fill:${bright}}`;
+const crtInk = (main: string, dim: string, bright: string) => `.lg{fill:${main}}.art{fill:${main}}.v{fill:${main}}.d{fill:${dim}}.t{fill:${main}}.c{fill:${dim}}.g{fill:${bright}}.r{fill:${dim}}.z{fill:${main}}.p{fill:${main}}.k{fill:${bright}}`;
 type Surface = { mode: Mode; bg: string; border: string; ink?: string };
 const SURFACES: Record<Exclude<CardTheme, 'auto'>, Surface> = {
   dark: { mode: 'dark', bg: '#161b22', border: '#30363d' }, black: { mode: 'dark', bg: '#000', border: '#2a2a2a' },
@@ -24,8 +24,8 @@ const SURFACES: Record<Exclude<CardTheme, 'auto'>, Surface> = {
   c64: { mode: 'dark', bg: '#3b2f8f', border: '#6c5eb5', ink: crtInk('#b9b0ff', '#8478d6', '#ffffff') },
 };
 const INK: Record<Mode, string> = {
-  dark: '.lg{fill:#c9d1d9}.art{fill:#c9d1d9}.v{fill:#a5d6ff}.d{fill:#6e7681}.t{fill:#c9d1d9}.c{fill:#6e7681}.g{fill:#56d364}.z{fill:#79e2d9}.p{fill:#f0abfc}',
-  light: '.lg{fill:#24292f}.art{fill:#24292f}.v{fill:#0550ae}.d{fill:#8c959f}.t{fill:#24292f}.c{fill:#6e7781}.g{fill:#1a7f37}.z{fill:#0b7a75}.p{fill:#a626a4}',
+  dark: '.lg{fill:#c9d1d9}.art{fill:#c9d1d9}.v{fill:#a5d6ff}.d{fill:#6e7681}.t{fill:#c9d1d9}.c{fill:#6e7681}.g{fill:#56d364}.r{fill:#f85149}.z{fill:#79e2d9}.p{fill:#f0abfc}',
+  light: '.lg{fill:#24292f}.art{fill:#24292f}.v{fill:#0550ae}.d{fill:#8c959f}.t{fill:#24292f}.c{fill:#6e7781}.g{fill:#1a7f37}.r{fill:#cf222e}.z{fill:#0b7a75}.p{fill:#a626a4}',
 };
 const colors = (surface: Surface, accent: CardAccent) => `.bg{fill:${surface.bg};stroke:${surface.border}}${surface.ink ?? `${INK[surface.mode]}.k{fill:${ACCENT_COLORS[accent][surface.mode]}}`}`;
 const CURSOR = '.cur{animation:cb 1.1s steps(1) infinite}@keyframes cb{50%{opacity:0}}@media (prefers-reduced-motion: reduce){.cur{animation:none}}';

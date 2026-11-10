@@ -42,6 +42,50 @@ const lookup = singleFlight(unstable_cache(async (login: string): Promise<Github
   return { status: 'ok', profile: { login: user.login, name: user.name ?? null, bio: user.bio ?? null, location: user.location ?? null, repos: user.public_repos, followers: user.followers, following: user.following, createdAt: user.created_at, stars, languages } };
 }, ['1337-github-profile-v2'], { revalidate: 3600 }));
 
+export type GithubActivity = { commits: number | null; added: number | null; removed: number | null };
+const statsSchema = z.array(z.object({ author: z.object({ login: z.string() }).nullable(), weeks: z.array(z.object({ a: z.number(), d: z.number() })) }));
+const repoNames = z.array(z.object({ name: z.string(), fork: z.boolean(), archived: z.boolean().optional() }));
+
+/** Lines added and removed by `login` in one repository's contributor statistics (GitHub lists a few hundred contributors at most). */
+export function linesOf(stats: z.infer<typeof statsSchema>, login: string): { added: number; removed: number } {
+  const mine = stats.find((entry) => entry.author?.login.toLowerCase() === login.toLowerCase());
+  return { added: mine?.weeks.reduce((sum, week) => sum + week.a, 0) ?? 0, removed: mine?.weeks.reduce((sum, week) => sum + week.d, 0) ?? 0 };
+}
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/** GitHub computes contributor statistics on first request and answers 202: ask once more shortly after, then give up on that repository. */
+async function repoLines(login: string, repo: string): Promise<{ added: number; removed: number } | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await get(`repos/${login}/${repo}/stats/contributors`);
+    if (response.status === 202) { await wait(1500); continue; }
+    if (!response.ok) return null;
+    const parsed = statsSchema.safeParse(await response.json().catch(() => null));
+    return parsed.success ? linesOf(parsed.data, login) : null;
+  }
+  return null;
+}
+
+/**
+ * Commits (one search request, any visitor) and, only with GITHUB_TOKEN, lines added and removed across the 10 most recently
+ * pushed repositories the user owns (one statistics request each). Cached six hours per username; each part is null when GitHub cannot answer.
+ */
+const activity = singleFlight(unstable_cache(async (login: string): Promise<GithubActivity> => {
+  const search = await get(`search/commits?q=${encodeURIComponent(`author:${login}`)}&per_page=1`);
+  const total = search.ok ? z.object({ total_count: z.number().int().nonnegative() }).safeParse(await search.json().catch(() => null)) : null;
+  const commits = total?.success ? total.data.total_count : null;
+  if (!process.env.GITHUB_TOKEN) return { commits, added: null, removed: null };
+  const list = await get(`users/${login}/repos?per_page=100&type=owner&sort=pushed`);
+  const repos = list.ok ? repoNames.safeParse(await list.json().catch(() => null)) : null;
+  if (!repos?.success) return { commits, added: null, removed: null };
+  const parts = await Promise.all(repos.data.filter((repo) => !repo.fork && !repo.archived).slice(0, 10).map((repo) => repoLines(login, repo.name).catch(() => null)));
+  const done = parts.filter((part): part is { added: number; removed: number } => !!part);
+  return { commits, added: done.length ? done.reduce((sum, part) => sum + part.added, 0) : null, removed: done.length ? done.reduce((sum, part) => sum + part.removed, 0) : null };
+}, ['1337-github-activity-v1'], { revalidate: 21_600 }));
+
+/** Commit and line counts, null when GitHub is slow (the card is drawn without those rows). */
+export async function loadActivity(login: string): Promise<GithubActivity | null> {
+  return withTimeout(activity(login.toLowerCase()).catch((error) => { console.error('github card activity failed:', error instanceof Error ? error.message.slice(0, 80) : 'unknown error'); return null; }), 12_000, null);
+}
+
 /** The GitHub numbers for a username, null when GitHub is slow or unavailable (the card still draws from the typed text). */
 export async function loadGithub(login: string): Promise<GithubLookup | null> {
   return withTimeout(lookup(login.toLowerCase()).catch((error) => { console.error('github card lookup failed:', error instanceof Error ? error.message.slice(0, 80) : 'unknown error'); return null; }), 9_000, null);
@@ -73,8 +117,15 @@ function duo(key1: string, value1: string, key2: string, value2: string): Segmen
 }
 const list = (value: string) => value.split(/\s*[,/|]\s*/).filter(Boolean).slice(0, 6).join(', ');
 
-/** The profile card's rows: typed lines first (only what was filled in), contact details, then live GitHub numbers. At most 22 fit. */
-export function githubLines(login: string, text: CardText, github: GithubProfile | null, now = Date.now()): Segment[][] {
+const num = (value: number) => value.toLocaleString('en-US');
+/** `Lines of code: ..... +1,545 -485`, additions and removals in their own colors. */
+function linesRow(added: number, removed: number): Segment[] {
+  const plus = `+${num(added)}`, minus = `-${num(removed)}`, key = 'Lines of code';
+  return [['d', '. '], ['k', key], ['t', ': '], ['d', `${'.'.repeat(Math.max(2, COLS - key.length - 5 - plus.length - minus.length - 1))} `], ['g', plus], ['t', ' '], ['r', minus]];
+}
+
+/** The profile card's rows: typed lines first (only what was filled in), contact details, then live GitHub numbers. At most 24 fit. */
+export function githubLines(login: string, text: CardText, github: GithubProfile | null, now = Date.now(), activity: GithubActivity | null = null): Segment[][] {
   const row = (key: string, value: string | null | undefined, valueClass = 'v'): Segment[] | null => value ? pair(key, value, valueClass, COLS) : null;
   const contact = [row('Email', text.email), row('Website', text.web), row('LinkedIn', text.linkedin), row('Discord', text.discord), row('X', text.x)].filter((entry): entry is Segment[] => !!entry);
   const head = `${login}@github `;
@@ -96,12 +147,14 @@ export function githubLines(login: string, text: CardText, github: GithubProfile
     ...(github ? [
       duo('Repos', String(github.repos), 'Stars', String(github.stars)),
       duo('Followers', String(github.followers), 'Following', String(github.following)),
+      ...(activity?.commits != null ? [pair('Commits', num(activity.commits), 'v', COLS)] : []),
+      ...(activity?.added != null && activity.removed != null ? [linesRow(activity.added, activity.removed)] : []),
       ...github.languages.slice(0, 1).map((language) => pair(language.name, `${bar(language.share)} ${Math.round(language.share * 100)}%`, 'v', COLS)),
     ] : [pair('Profile', `github.com/${login}`, 'v', COLS)]),
     [['c', text.fun ? `// ${text.fun}` : '// Made with GitHub Card']],
   ];
   const filled = rows.filter((entry): entry is Segment[] => !!entry);
-  // A full card has 23 rows: the top-language bar goes first, since Languages.Programming already names the languages.
+  // A card with every field has one row too many: the top-language bar goes first, since Languages.Programming already names the languages.
   const barAt = filled.findIndex((entry) => entry.some(([, part]) => part.includes('█')));
   return filled.length > FULL.rows && barAt > 0 ? filled.filter((_, index) => index !== barAt) : filled;
 }

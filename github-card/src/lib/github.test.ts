@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/cache', () => ({ unstable_cache: <T extends (...args: never[]) => unknown>(fn: T) => fn }));
-const { GITHUB_LOGIN, cleanLogin, cleanText, githubLines, parseCardText, summarizeRepos, textQuery, uptime } = await import('./github');
+const { GITHUB_LOGIN, cleanLogin, cleanText, githubLines, linesOf, parseCardText, summarizeRepos, textQuery, uptime } = await import('./github');
 const { FULL, renderTerminalCard } = await import('./terminal-card');
 const { TEXT_FIELDS } = await import('./github-input');
 
@@ -51,9 +51,33 @@ describe('github card content', () => {
   });
   it('keeps the fun fact line when every field is filled in', () => {
     const all = Object.fromEntries(Object.keys(TEXT_FIELDS).map((key) => [key, 'x'])) as Record<string, string>;
-    const rows = flat(githubLines('ada', all, profile, Date.UTC(2026, 10, 9)));
-    expect(rows).toHaveLength(22);
-    expect(rows.at(-1)).toBe('// x');
+    const plain = flat(githubLines('ada', all, profile, Date.UTC(2026, 10, 9)));
+    expect(plain.at(-1)).toBe('// x');
+    const busy = flat(githubLines('ada', all, profile, Date.UTC(2026, 10, 9), { commits: 1234, added: 1545, removed: 485 }));
+    expect(busy).toHaveLength(24);
+    expect(busy.at(-1)).toBe('// x');
+    expect(busy.some((row) => row.includes('█'))).toBe(false);
+  });
+  it('shows commits, and lines added and removed only when they are known', () => {
+    const rows = (activity: Parameters<typeof githubLines>[4]) => flat(githubLines('ada', {}, profile, Date.UTC(2026, 10, 9), activity));
+    const full = rows({ commits: 2116, added: 1545, removed: 485 });
+    expect(full.some((row) => row.includes('Commits') && row.includes('2,116'))).toBe(true);
+    const lines = full.find((row) => row.includes('Lines of code'))!;
+    expect(lines).toContain('+1,545 -485');
+    expect(lines.length).toBe(66);
+    const noLines = rows({ commits: 5, added: null, removed: null });
+    expect(noLines.some((row) => row.includes('Commits'))).toBe(true);
+    expect(noLines.some((row) => row.includes('Lines of code'))).toBe(false);
+    expect(rows(null).some((row) => row.includes('Commits'))).toBe(false);
+  });
+  it('sums only the user\'s own weeks from contributor statistics', () => {
+    const stats = [
+      { author: { login: 'Ada' }, weeks: [{ a: 10, d: 2 }, { a: 5, d: 1 }] },
+      { author: { login: 'bob' }, weeks: [{ a: 99, d: 99 }] },
+      { author: null, weeks: [{ a: 7, d: 7 }] },
+    ];
+    expect(linesOf(stats, 'ada')).toEqual({ added: 15, removed: 3 });
+    expect(linesOf(stats, 'nobody')).toEqual({ added: 0, removed: 0 });
   });
   it('keeps every row the same width so the columns line up', () => {
     const rows = flat(githubLines('ada', { os: 'Arch', host: 'Home', web: 'ada.dev' }, profile, Date.UTC(2026, 10, 9)));
@@ -75,6 +99,6 @@ describe('github card content', () => {
     expect(plain).not.toContain('feGaussianBlur');
     for (const part of ['feGaussianBlur', 'url(#sl)', 'class="cur k"', 'prefers-reduced-motion']) expect(crt).toContain(part);
     expect(crt).toContain('width="985" height="408"');
-    expect(renderTerminalCard('x', githubLines('ada', Object.fromEntries(Object.keys(TEXT_FIELDS).map((key) => [key, 'x'])), profile), 'dark', null, {}, FULL)).toContain('height="530"');
+    expect(renderTerminalCard('x', githubLines('ada', Object.fromEntries(Object.keys(TEXT_FIELDS).map((key) => [key, 'x'])), profile), 'dark', null, {}, FULL)).toContain('height="552"');
   });
 });
