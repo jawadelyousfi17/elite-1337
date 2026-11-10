@@ -98,7 +98,7 @@ export function githubLines(login: string, text: CardText, github: GithubProfile
       duo('Followers', String(github.followers), 'Following', String(github.following)),
       ...github.languages.slice(0, 1).map((language) => pair(language.name, `${bar(language.share)} ${Math.round(language.share * 100)}%`, 'v', COLS)),
     ] : [pair('Profile', `github.com/${login}`, 'v', COLS)]),
-    [['c', text.fun ? `// ${text.fun}` : '// Make yours at elite-1337.app/github-card']],
+    [['c', text.fun ? `// ${text.fun}` : '// Make yours at github-card.elite-1337.app']],
   ];
   const filled = rows.filter((entry): entry is Segment[] => !!entry);
   // A full card has 23 rows: the top-language bar goes first, since Languages.Programming already names the languages.
