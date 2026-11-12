@@ -78,16 +78,16 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
   const avatars = known.length ? photoReferences(known) : {};
   return <section className="st-card st-correctors" aria-labelledby="st-correctors">
     <header>
-      <h2 id="st-correctors">Strictest correctors</h2>
+      <h2 id="st-correctors">Corrector return rates</h2>
       <div className="st-head-tools">
-        <nav data-keep-scroll className="st-period" aria-label="Strict correctors period">{CORRECTOR_WINDOWS.map((window) => <Link key={window} href={hrefFor[window]} scroll={false} aria-current={window === days ? 'true' : undefined} title={`Last ${window} days`}>{window}d</Link>)}</nav>
-        <span className="st-info" tabIndex={0} aria-label="How strictness is measured" aria-describedby="st-correctors-info">
+        <nav data-keep-scroll className="st-period" aria-label="Corrector statistics period">{CORRECTOR_WINDOWS.map((window) => <Link key={window} href={hrefFor[window]} scroll={false} aria-current={window === days ? 'true' : undefined} title={`Last ${window} days`}>{window}d</Link>)}</nav>
+        <span className="st-info" tabIndex={0} aria-label="How return rates are measured" aria-describedby="st-correctors-info">
           <Info size={18}/>
           <span className="st-info-tip" role="tooltip" id="st-correctors-info">
             <strong>How it's measured</strong>
             <span>Share of a corrector's evaluations that returned the project.</span>
             <span>{campusId ? names[campusId] : 'All campuses'}, Common Core, last {days} days.</span>
-            <span>At least {min} evaluations and one return to be listed.</span>
+            <span>At least {min} evaluations and one return to be listed. Peer Video and unidentified projects excluded.</span><span>Project difficulty and student performance differ; this rate does not measure fairness or strictness.</span>
           </span>
         </span>
       </div>
@@ -97,7 +97,7 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
         <Link href={`https://profile.intra.42.fr/users/${encodeURIComponent(item.login)}`} target="_blank" rel="noopener noreferrer">
           <span className={cn('st-correctors-rank', index < 3 && `is-top is-top-${index + 1}`)}>{index + 1}</span>
           <Avatar login={item.login} src={avatars[item.correctorId]} size={38}/>
-          <span className="st-who"><b>{item.login}<NewTabMark/></b><small>{!campusId && <><i className="st-correctors-campus" style={{ background: campusColors[item.campusId] ?? '#888' }} aria-hidden="true"/>{names[item.campusId]} · </>}returned {fmt(item.returned)} of {fmt(item.evaluations)}</small></span>
+          <span className="st-who"><b>{item.login}<NewTabMark/></b><small>{!campusId && <><i className="st-correctors-campus" style={{ background: campusColors[item.campusId] ?? '#888' }} aria-hidden="true"/>{names[item.campusId]} · </>}returned {fmt(item.returned)} of {fmt(item.evaluations)}{item.evaluations < 20 ? ' · small sample' : ''}</small></span>
           <span className="st-correctors-score">
             <strong>{pct(item.rate)}</strong>
             <i className="st-correctors-bar" aria-hidden="true"><em style={{ width: `${item.rate * 100}%` }}/></i>
@@ -108,8 +108,8 @@ export async function StrictCorrectors({ students, campusId, names, days, hrefFo
 }
 
 export function StrictCorrectorsSkeleton() {
-  return <section className="st-card st-correctors" aria-busy="true" aria-label="Loading strict correctors">
-    <header><h2>Strictest correctors</h2><span className="st-note-chip">Loading from 42…</span></header>
+  return <section className="st-card st-correctors" aria-busy="true" aria-label="Loading corrector return rates">
+    <header><h2>Corrector return rates</h2><span className="st-note-chip">Loading from 42…</span></header>
     <div className="st-career-loading"/>
   </section>;
 }
