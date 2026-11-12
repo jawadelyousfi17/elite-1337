@@ -8,3 +8,6 @@ node_modules
 .impeccable/hook.cache.json
 .tmp/
 .env.docker
+
+playwright-report/
+test-results/
