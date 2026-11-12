@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Calculator, ChartNoAxesCombined, Corrections, MapPinned, Trophy, UserRound } from '@/components/icons';
+import { Calculator, ChartNoAxesCombined, Corrections, Trophy, UserRound } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 // Short label: the top bar only fits a word as wide as "Offers"; longer ones push "Me" onto a second line.
@@ -12,7 +12,6 @@ const shared = [
   { href: '/leaderboard', label: 'Ranks', icon: Trophy },
   { href: '/stats', label: 'Stats', icon: ChartNoAxesCombined },
   { href: '/corrections', label: 'Corrections', icon: Corrections },
-  { href: '/clusters', label: 'Clusters', icon: MapPinned },
   xp,
 ];
 const me = { href: '/me', label: 'Me', icon: UserRound };

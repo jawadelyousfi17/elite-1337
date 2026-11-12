@@ -17,15 +17,11 @@ export const accents = [
   { key: 'peach', label: 'Peach', color: '#ffd6bf', swatch: '#ffd6bf' },
   { key: 'lemon', label: 'Lemon', color: '#fff3a3', swatch: '#fff3a3' },
 ] as const;
-export const radii = [
-  { key: 'sharp', label: 'Sharp', scale: .4, pill: '6px' },
-  { key: 'soft', label: 'Soft', scale: .7, pill: '12px' },
-  { key: 'default', label: 'Default', scale: null, pill: null },
-  { key: 'round', label: 'Round', scale: 1.35, pill: null },
-] as const;
+/** Corners are fixed: cards and panels use the Soft scale, while chips, inputs and nav stay full pills. Must match `layout.tsx`. */
+export const CARD_RADIUS_SCALE = .7;
 
-export type Settings = { surface: string; accent: string; radius: string; lastDark?: string };
-export const DEFAULTS: Settings = { surface: 'black', accent: 'mint', radius: 'round' };
+export type Settings = { surface: string; accent: string; lastDark?: string };
+export const DEFAULTS: Settings = { surface: 'black', accent: 'mint' };
 // Dark and Round are the defaults now: settings saved under older keys are ignored and removed, everyone starts fresh.
 const STORAGE_KEY = 'elite-tweaks-v4';
 const OLD_KEYS = ['elite-tweaks', 'elite-tweaks-v1', 'elite-tweaks-v2', 'elite-tweaks-v3', 'elite-tweaks-radius-v3'];
@@ -39,15 +35,13 @@ function apply(settings: Settings) {
   root.classList.toggle('dark', settings.surface !== 'light');
   const surface = surfaces.find((item) => item.key === settings.surface)?.tones;
   const accent = accents.find((item) => item.key === settings.accent)?.color;
-  const shape = radii.find((item) => item.key === settings.radius), radius = shape?.scale;
   if (settings.surface === 'light') root.dataset.twLight = ''; else delete root.dataset.twLight;
   if (surface) { root.dataset.twSurface = settings.surface; for (const [name, value] of Object.entries(surface)) root.style.setProperty(`--tw-${name}`, value); }
   else { delete root.dataset.twSurface; for (const name of ['bg', 'card', 'raise', 'hover']) root.style.removeProperty(`--tw-${name}`); }
   if (accent) { root.dataset.twAccent = settings.accent; root.style.setProperty('--tw-accent', accent); }
   else { delete root.dataset.twAccent; root.style.removeProperty('--tw-accent'); }
-  if (radius) { root.dataset.twRadius = settings.radius; root.style.setProperty('--tw-r', String(radius)); root.style.setProperty('--radius', `${radius}rem`); }
-  else { delete root.dataset.twRadius; root.style.removeProperty('--tw-r'); root.style.removeProperty('--radius'); }
-  if (shape?.pill) root.style.setProperty('--tw-pill', shape.pill); else root.style.removeProperty('--tw-pill');
+  root.dataset.twRadius = 'soft'; root.style.setProperty('--tw-r', String(CARD_RADIUS_SCALE)); root.style.setProperty('--radius', `${CARD_RADIUS_SCALE}rem`);
+  root.style.removeProperty('--tw-pill');
 }
 
 function load() {

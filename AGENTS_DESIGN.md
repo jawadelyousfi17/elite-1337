@@ -4,7 +4,7 @@ How Elite 1337 looks and behaves, for AI agents and people changing the UI. `AGE
 
 ## Principles
 
-- **Dark first, calm, rounded.** The app opens on the Black surface with Round corners and the Mint accent. Light mode exists and must look as good, but it is the variant, not the base.
+- **Dark first, calm, rounded.** The app opens on the Black surface with soft corners and the Mint accent. Light mode exists and must look as good, but it is the variant, not the base.
 - **Content over chrome.** Rankings, levels and XP are the product. Cards are flat (no borders, no shadows) and let the numbers lead.
 - **Compact and dense.** Small type for secondary text, one clear number per card, no decorative copy.
 - **Fail soft.** A slow or missing side service shows a Kiwi note or a skeleton, never a blank page or a spinner that never ends.
@@ -25,9 +25,9 @@ Defined in `src/app/globals.css` (`:root`) and mirrored by the Tweaks panel (`sr
 | Text | `#f9f9f9` | Primary text |
 | Font | General Sans (400, 500, 600, 700), loaded locally in `src/app/layout.tsx` | Everything; `font-variant-numeric: tabular-nums` on numbers |
 
-Shape: panels use a 23px radius, rows and cards 18–22px, buttons and chips are pills (`999px`). The Tweaks radius scale multiplies these (Sharp .4, Soft .7, Default 1, Round 1.35); the default is **Round**.
+Shape: panels use a 23px radius, rows and cards 18–22px, buttons and chips are pills (`999px`). Corners are fixed, not a student choice: every 5–40px corner (cards, rows, panels) is multiplied by the **Soft** scale `.7` (`CARD_RADIUS_SCALE` in `tweaks-store.ts`, mirrored in `layout.tsx`), and pills (chips, inputs, nav, buttons) always stay fully round. Write pills as `999px` so they keep that shape.
 
-Tweaks the student can choose: surface (Black, Charcoal, Midnight, Forest, Plum, Light), accent (Mint, Lime, Sky, Lilac, Peach, Lemon) and radius. Defaults are Black, Mint and Round. Saved settings live in `localStorage` (see `STORAGE_KEY` in `tweaks-store.ts`); when defaults change, bump the key so old saved choices do not override the new look.
+Tweaks the student can choose: surface (Black, Charcoal, Midnight, Forest, Plum, Light), accent (Mint, Lime, Sky, Lilac, Peach, Lemon). Defaults are Black and Mint. Saved settings live in `localStorage` (see `STORAGE_KEY` in `tweaks-store.ts`); when defaults change, bump the key so old saved choices do not override the new look.
 
 ## Components to reuse
 
