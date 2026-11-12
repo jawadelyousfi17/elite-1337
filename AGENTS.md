@@ -61,6 +61,7 @@ The app shares **1,200 requests per hour and 2 per second** for every visitor. R
 - All database access goes through `sql()` from `src/lib/db.ts` (one Neon HTTP client; Docker points it at a local proxy). Use the tagged template (`` sql()`... ${value}` ``) only. Never build SQL strings.
 - Limit writes per student inside the same statement (see `saveFeedback`, `saveFilterSession`).
 - Side features fail soft: if `DATABASE_URL`, Discord or 42 is unavailable, the page still renders without that part.
+- **Do not rely on the database.** The app must work fine with no `DATABASE_URL` at all, and keep working during a Neon outage. Sign-in, page guards, rankings, stats and every 42 request must never depend on Neon; only side features (feedback, experiments, site stats) may use it, and they turn off quietly when it is missing or failing. Never throw from a database helper in a path every page runs.
 - Privacy: don't build public lists that name or shame students (unfilled evaluations, missing feedback, logtime of others). A student's own logtime is shown only to them.
 - Photos go through the signed proxy (`intraPhotoUrl`), never raw 42 CDN links.
 
@@ -96,3 +97,9 @@ The app shares **1,200 requests per hour and 2 per second** for every visitor. R
 - Commit messages: a short imperative title (under about 72 characters), a blank line, then `-` bullets explaining what changed and why.
 - Stage files by name. Never commit `.env*`, `.tmp/`, screenshots or local scratch files.
 - Secrets live only in `.env.local` and Vercel. Never print or commit them.
+
+## Pull requests
+
+- **Do not add too many features at once; it makes the review harder.** One topic per PR: a feature, a fix or a refactor. Split unrelated changes into separate PRs so each one can be reviewed, tested and reverted on its own.
+- A PR that changes the production database (new tables, triggers, migrations) gets its own PR and says so in the description. A PR must never make the database (or any new service) required for the app to run; check it with `DATABASE_URL` unset.
+- Say how many 42 requests the change costs (cold and warm), and how you tested it.
