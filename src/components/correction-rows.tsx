@@ -67,7 +67,7 @@ export function CorrectionRows({ rows, mode }: { rows: CorrectionRowData[]; mode
           <span className="pl-avatar"><Avatar login={solo.login} src={solo.src} size={45}/></span>
           <span className="pl-copy"><strong><Link href={appHref(solo.login)} {...newTab} className="pl-row-link">{solo.login}<NewTabMark/></Link>{solo.mine && <em>You</em>}</strong><span><b>Level {solo.level.toFixed(2)}</b> · {solo.year ?? '?'}</span></span>
         </>}
-        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning title={row.steps?.join(', ')}>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'failed' ? <><X size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}{row.steps?.length ? ` · ${row.steps.length} ${row.steps.length === 1 ? 'step' : 'steps'}` : ''}</>}</small></span>
+        <span className="pc-project"><b>{row.project}</b><small suppressHydrationWarning title={row.steps?.join(', ')}>{mode === 'validated' ? <><Check size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'failed' ? <><X size={12}/> {row.mark ?? '—'} · {ago(row.at)}</> : mode === 'locked' ? <><LockKeyhole size={12}/> locked {ago(row.at)}</> : <><Clock3 size={12}/> Updated {ago(row.at)}{row.attempt && row.attempt > 1 ? ` · try ${row.attempt}` : ''}{row.steps?.length ? ` · ${row.steps.length} ${row.steps.length === 1 ? 'step' : 'steps'}` : ''}</>}</small></span>
       </div>
     </li>;
     })}</ol>

@@ -141,9 +141,9 @@ export class FortyTwoClient {
     const bytes = new Uint8Array(await response.arrayBuffer());
     return bytes.length > 0 && bytes.length <= MAX_PHOTO_BYTES ? bytes : null;
   }
-  async waitingForCorrection(campusId: number, from: string, to: string): Promise<ApiProjectUser[]> {
+  async waitingForCorrection(campusId: number): Promise<ApiProjectUser[]> {
     const path = 'projects_users';
-    const base = { 'filter[campus]': String(campusId), 'filter[status]': 'waiting_for_correction', [`range[updated_at]`]: `${from},${to}`, sort: 'id', 'page[size]': String(PAGE_SIZE) };
+    const base = { 'filter[campus]': String(campusId), 'filter[status]': 'waiting_for_correction', sort: 'id', 'page[size]': String(PAGE_SIZE) };
     const first = await this.request(path, z.array(projectUserSchema), { ...base, 'page[number]': '1' });
     if (first.total === null) throw new IncompletePopulationError('Pending corrections omitted their total count');
     const pages = Math.ceil(first.total / PAGE_SIZE);
