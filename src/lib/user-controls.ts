@@ -115,3 +115,14 @@ export async function clearUserControl(login: string) {
   try { await ensureTable(); await sql()`delete from user_controls where login = ${login}`; cached = undefined; return true; }
   catch (error) { console.error('User control delete failed:', error instanceof Error ? error.name : 'unknown'); return false; }
 }
+
+/** Register a login without overwriting any existing access decision. */
+export async function addUserControl(login: string, actor: string) {
+  if (!process.env.DATABASE_URL) return false;
+  try {
+    await ensureTable();
+    await sql()`insert into user_controls (login, updated_by) values (${login}, ${actor}) on conflict (login) do nothing`;
+    cached = undefined;
+    return true;
+  } catch { return false; }
+}

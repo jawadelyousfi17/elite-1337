@@ -33,3 +33,17 @@ it('supports deliberately environment-only installations', async () => {
   expect(await policy.isAccessAdmin('revoked')).toBe(true);
   expect(query).not.toHaveBeenCalled();
 });
+
+it('registers a login without overwriting existing restrictions', async () => {
+  query.mockResolvedValue([]);
+  const policy = await import('./user-controls');
+  expect(await policy.addUserControl('blocked', 'admin')).toBe(true);
+  expect(await policy.addUserControl('blocked', 'admin')).toBe(true);
+  const writes = query.mock.calls.filter(([parts]) => parts.join('').includes('insert into'));
+  expect(writes).toHaveLength(2);
+  for (const [parts, ...values] of writes) {
+    expect(parts.join('')).toContain('on conflict (login) do nothing');
+    expect(parts.join('')).not.toContain('allowed');
+    expect(values).toEqual(['blocked', 'admin']);
+  }
+});

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { requireStudent } from '@/lib/guard';
-import { clearUserControl, isAccessAdmin, setUserControl } from '@/lib/user-controls';
+import { addUserControl, clearUserControl, isAccessAdmin, setUserControl } from '@/lib/user-controls';
 
 const loginSchema = z.string().trim().toLowerCase().regex(/^[a-z0-9_.-]{2,40}$/);
 const fieldSchema = z.enum(['admin', 'hacker', 'anonymized', 'allowed']);
@@ -28,7 +28,7 @@ export async function updateUserControl(form: FormData) {
 export async function addManagedUser(form: FormData) {
   const by = await actor(), login = loginSchema.safeParse(form.get('login'));
   if (!login.success) redirect('/admin/access?result=invalid');
-  const saved = await setUserControl(login.data, 'allowed', true, by);
+  const saved = await addUserControl(login.data, by);
   redirect(`/admin/access?result=${saved ? 'added' : 'unavailable'}`);
 }
 
