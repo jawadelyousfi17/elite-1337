@@ -1,3 +1,4 @@
+import { eligibleEvaluation } from './evaluation-rules';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { singleFlight } from './single-flight';
@@ -15,9 +16,12 @@ export type CorrectorStat = { correctorId: number; login: string; campusId: numb
 
 /** Filled evaluations by people (not automated correctors) that carry a verdict. */
 export function pickEvaluations(rows: ApiScaleTeam[], campusId: number): Evaluation[] {
-  return rows.flatMap((row) => row.filled_at && row.flag && row.corrector && typeof row.corrector === 'object'
-    ? [{ id: row.id, campusId, correctorId: row.corrector.id, corrector: row.corrector.login, at: row.filled_at, returned: !row.flag.positive }]
-    : []);
+  const seen = new Set<number>();
+  return rows.flatMap((row) => {
+    if (!eligibleEvaluation(row) || seen.has(row.id) || !row.corrector || typeof row.corrector !== 'object' || !row.flag || !row.filled_at) return [];
+    seen.add(row.id);
+    return [{ id: row.id, campusId, correctorId: row.corrector.id, corrector: row.corrector.login, at: row.filled_at, returned: !row.flag.positive }];
+  });
 }
 
 /** Correctors ranked by the share of their evaluations that returned the project; ties by more returns, then login. */
@@ -51,7 +55,7 @@ const loadSlice = singleFlight(function loadSlice(campusId: number, slice: numbe
   return unstable_cache(async () => {
     const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(current ? Date.now() : (slice + 1) * SLICE_DAYS * DAY);
     return pickEvaluations(await fortyTwoApi.scaleTeams(campusId, from.toISOString(), to.toISOString(), cursusId()), campusId);
-  }, ['1337-evaluations-v2', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 86_400 : 30 * 86_400 })();
+  }, ['1337-evaluations-v3', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 86_400 : 30 * 86_400 })();
 });
 
 export const loadEvaluations = cache(async (): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {

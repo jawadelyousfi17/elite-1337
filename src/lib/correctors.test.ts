@@ -5,13 +5,13 @@ const now = Date.parse('2026-10-23T12:00:00Z');
 const daysAgo = (days: number) => new Date(now - days * 86_400_000).toISOString();
 const ids: Record<string, number> = {};
 const row = (id: number, login: string | null, positive: boolean | null, days = 1) => ({
-  id, filled_at: daysAgo(days), corrector: login === null ? 'invisible' : { id: ids[login] ??= Object.keys(ids).length + 1, login }, flag: positive === null ? null : { name: positive ? 'Ok' : 'Incomplete work', positive },
+  id: id + 1, team: { project: { name: 'Libft', slug: 'libft' } }, filled_at: daysAgo(days), corrector: login === null ? 'invisible' : { id: ids[login] ??= Object.keys(ids).length + 1, login }, flag: positive === null ? null : { name: positive ? 'Ok' : 'Incomplete work', positive },
 });
 
 describe('pickEvaluations', () => {
   it('keeps filled, judged evaluations by people', () => {
     const picked = pickEvaluations([row(1, 'amine', false), row(2, null, false), row(3, 'sara', null), { ...row(4, 'sara', true), filled_at: null }], 16);
-    expect(picked.map((evaluation) => [evaluation.id, evaluation.corrector, evaluation.returned, evaluation.campusId])).toEqual([[1, 'amine', true, 16]]);
+    expect(picked.map((evaluation) => [evaluation.id, evaluation.corrector, evaluation.returned, evaluation.campusId])).toEqual([[2, 'amine', true, 16]]);
   });
 });
 

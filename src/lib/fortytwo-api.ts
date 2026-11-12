@@ -36,6 +36,7 @@ export type ApiProjectUser = z.infer<typeof projectUserSchema>;
 /** A peer evaluation; the corrector is an object for people (a string marks automated or hidden correctors). */
 export const scaleTeamSchema = z.object({
   id: z.number().int(), filled_at: z.string().nullish(),
+  team: z.object({ project: z.object({ name: z.string().nullish(), slug: z.string().nullish() }).nullish(), project_gitlab_path: z.string().nullish() }).nullish(),
   corrector: z.union([z.object({ id: z.number().int(), login: z.string() }), z.string()]).nullish(),
   flag: z.object({ name: z.string(), positive: z.boolean() }).nullish(),
 });
