@@ -1,3 +1,4 @@
+import { SharedBudget } from './shared-budget';
 import { z } from 'zod';
 import { INTRA_CDN, MAX_PHOTO_BYTES, intraPhotoPath, validPhotoPath } from './avatars/intra-photo';
 
@@ -76,7 +77,7 @@ export class RequestPacer {
 export class FortyTwoClient {
   private token?: { value: string; expiresAt: number };
   private tokenPromise?: Promise<string>;
-  constructor(private pace = new RequestPacer(), private fetcher: typeof fetch = fetch) {}
+  constructor(private pace: { acquire(): Promise<void> } = new RequestPacer(), private fetcher: typeof fetch = fetch) {}
   private async appToken() {
     if (this.token && this.token.expiresAt > Date.now() + 60_000) return this.token.value;
     if (this.tokenPromise) return this.tokenPromise;
@@ -288,4 +289,10 @@ export class FortyTwoClient {
 const globalForApi = globalThis as unknown as { fortyTwoPacer?: RequestPacer };
 const pacer = globalForApi.fortyTwoPacer ?? new RequestPacer();
 if (process.env.NODE_ENV !== 'production') globalForApi.fortyTwoPacer = pacer;
-export const fortyTwoApi = new FortyTwoClient(pacer);
+const sharedBudget = new SharedBudget();
+const coordinatedPacer = { async acquire() {
+  await pacer.acquire();
+  try { await sharedBudget.acquire(); }
+  catch { throw new RateBudgetError(); }
+} };
+export const fortyTwoApi = new FortyTwoClient(coordinatedPacer);
