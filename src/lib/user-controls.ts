@@ -4,6 +4,10 @@ export type UserControl = {
   login: string; admin: boolean; hacker: boolean; anonymized: boolean; allowed: boolean;
   source: 'environment' | 'database'; updatedAt: string | null;
 };
+export class UserPolicyUnavailableError extends Error {
+  constructor() { super('Account policy is temporarily unavailable'); this.name = 'UserPolicyUnavailableError'; }
+}
+
 export type UserControlField = 'admin' | 'hacker' | 'anonymized' | 'allowed';
 
 type Row = { login: string; admin: boolean | null; hacker: boolean | null; anonymized: boolean | null; allowed: boolean | null; updated_at: Date | string };
@@ -26,7 +30,7 @@ async function ensureTable() {
   return ready;
 }
 
-/** Database overrides cached briefly; environment values remain the safe fallback during a Neon outage. */
+/** Policy is authoritative: an outage must never turn a restriction into permission. */
 async function rows(): Promise<Row[]> {
   if (!process.env.DATABASE_URL) return [];
   if (cached && cached.until > Date.now()) return cached.rows;
@@ -39,7 +43,7 @@ async function rows(): Promise<Row[]> {
       return result;
     } catch (error) {
       console.error('User controls unavailable:', error instanceof Error ? error.name : 'unknown');
-      return [];
+      throw new UserPolicyUnavailableError();
     } finally { loading = undefined; }
   })();
   return loading;
