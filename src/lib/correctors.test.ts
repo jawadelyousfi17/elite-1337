@@ -38,3 +38,11 @@ describe('strictCorrectors', () => {
     expect([30, 60, 90].map(minEvaluations)).toEqual([5, 10, 15]);
   });
 });
+
+it('fills the visible top ten after removing hidden evaluators', () => {
+  const evaluations = Array.from({ length: 12 }, (_, i) => ({ id: i, campusId: 16, correctorId: i + 1, corrector: `person${String(i).padStart(2, '0')}`, at: daysAgo(1), returned: true }));
+  const result = strictCorrectors(evaluations, { now, min: 1, hidden: new Set(['person00', 'person01']) });
+  expect(result).toHaveLength(10);
+  expect(result[0].login).toBe('person02');
+  expect(result[9].login).toBe('person11');
+});

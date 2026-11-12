@@ -73,7 +73,7 @@ export function ReturnsSkeleton() {
 export async function StrictCorrectors({ students, campusId, names, days, hrefFor }: { students: StudentRank[]; campusId?: number; names: Record<number, string>; days: CorrectorWindow; hrefFor: Record<CorrectorWindow, string> }) {
   const [state, controls] = await Promise.all([loadEvaluations(), userControlSets()]);
   const min = minEvaluations(days);
-  const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId }).filter((item) => !controls.anonymized.has(item.login.toLowerCase())) : [];
+  const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId, hidden: controls.anonymized }) : [];
   const known = students.filter((student) => list.some((item) => item.correctorId === student.id));
   const avatars = known.length ? photoReferences(known) : {};
   return <section className="st-card st-correctors" aria-labelledby="st-correctors">

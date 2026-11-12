@@ -21,9 +21,10 @@ export function pickEvaluations(rows: ApiScaleTeam[], campusId: number): Evaluat
 }
 
 /** Correctors ranked by the share of their evaluations that returned the project; ties by more returns, then login. */
-export function strictCorrectors(evaluations: Evaluation[], { days = 30, min = minEvaluations(days), campusId, limit = 10, now = Date.now() }: { days?: number; min?: number; campusId?: number; limit?: number; now?: number } = {}): CorrectorStat[] {
+export function strictCorrectors(evaluations: Evaluation[], { days = 30, min = minEvaluations(days), campusId, limit = 10, hidden = new Set<string>(), now = Date.now() }: { days?: number; min?: number; campusId?: number; limit?: number; hidden?: ReadonlySet<string>; now?: number } = {}): CorrectorStat[] {
   const byCorrector = new Map<number, CorrectorStat & { campuses: Map<number, number> }>();
   for (const evaluation of evaluations) {
+    if (hidden.has(evaluation.corrector.toLowerCase())) continue;
     const age = now - Date.parse(evaluation.at);
     if (age < 0 || age > days * DAY || (campusId && evaluation.campusId !== campusId)) continue;
     const stat = byCorrector.get(evaluation.correctorId) ?? { correctorId: evaluation.correctorId, login: evaluation.corrector, campusId: evaluation.campusId, evaluations: 0, returned: 0, rate: 0, campuses: new Map() };
