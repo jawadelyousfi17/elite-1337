@@ -44,10 +44,6 @@ The Intra cluster screens supplied for Khouribga are the interaction reference: 
 
 The client checks for updates every 60 seconds while visible and avoids overlapping requests. Active-host snapshots are cached server-side for 180 seconds; the recent-host sample is cached for one day. The UI shows the actual snapshot time and marks states Unknown after four minutes or an API failure. These caches limit API traffic but, like the ranking cache, do not provide a global request budget across all serverless instances. If traffic outgrows the current setup, the smallest viable addition is a shared cache and distributed rate limiter; a database is not needed for cluster occupancy.
 
-## Admin live presence
-
-`/admin/online` shows students actively using Elite 1337 itself, not 42 campus locations. A signed-in browser sends a private heartbeat once a minute while visible. Neon keeps one row per student with their 42 id, login, normalized current section and last-seen time; the page treats heartbeats from the last five minutes as online. The view uses the same `ADMIN_LOGINS` guard as feedback and site stats, and the heartbeat does not create extra page views. General analytics remain anonymous/keyed counts.
-
 ## API limits and caching
 
 The shared server-side 42 client spaces requests at least 600 ms apart and caps its own traffic at 1,180 requests per hour per server instance, leaving a small margin under the stated 1,200/hour application limit. HTTP 429 and transient server failures use bounded exponential backoff. The initial complete fetch is about a few dozen paginated requests and can take tens of seconds.

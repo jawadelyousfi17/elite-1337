@@ -23,7 +23,6 @@ export default function Privacy() {
       { id: 'stored', title: 'What we store', body: <>
         <ul>
           <li><strong>Feedback</strong> (optional): what you send through the feedback dialog, described below.</li>
-          <li><strong>Site presence:</strong> while you are signed in, we keep your 42 id, login, current site section and last-seen time. It is refreshed once a minute, used only to show configured administrators who used Elite 1337 in the last five minutes, and is not public.</li>
         </ul>
       </> },
       { id: 'feedback', title: 'Bug reports and feedback', body: <>
@@ -33,13 +32,13 @@ export default function Privacy() {
         <p>Your browser keeps a few small settings in local storage: theme and race sound on or off. They never leave your device, and clearing your browser data removes them.</p>
       </> },
       { id: 'analytics', title: 'Analytics', body: <>
-        <p>We use first-party counts and Umami Cloud to understand visits and a few clicks. General analytics use random or keyed identifiers and the admin stats page shows counts, not names. The separate live-presence row described above is visible only to configured administrators. We never send logins, names or search text to Umami. Search and filter values in the address bar are ignored.</p>
+        <p>We use first-party counts and Umami Cloud to understand visits and a few clicks. General analytics use random or keyed identifiers and the admin stats page shows counts, not names. We never send logins, names or search text to Umami. Search and filter values in the address bar are ignored.</p>
       </> },
       { id: 'others', title: 'Services we rely on', body: <>
         <ul>
           <li><strong>42 Intra</strong>: sign-in and all student data.</li>
           <li><strong>Vercel</strong>: hosting. Like any web host, it keeps short technical logs, such as IP addresses and errors.</li>
-          <li><strong>Neon</strong>: the database that keeps feedback, first-party visit counts and live site presence.</li>
+          <li><strong>Neon</strong>: the database that keeps feedback and first-party visit counts.</li>
           <li><strong>Discord</strong>: team notifications for new feedback.</li>
           <li><strong>Umami Cloud</strong>: visit counts.</li>
         </ul>
