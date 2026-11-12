@@ -71,7 +71,7 @@ export function ReturnsSkeleton() {
 }
 
 export async function StrictCorrectors({ students, campusId, names, days, hrefFor }: { students: StudentRank[]; campusId?: number; names: Record<number, string>; days: CorrectorWindow; hrefFor: Record<CorrectorWindow, string> }) {
-  const [state, controls] = await Promise.all([loadEvaluations(), userControlSets()]);
+  const [state, controls] = await Promise.all([loadEvaluations(days, campusId), userControlSets()]);
   const min = minEvaluations(days);
   const list = state.status === 'ready' ? strictCorrectors(state.evaluations, { days, min, campusId, hidden: controls.anonymized }) : [];
   const known = students.filter((student) => list.some((item) => item.correctorId === student.id));

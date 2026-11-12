@@ -58,11 +58,13 @@ const loadSlice = singleFlight(function loadSlice(campusId: number, slice: numbe
   }, ['1337-evaluations-v3', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 86_400 : 30 * 86_400 })();
 });
 
-export const loadEvaluations = cache(async (): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {
-  const now = Date.now(), last = sliceOf(now), first = sliceOf(now - Math.max(...CORRECTOR_WINDOWS) * DAY);
+export const loadEvaluations = cache(async (days: CorrectorWindow = 30, campusId?: number): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {
+  if (!CORRECTOR_WINDOWS.includes(days) || (campusId !== undefined && !campusIds().includes(campusId))) return { status: 'unavailable' };
+  const campuses = campusId === undefined ? campusIds() : [campusId];
+  const now = Date.now(), last = sliceOf(now), first = sliceOf(now - days * DAY);
   const slices = Array.from({ length: last - first + 1 }, (_, index) => first + index);
   try {
-    const parts = await Promise.all(campusIds().flatMap((campusId) => slices.map((slice) => loadSlice(campusId, slice, slice === last))));
+    const parts = await Promise.all(campuses.flatMap((campusId) => slices.map((slice) => loadSlice(campusId, slice, slice === last))));
     const seen = new Set<number>();
     return { status: 'ready', evaluations: parts.flat().filter((evaluation) => !seen.has(evaluation.id) && seen.add(evaluation.id)) };
   } catch (error) {
