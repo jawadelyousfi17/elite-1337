@@ -1,16 +1,15 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ArrowUpRight, GitHub, Instagram, LinkedIn } from '@/components/icons';
+import { ArrowUpRight, GitHub, Heart, Instagram, LinkedIn } from '@/components/icons';
 import type { Contributor } from '@/lib/contributors';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-type Creator = { alias: string; name: string; login: string; photo: string; role: string; bio: string; skills: string[]; links: { label: string; href: string; icon: 'github' | 'instagram' | 'linkedin' | 'intra' }[] };
+type Creator = { alias: string; name: string; login: string; photo: string; links: { label: string; href: string; icon: 'github' | 'instagram' | 'linkedin' | 'intra' }[] };
 
 const creators: Creator[] = [
   {
     alias: 'ikosoft', name: 'Yassine Ikoubazene', login: 'yikoubaz', photo: '/assets/credit-ikosoft.webp',
-    role: 'Software Engineer', bio: 'Builds reliable product features and the data systems behind them.', skills: ['Python', 'TypeScript', 'API architecture'],
     links: [
       { label: 'GitHub', href: 'https://github.com/ikosoftT', icon: 'github' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/yassine-ikoubazene-7ab090384/', icon: 'linkedin' },
@@ -19,7 +18,6 @@ const creators: Creator[] = [
   },
   {
     alias: 'Fury', name: 'Jawad El Yousfi', login: 'jel-yous', photo: '/assets/credit-fury.webp',
-    role: 'Product Creator', bio: 'Turns ideas into clear, useful product experiences and community stories.', skills: ['Product design', 'Frontend', 'Content strategy'],
     links: [
       { label: 'GitHub', href: 'https://github.com/jawadelyousfi17', icon: 'github' },
       { label: 'Instagram', href: 'https://www.instagram.com/jawad_elyo/', icon: 'instagram' },
@@ -54,13 +52,10 @@ function CreatorCard({ creator }: { creator: Creator }) {
       <img src={creator.photo} alt="" width={64} height={64}/>
       <div>
         <p className="creator-name">{creator.name}</p>
-        <p className="creator-role">{creator.role}</p>
-        <p className="creator-login">@{creator.login} · {creator.alias}</p>
+        <p className="creator-login">@{creator.login} · aka <b>{creator.alias}</b></p>
       </div>
     </header>
     <div className="creator-body">
-      <p>{creator.bio}</p>
-      <div className="creator-focus"><span>Professional focus</span><ul className="creator-tags">{creator.skills.map((skill) => <li key={skill}>{skill}</li>)}</ul></div>
       <div className="creator-links">{creator.links.map((link) => {
         const Icon = icons[link.icon];
         return <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"><Icon size={17}/>{link.label}</a>;
@@ -75,13 +70,10 @@ function ContributorCard({ person }: { person: Contributor }) {
       <img src={person.avatar} alt="" width={64} height={64} referrerPolicy="no-referrer"/>
       <div>
         <p className="creator-name">{person.login}</p>
-        <p className="creator-role">Open-source contributor</p>
-        <p className="creator-login">Elite 1337 repository</p>
+        <p className="creator-login">Contributor{person.commits > 0 && <> · {person.commits} {person.commits === 1 ? 'commit' : 'commits'}</>}</p>
       </div>
     </header>
     <div className="creator-body">
-      <div className="creator-impact"><span>Contribution impact</span><strong>{person.commits.toLocaleString()}</strong><small>{person.commits === 1 ? 'commit' : 'commits'} shipped</small></div>
-      <div className="creator-focus"><span>Professional focus</span><ul className="creator-tags"><li>Engineering</li><li>Collaboration</li></ul></div>
       <div className="creator-links"><a href={person.url} target="_blank" rel="noopener noreferrer"><GitHub size={17}/>GitHub</a></div>
     </div>
   </HoverCard>;
@@ -93,7 +85,7 @@ const SHOWN = 8;
 export function Credits({ className, contributors = [] }: { className?: string; contributors?: Contributor[] }) {
   const shown = contributors.slice(0, SHOWN), more = contributors.length - shown.length;
   return <div className={`credits ${className ?? ''}`}>
-    <span>Contributors</span>
+    <span className="credits-label">Built with <Heart size={13} weight="fill" aria-label="love"/> by</span>
     <ul className="credits-faces">
       <li><CreatorCard creator={creators[1]}/></li>
       <li><CreatorCard creator={creators[0]}/></li>
