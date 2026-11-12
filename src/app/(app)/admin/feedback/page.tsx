@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireStudent } from '@/lib/guard';
-import { FEEDBACK_KINDS, isFeedbackAdmin, isFeedbackKind, listFeedback, type FeedbackKind } from '@/lib/feedback';
+import { FEEDBACK_KINDS, isFeedbackKind, listFeedback, type FeedbackKind } from '@/lib/feedback';
+import { isAccessAdmin } from '@/lib/user-controls';
 import { timeAgo } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import { AdminTabs } from '../admin-tabs';
@@ -14,7 +15,7 @@ const LABELS: Record<FeedbackKind, string> = { bug: 'Bug', idea: 'Idea', other: 
 /** Reports from the feedback dialog, readable only by the logins in ADMIN_LOGINS; everyone else gets a 404. */
 export default async function FeedbackAdminPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const user = await requireStudent();
-  if (!isFeedbackAdmin(user.login)) notFound();
+  if (!await isAccessAdmin(user.login)) notFound();
   const { kind: requested } = await searchParams;
   const kind = isFeedbackKind(requested) ? requested : null;
   const entries = await listFeedback();

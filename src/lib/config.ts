@@ -9,6 +9,8 @@ export function campusIds(): number[] {
   return verified;
 }
 export function cursusId(): number { return positive.parse(process.env.FORTYTWO_CURSUS_ID); }
+/** The C Piscine cursus is stable, while an override keeps self-hosted 42 instances configurable. */
+export function piscineCursusId(): number { return positive.parse(process.env.FORTYTWO_PISCINE_CURSUS_ID ?? 9); }
 
 export function excludedUserIds(): ReadonlySet<number> {
   const ids = (process.env.FORTYTWO_EXCLUDED_USER_IDS ?? '').split(',').map((value) => value.trim()).filter(Boolean).map((value) => positive.parse(value));

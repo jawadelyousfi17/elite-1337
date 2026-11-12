@@ -44,6 +44,21 @@ describe('42 API pagination and limits', () => {
     const api = new FortyTwoClient(new RequestPacer(0, 1180), fetcher);
     expect(await api.usersByPiscine(16, '2024', 'july')).toHaveLength(102);
   });
+  it('batches Piscine progress instead of fetching one candidate at a time', async () => {
+    process.env.FORTYTWO_CLIENT_ID = 'fixture-id'; process.env.FORTYTWO_CLIENT_SECRET = 'fixture-secret';
+    const batches: number[][] = [];
+    const fetcher = (async (input: RequestInfo | URL) => {
+      const url = new URL(input.toString());
+      if (url.pathname === '/oauth/token') return new Response(JSON.stringify({ access_token: 'fixture-token', expires_in: 3600 }));
+      const ids = (url.searchParams.get('filter[user_id]') ?? '').split(',').filter(Boolean).map(Number);
+      batches.push(ids);
+      return new Response(JSON.stringify(ids.map((id) => ({ ...row(id), id: id * 10, cursus_id: 9 }))), { headers: { 'x-total': String(ids.length) } });
+    }) as typeof fetch;
+    const api = new FortyTwoClient(new RequestPacer(0, 1180), fetcher);
+    const records = await api.cursusUsersFor(Array.from({ length: 205 }, (_, index) => index + 1), 9);
+    expect(records).toHaveLength(205);
+    expect(batches.map((batch) => batch.length)).toEqual([100, 100, 5]);
+  });
   it('fetches all pages and verifies the reported total', async () => {
     const { api, requested } = clientFor(201);
     const records = await api.cursusUsers(16, 21);

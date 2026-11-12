@@ -3,18 +3,19 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Calculator, ChartNoAxesCombined, Corrections, Trophy, UserRound } from '@/components/icons';
+import { Calculator, ChartNoAxesCombined, Corrections, MapPinned, Trophy, UserRound } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 // Short label: the top bar only fits a word as wide as "Offers"; longer ones push "Me" onto a second line.
 const xp = { href: '/xp', label: 'XP', icon: Calculator };
-const LINKS = [
+const shared = [
   { href: '/leaderboard', label: 'Ranks', icon: Trophy },
   { href: '/stats', label: 'Stats', icon: ChartNoAxesCombined },
   { href: '/corrections', label: 'Corrections', icon: Corrections },
+  { href: '/clusters', label: 'Clusters', icon: MapPinned },
   xp,
-  { href: '/me', label: 'Me', icon: UserRound },
 ];
+const me = { href: '/me', label: 'Me', icon: UserRound };
 
 const HIGHLIGHT_CLICKS = 'xp-highlight-clicks', HIGHLIGHT_AFTER_MS = 1000, HIGHLIGHT_UNTIL_CLICKS = 2;
 const highlightClicks = () => { try { return Number(localStorage.getItem(HIGHLIGHT_CLICKS) ?? 0); } catch { return 0; } };
@@ -41,8 +42,9 @@ export function NavLinks({ variant }: { variant: 'top' | 'bottom' }) {
     try { localStorage.setItem(HIGHLIGHT_CLICKS, String(highlightClicks() + 1)); } catch { /* nothing to remember */ }
   };
 
-  return <>{LINKS.map(({ href, label, icon: Icon }) => {
-    const active = pathname === href || pathname.startsWith(`${href}/`) || (href === '/leaderboard' && pathname.startsWith('/students/'));
+  const links = variant === 'bottom' ? [...shared, me] : shared;
+  return <>{links.map(({ href, label, icon: Icon }) => {
+    const active = pathname === href || pathname.startsWith(`${href}/`) || (href === '/leaderboard' && (pathname.startsWith('/students/') || pathname.startsWith('/piscines')));
     const glowing = highlight && href === xp.href && !active;
     return <Link key={href} href={href} className={cn(active && 'is-active', glowing && 'is-new')} aria-current={active ? 'page' : undefined} aria-label={href === xp.href ? 'XP calculator' : undefined} title={href === xp.href ? 'XP calculator' : undefined}
       onClick={(event) => { open(href); if (!event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) setClicked(href); }}>

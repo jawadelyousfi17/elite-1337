@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { ArrowDownRight, ArrowUpRight } from '@/components/icons';
 import { requireStudent } from '@/lib/guard';
-import { isFeedbackAdmin } from '@/lib/feedback';
+import { isAccessAdmin } from '@/lib/user-controls';
 import { siteStats, type DayPoint, type PromoRow } from '@/lib/site-stats';
 import { change, parsePeriod, PERIOD_LABEL, ratio, STATS_PERIODS, type StatsPeriod } from '@/lib/site-stats-core';
 import { cn } from '@/lib/utils';
@@ -40,7 +40,7 @@ function Delta({ now, before, period }: { now: number; before: number; period: S
 /** Admin-only first-party traffic: who uses Elite 1337, how often, and what the landing promos bring in. Counts only, never names. */
 export default async function SiteStatsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const user = await requireStudent();
-  if (!isFeedbackAdmin(user.login)) notFound();
+  if (!await isAccessAdmin(user.login)) notFound();
   const period = parsePeriod((await searchParams).period);
   const stats = await siteStats(period);
 

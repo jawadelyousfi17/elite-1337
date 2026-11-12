@@ -1,13 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CircleHelp, Clock3, LayoutGrid, MapPin, Monitor, RefreshCw, Search, ZoomIn, ZoomOut } from '@/components/icons';
+import { Avatar } from '@/components/avatar';
+import { CircleHelp, LayoutGrid, MapPin, Monitor, RefreshCw, Search, ZoomIn, ZoomOut } from '@/components/icons';
 import { layoutFor } from '@/lib/cluster-layout';
 import { searchWorkstations, type ClusterSnapshot, type Workstation } from '@/lib/cluster-core';
+import { timeAgo } from '@/lib/time';
 
 type Campus = { id: number; name: string };
 const collator = new Intl.Collator('en', { numeric: true });
 
+/** Keeps live occupancy readable while deriving each campus topology from its observed 42 hostnames. */
 export function ClusterExplorer({ campuses, initialCampus }: { campuses: Campus[]; initialCampus: number }) {
   const [campusId, setCampusId] = useState(initialCampus);
   const [clusterId, setClusterId] = useState('all');
@@ -15,7 +18,6 @@ export function ClusterExplorer({ campuses, initialCampus }: { campuses: Campus[
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [findEmpty, setFindEmpty] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -67,13 +69,13 @@ export function ClusterExplorer({ campuses, initialCampus }: { campuses: Campus[
   const expired = !!snapshot?.fetchedAt && !!now && now - Date.parse(snapshot.fetchedAt) > 240_000;
   const seats = useMemo(() => snapshot?.seats.map((seat) => expired ? { ...seat, state: 'unknown' as const } : seat) ?? [], [snapshot, expired]);
   const clusters = useMemo(() => [...new Set(seats.map((seat) => seat.clusterId))].sort(collator.compare), [seats]);
+  useEffect(() => { if (clusters.length && !clusters.includes(clusterId)) setClusterId(clusters[0]); }, [clusterId, clusters]);
   const campusName = campuses.find((campus) => campus.id === campusId)?.name ?? 'Campus';
   const clusterSeats = clusterId === 'all' ? seats : seats.filter((seat) => seat.clusterId === clusterId);
   const shown = searchWorkstations(clusterSeats, query);
   const searchResults = query.trim() ? searchWorkstations(seats, query) : [];
   const selected = seats.find((seat) => seat.id === selectedId) ?? null;
-  const count = (items: Workstation[]) => ({ occupied: items.filter((seat) => seat.state === 'occupied' && seat.enabled).length, available: items.filter((seat) => seat.state === 'available' && seat.enabled).length, unknown: items.filter((seat) => seat.state === 'unknown' && seat.enabled).length });
-  const campusCount = count(seats), clusterCount = count(clusterSeats);
+  const live = seats.filter((seat) => seat.state === 'occupied' && seat.occupant).sort((a, b) => Date.parse(b.occupant!.since) - Date.parse(a.occupant!.since));
   const layout = clusterId === 'all' ? null : layoutFor(campusId, clusterId);
   const lastUpdated = snapshot?.fetchedAt ? new Date(snapshot.fetchedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC' : 'No successful update';
   const age = snapshot?.fetchedAt && now ? Math.max(0, Math.floor((now - Date.parse(snapshot.fetchedAt)) / 60_000)) : null;
@@ -83,36 +85,24 @@ export function ClusterExplorer({ campuses, initialCampus }: { campuses: Campus[
     window.setTimeout(() => document.getElementById(`seat-${campusId}-${seat.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 30);
   };
 
-  return <main className="shell clusters-page">
-    <header className="clusters-intro"><div><h1>Cluster Explorer<span className="green">.</span></h1></div><div className="cluster-intro-badge"><Monitor size={19}/><span>Anonymous occupancy</span></div></header>
-    <section className="panel cluster-toolbar" aria-label="Cluster controls">
-      <CampusSelector campuses={campuses} selected={campusId} onChange={setCampusId}/>
-      <label className="cluster-field"><span>Cluster</span><select className="input" value={clusterId} onChange={(event) => { setClusterId(event.target.value); setSelectedId(null); }}><option value="all">All observed groups</option>{clusters.map((id) => <option key={id} value={id}>{id === 'other' ? 'Other hosts' : id.toUpperCase()}</option>)}</select></label>
-      <WorkstationSearch query={query} onChange={setQuery} onSubmit={() => { if (searchResults[0]) selectSeat(searchResults[0]); }}/>
-      <button className={`btn cluster-empty-button${findEmpty ? ' active' : ''}`} type="button" aria-pressed={findEmpty} onClick={() => setFindEmpty((value) => !value)}><Monitor size={17}/> Find Empty Seats</button>
-      <RefreshIndicator loading={loading} lastUpdated={lastUpdated} age={age} stale={snapshot ? expired || !snapshot.fresh : !!problem} onRefresh={() => void refresh(campusId)}/>
-    </section>
-
-    <div className="clusters-layout">
-      <section className="panel cluster-main" aria-label="Workstation directory or floor plan">
-        <div className="cluster-main-head"><div><span className="eyebrow">{campusName} / {clusterId === 'all' ? 'all groups' : clusterId.toUpperCase()}</span><h2>{layout ? 'Verified floor plan' : 'Workstation directory'}</h2><p>{layout ? 'Drag or scroll to pan; use zoom controls to inspect seats.' : 'Hosts seen in recent campus sessions. No verified floor plan yet.'}</p></div><span className="cluster-count">{shown.length} shown</span></div>
-        {problem && <div className="cluster-notice danger" role="alert">{problem}</div>}
-        {snapshot?.notice && <div className="cluster-notice" role="status">{snapshot.notice}</div>}
-        {expired && <div className="cluster-notice" role="status">The last snapshot is stale. States are shown as unknown until refresh succeeds.</div>}
-        {findEmpty && campusCount.available === 0 && <div className="cluster-notice" role="status">No verified available seats are known. The 42 location API does not provide an enabled-seat inventory, so unoccupied observed hosts remain unknown.</div>}
-        <AvailabilityLegend/>
-        {loading && !snapshot ? <div className="cluster-loading" role="status">Loading campus workstation data…</div> : layout ? <FloorPlan seats={shown} campusId={campusId} width={layout.width} height={layout.height} zoom={zoom} setZoom={setZoom} selectedId={selectedId} findEmpty={findEmpty} onSelect={selectSeat}/> : <WorkstationDirectory seats={shown} campusId={campusId} selectedId={selectedId} findEmpty={findEmpty} onSelect={selectSeat}/>}
-        {!loading && !shown.length && <div className="cluster-empty-state"><CircleHelp size={26}/><strong>No matching workstations</strong><p>Try another group or workstation ID. The directory contains only recently observed hosts.</p></div>}
+  return <main className="clusters-page"><section className="cluster-intra">
+    <header className="cluster-intra-head"><div><span className="eyebrow">{campusName} · live campus</span><h1>Clusters</h1></div><div className="cluster-intra-tools"><CampusSelector campuses={campuses} selected={campusId} onChange={setCampusId}/><WorkstationSearch query={query} onChange={setQuery} onSubmit={() => { if (searchResults[0]) selectSeat(searchResults[0]); }}/><RefreshIndicator loading={loading} lastUpdated={lastUpdated} age={age} stale={snapshot ? expired || !snapshot.fresh : !!problem} onRefresh={() => void refresh(campusId)}/></div></header>
+    {problem && <div className="cluster-notice danger" role="alert">{problem}</div>}{snapshot?.notice && <div className="cluster-notice" role="status">{snapshot.notice}</div>}{expired && <div className="cluster-notice" role="status">The last snapshot is stale. Workstation states are unknown until refresh succeeds.</div>}
+    <div className="cluster-intra-grid">
+      <section className="cluster-intra-map" aria-label={`${clusterId.toUpperCase()} workstation map`}>
+        <div className="cluster-map-tabs" role="tablist" aria-label="Clusters">{clusters.map((id) => <button key={id} type="button" role="tab" aria-selected={clusterId === id} className={clusterId === id ? 'active' : undefined} onClick={() => { setClusterId(id); setSelectedId(null); setQuery(''); }}>{id === 'other' ? 'Other' : id.toUpperCase()}</button>)}</div>
+        <p className="cluster-pan-hint">Swipe the floor map to explore every workstation.</p>
+        {loading && !snapshot ? <div className="cluster-loading" role="status">Loading campus workstation data…</div> : layout ? <FloorPlan seats={shown} campusId={campusId} width={layout.width} height={layout.height} zoom={zoom} setZoom={setZoom} selectedId={selectedId} findEmpty={false} onSelect={selectSeat}/> : <WorkstationDirectory seats={shown} campusId={campusId} selectedId={selectedId} findEmpty={false} onSelect={selectSeat}/>}
+        {!loading && !shown.length && <div className="cluster-empty-state"><CircleHelp size={26}/><strong>No matching workstations</strong><p>Try another cluster or workstation ID.</p></div>}
       </section>
-      <aside className="cluster-sidebar" aria-label="Occupancy details">
-        <OccupancySummary title={campusName} subtitle="Campus · observed hosts" counts={campusCount}/>
-        <OccupancySummary title={clusterId === 'all' ? 'All groups' : clusterId.toUpperCase()} subtitle="Selected view" counts={clusterCount}/>
-        <section className="panel cluster-side-card"><h3>Search results</h3>{query.trim() ? <>{searchResults.length ? <div className="cluster-search-results">{searchResults.slice(0, 12).map((seat) => <button key={seat.id} type="button" onClick={() => selectSeat(seat)}><span>{seat.id}</span><small>{seat.clusterId} · {seat.state}</small></button>)}</div> : <p>No observed workstation matches “{query}”.</p>}</> : <p>Search a workstation ID to highlight it and inspect its state.</p>}</section>
-        <section className="panel cluster-side-card"><h3>Data status</h3><p><Clock3 size={15}/> {lastUpdated}</p><p>{snapshot?.complete && !expired ? 'Complete active-location pages for this campus' : 'Availability cannot be established right now'}</p><p>Automatic checks every 60 seconds while this page is visible. 42 data is cached for up to 3 minutes.</p></section>
+      <aside className="cluster-intra-side" aria-label="Live cluster activity">
+        <section className="cluster-intra-totals" aria-label="Cluster totals">{clusters.map((id) => { const group = seats.filter((seat) => seat.clusterId === id), occupied = group.filter((seat) => seat.state === 'occupied').length; return <button key={id} type="button" className={clusterId === id ? 'active' : undefined} onClick={() => { setClusterId(id); setSelectedId(null); }}><span>{id.toUpperCase()}</span><strong>{occupied} live</strong><small>{group.length} observed posts</small></button>; })}</section>
         {selected && <WorkstationDetails seat={selected} onClose={() => setSelectedId(null)}/>}
+        <section className="cluster-live"><h2>Live</h2>{live.length ? <ol>{live.map((seat) => <li key={seat.id}><button type="button" onClick={() => selectSeat(seat)}><Avatar login={seat.occupant!.login} name={seat.occupant!.displayName} src={seat.occupant!.avatar} size={42}/><span><strong>{seat.occupant!.login}</strong><small>logged on · {timeAgo(seat.occupant!.since)}</small></span><b>{seat.id}</b></button></li>)}</ol> : <p>Nobody is logged on to an observed workstation.</p>}</section>
+        <footer className="cluster-intra-status"><span className={`cluster-refresh-dot${snapshot && !expired && snapshot.fresh ? '' : ' stale'}`}/>{lastUpdated}<small>Refreshes every minute</small></footer>
       </aside>
     </div>
-  </main>;
+  </section></main>;
 }
 
 function CampusSelector({ campuses, selected, onChange }: { campuses: Campus[]; selected: number; onChange: (id: number) => void }) {
@@ -131,15 +121,25 @@ function AvailabilityLegend() {
   return <div className="cluster-legend" aria-label="Workstation states"><span><i className="occupied"/>Occupied</span><span><i className="available"/>Verified available</span><span><i className="unknown"/>Unknown</span></div>;
 }
 function WorkstationSeat({ seat, campusId, selected, findEmpty, onSelect }: { seat: Workstation; campusId: number; selected: boolean; findEmpty: boolean; onSelect: (seat: Workstation) => void }) {
-  return <button id={`seat-${campusId}-${seat.id}`} type="button" className={`cluster-seat ${seat.state}${selected ? ' selected' : ''}${findEmpty && seat.state !== 'available' ? ' dimmed' : ''}`} onClick={() => onSelect(seat)} aria-pressed={selected} aria-label={`Workstation ${seat.id}, ${seat.enabled ? seat.state : 'disabled'}`}><Monitor size={16}/><span>{seat.id}</span></button>;
+  const person = seat.occupant;
+  return <button id={`seat-${campusId}-${seat.id}`} type="button" className={`cluster-seat ${seat.state}${person ? ' has-occupant' : ''}${selected ? ' selected' : ''}${findEmpty && seat.state !== 'available' ? ' dimmed' : ''}`} onClick={() => onSelect(seat)} aria-pressed={selected} aria-label={`Workstation ${seat.id}, ${person ? `occupied by ${person.login}` : seat.enabled ? seat.state : 'disabled'}`} title={person ? `${person.login} · ${seat.id}` : seat.id}>{person ? <Avatar login={person.login} name={person.displayName} src={person.avatar} size={42}/> : <><Monitor size={16}/><span>{seat.position ? `P${seat.position}` : seat.id}</span></>}</button>;
 }
 function WorkstationDirectory({ seats, campusId, selectedId, findEmpty, onSelect }: { seats: Workstation[]; campusId: number; selectedId: string | null; findEmpty: boolean; onSelect: (seat: Workstation) => void }) {
   const groups = [...new Set(seats.map((seat) => seat.clusterId))];
-  return <div className="cluster-directory">{groups.map((id) => <section key={id} className="cluster-directory-group"><h3><LayoutGrid size={17}/>{id === 'other' ? 'Other hosts' : id.toUpperCase()}<span>{seats.filter((seat) => seat.clusterId === id).length} hosts</span></h3><div className="cluster-seat-grid">{seats.filter((seat) => seat.clusterId === id).map((seat) => <WorkstationSeat key={seat.id} seat={seat} campusId={campusId} selected={selectedId === seat.id} findEmpty={findEmpty} onSelect={onSelect}/>)}</div></section>)}</div>;
+  return <div className="cluster-directory">{groups.map((id) => {
+    const grouped = seats.filter((seat) => seat.clusterId === id);
+    const rows = [...new Set(grouped.map((seat) => seat.row).filter((row): row is number => row !== undefined))].sort((a, b) => b - a);
+    const loose = grouped.filter((seat) => seat.row === undefined);
+    const positions = Math.max(1, ...grouped.map((seat) => seat.position ?? 1));
+    return <section key={id} className="cluster-directory-group"><h3><LayoutGrid size={17}/>{id === 'other' ? 'Other hosts' : id.toUpperCase()}<span>{grouped.length} hosts · {rows.length} rows</span></h3><div className="cluster-topology"><span className="cluster-watermark" aria-hidden="true">{id.toUpperCase()}</span>
+      {rows.map((row) => <div key={row} className="cluster-row"><div className="cluster-seat-line" style={{ '--cluster-columns': positions } as React.CSSProperties}>{grouped.filter((seat) => seat.row === row).sort((a, b) => (a.position ?? 0) - (b.position ?? 0)).map((seat) => <span key={seat.id} style={{ gridColumn: seat.position }}><WorkstationSeat seat={seat} campusId={campusId} selected={selectedId === seat.id} findEmpty={findEmpty} onSelect={onSelect}/></span>)}</div><strong>R{row}</strong></div>)}
+      {!!loose.length && <div className="cluster-row"><div className="cluster-seat-grid">{loose.map((seat) => <WorkstationSeat key={seat.id} seat={seat} campusId={campusId} selected={selectedId === seat.id} findEmpty={findEmpty} onSelect={onSelect}/>)}</div><strong>Observed</strong></div>}
+    </div></section>;
+  })}</div>;
 }
 function FloorPlan({ seats, campusId, width, height, zoom, setZoom, selectedId, findEmpty, onSelect }: { seats: Workstation[]; campusId: number; width: number; height: number; zoom: number; setZoom: (value: number) => void; selectedId: string | null; findEmpty: boolean; onSelect: (seat: Workstation) => void }) {
   return <div className="cluster-floor-shell"><div className="cluster-zoom"><button type="button" aria-label="Zoom out" onClick={() => setZoom(Math.max(.6, zoom - .2))}><ZoomOut size={17}/></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => setZoom(Math.min(2, zoom + .2))}><ZoomIn size={17}/></button></div><div className="cluster-floor-scroll"><div className="cluster-floor" style={{ width: width * zoom, height: height * zoom }}>{seats.map((seat) => <div key={seat.id} style={{ position: 'absolute', left: (seat.x ?? 0) * zoom, top: (seat.y ?? 0) * zoom, transform: `rotate(${seat.rotation ?? 0}deg)` }}><WorkstationSeat seat={seat} campusId={campusId} selected={selectedId === seat.id} findEmpty={findEmpty} onSelect={onSelect}/></div>)}</div></div></div>;
 }
 function WorkstationDetails({ seat, onClose }: { seat: Workstation; onClose: () => void }) {
-  return <section className="panel cluster-side-card cluster-details" aria-label="Workstation details"><button className="cluster-detail-close" type="button" onClick={onClose} aria-label="Close workstation details">×</button><h3>{seat.id}</h3><p><MapPin size={15}/> {seat.clusterId === 'other' ? 'Other host' : seat.clusterId.toUpperCase()}{seat.roomLabel ? ` · ${seat.roomLabel}` : ''}</p><span className={`cluster-state-pill ${seat.state}`}>{seat.enabled ? seat.state : 'Disabled'}</span><p>{seat.state === 'available' ? 'Enabled workstation with no active session in a complete, fresh snapshot.' : seat.state === 'occupied' ? 'An active session was reported for this host. Student identity is hidden.' : 'Availability cannot be verified for this workstation.'}</p></section>;
+  return <section className="panel cluster-side-card cluster-details" aria-label="Workstation details"><button className="cluster-detail-close" type="button" onClick={onClose} aria-label="Close workstation details">×</button><h3>{seat.id}</h3><p><MapPin size={15}/> {seat.clusterId === 'other' ? 'Other host' : seat.clusterId.toUpperCase()}{seat.row !== undefined ? ` · Row ${seat.row}` : ''}{seat.position !== undefined ? ` · Seat ${seat.position}` : ''}{seat.roomLabel ? ` · ${seat.roomLabel}` : ''}</p>{seat.occupant && <div className="cluster-occupant"><Avatar login={seat.occupant.login} name={seat.occupant.displayName} src={seat.occupant.avatar} size={46}/><div><strong>{seat.occupant.login}</strong><span>{seat.occupant.displayName ?? '1337 student'}</span></div></div>}<span className={`cluster-state-pill ${seat.state}`}>{seat.enabled ? seat.state : 'Disabled'}</span><p>{seat.state === 'available' ? 'Enabled workstation with no active session in a complete, fresh snapshot.' : seat.state === 'occupied' ? `${seat.occupant?.login ?? 'A student'} has an active session on this workstation.` : 'Availability cannot be verified for this workstation.'}</p></section>;
 }

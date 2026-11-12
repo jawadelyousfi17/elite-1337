@@ -3,6 +3,7 @@ import type { OAuthConfig } from 'next-auth/providers';
 import { z } from 'zod';
 import { isAnonymized } from '@/lib/anonymous';
 import { DEMO_USER, isDemo } from '@/lib/demo';
+import { userControl } from '@/lib/user-controls';
 
 type FortyTwoProfile = Record<string, unknown>;
 const identitySchema = z.object({ id: z.number().int().positive(), login: z.string().min(1) });
@@ -40,10 +41,15 @@ const real = NextAuth({
   pages: { signIn: '/', error: '/denied' },
   callbacks: {
     // Students who asked to be removed (ANONYMIZED_LOGINS) cannot sign in, and a session they already hold ends.
-    signIn({ user }) { return isAnonymized((user as { login?: string }).login) ? '/removed' : true; },
-    jwt({ token, user, account }) {
+    async signIn({ user }) {
+      const login = (user as { login?: string }).login, control = await userControl(login);
+      if (control?.anonymized || isAnonymized(login)) return '/removed';
+      return control && !control.allowed ? '/denied?reason=blocked' : true;
+    },
+    async jwt({ token, user, account }) {
       if (user && account?.provider === '42') { token.fortyTwoId = account.providerAccountId; token.login = user.login; }
-      return isAnonymized(typeof token.login === 'string' ? token.login : null) ? null : token;
+      const login = typeof token.login === 'string' ? token.login : null, control = await userControl(login);
+      return isAnonymized(login) || control?.anonymized || control?.allowed === false ? null : token;
     },
     session({ session, token }) { session.user.id = String(token.fortyTwoId); session.user.login = String(token.login); return session; }
   }

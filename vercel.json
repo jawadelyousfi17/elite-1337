@@ -3,5 +3,5 @@
   "regions": [
     "cdg1"
   ],
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude)github-card'"
+  "ignoreCommand": "git rev-parse --verify HEAD^ >/dev/null 2>&1 || exit 1; git diff --quiet HEAD^ HEAD -- . ':(exclude)github-card'"
 }

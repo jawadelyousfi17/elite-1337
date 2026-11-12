@@ -16,13 +16,14 @@ export default function Privacy() {
         <p>To build the pages, our server reads public 42 Intra data through the 42 API: logins, names, campus, levels, profile photos, Common Core projects and attempts, evaluations, blackhole dates and workstation sessions.</p>
         <p>This data is cached on the server for between a few minutes and a few hours, then fetched again. It is not stored in a database.</p>
         <ul>
-          <li><strong>Visible to every signed-in student:</strong> the leaderboard, stats, corrections and each student&apos;s Common Core race, the same kind of information already visible on 42 Intra.</li>
+          <li><strong>Visible to every signed-in 1337 student:</strong> the leaderboard, stats, corrections, each student&apos;s Common Core race, and the login and Intra avatar attached to a currently occupied cluster workstation—the same kind of information already visible on 42 Intra.</li>
           <li><strong>Visible only to you:</strong> your logtime stats on My race (hours, streaks, seats, schedule). Other students cannot open them.</li>
         </ul>
       </> },
       { id: 'stored', title: 'What we store', body: <>
         <ul>
           <li><strong>Feedback</strong> (optional): what you send through the feedback dialog, described below.</li>
+          <li><strong>Site presence:</strong> while you are signed in, we keep your 42 id, login, current site section and last-seen time. It is refreshed once a minute, used only to show configured administrators who used Elite 1337 in the last five minutes, and is not public.</li>
         </ul>
       </> },
       { id: 'feedback', title: 'Bug reports and feedback', body: <>
@@ -32,13 +33,13 @@ export default function Privacy() {
         <p>Your browser keeps a few small settings in local storage: theme and race sound on or off. They never leave your device, and clearing your browser data removes them.</p>
       </> },
       { id: 'analytics', title: 'Analytics', body: <>
-        <p>We use Umami Cloud to count visits and a few clicks (sign-in and GitHub). Umami uses no cookies and keeps no personal profiles. We never send logins, names or search text to it. Search and filter values in the address bar are ignored.</p>
+        <p>We use first-party counts and Umami Cloud to understand visits and a few clicks. General analytics use random or keyed identifiers and the admin stats page shows counts, not names. The separate live-presence row described above is visible only to configured administrators. We never send logins, names or search text to Umami. Search and filter values in the address bar are ignored.</p>
       </> },
       { id: 'others', title: 'Services we rely on', body: <>
         <ul>
           <li><strong>42 Intra</strong>: sign-in and all student data.</li>
           <li><strong>Vercel</strong>: hosting. Like any web host, it keeps short technical logs, such as IP addresses and errors.</li>
-          <li><strong>Neon</strong>: the database that keeps feedback.</li>
+          <li><strong>Neon</strong>: the database that keeps feedback, first-party visit counts and live site presence.</li>
           <li><strong>Discord</strong>: team notifications for new feedback.</li>
           <li><strong>Umami Cloud</strong>: visit counts.</li>
         </ul>

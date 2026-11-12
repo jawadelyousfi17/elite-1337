@@ -3,12 +3,14 @@ import { singleFlight } from './single-flight';
 import { z } from 'zod';
 import { fortyTwoApi, IncompletePopulationError } from './fortytwo-api';
 import { isDemo } from './demo';
+import { intraPhotoPath } from './avatars/intra-photo';
 
 const profileSchema = z.object({
   wallet: z.number().nullish(),
   correction_point: z.number().nullish(),
   pool_year: z.string().nullish(),
   pool_month: z.string().nullish(),
+  image: z.unknown().transform(intraPhotoPath).optional(),
   campus_users: z.array(z.object({ campus_id: z.number().int(), is_primary: z.boolean().nullish() })).default([]),
 });
 const projectSchema = z.object({
@@ -30,9 +32,9 @@ function checkedId(id: string) {
 }
 
 export const getStudentProfile = singleFlight(unstable_cache(async (id: string) => {
-  if (isDemo()) return { wallet: 420, correction_point: 7, pool_year: '2023', pool_month: 'july', campus_users: [{ campus_id: 21, is_primary: true }] } satisfies StudentProfileSummary;
+  if (isDemo()) return { wallet: 420, correction_point: 7, pool_year: '2023', pool_month: 'july', image: null, campus_users: [{ campus_id: 21, is_primary: true }] } satisfies StudentProfileSummary;
   return (await fortyTwoApi.request(`users/${checkedId(id)}`, profileSchema)).data;
-}, ['42-student-profile-v1'], { revalidate: 600 }));
+}, ['42-student-profile-v2'], { revalidate: 600 }));
 
 const getLatestProject = singleFlight(unstable_cache(async (id: string) => {
   const { data } = await fortyTwoApi.request(`users/${checkedId(id)}/projects_users`, z.array(projectSchema), { sort: '-updated_at', 'page[size]': '1' });
