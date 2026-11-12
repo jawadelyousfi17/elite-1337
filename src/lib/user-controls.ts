@@ -1,4 +1,5 @@
 import { sql } from './db';
+import { ensurePolicyAudit } from './policy-audit';
 
 export type UserControl = {
   login: string; admin: boolean; hacker: boolean; anonymized: boolean; allowed: boolean;
@@ -26,7 +27,7 @@ async function ensureTable() {
       allowed boolean,
       updated_at timestamptz not null default now(),
       updated_by text not null
-    )`.catch((error) => { ready = undefined; throw error; });
+    )`.then(() => ensurePolicyAudit()).catch((error) => { ready = undefined; throw error; });
   return ready;
 }
 
@@ -110,9 +111,9 @@ export async function setUserControl(login: string, field: UserControlField, val
 }
 
 /** Removes database overrides so environment defaults apply again. */
-export async function clearUserControl(login: string) {
+export async function clearUserControl(login: string, actor: string) {
   if (!process.env.DATABASE_URL) return false;
-  try { await ensureTable(); await sql()`delete from user_controls where login = ${login}`; cached = undefined; return true; }
+  try { await ensureTable(); await sql().transaction([sql()`select set_config('app.audit_actor', ${actor}, true)`, sql()`delete from user_controls where login = ${login}`]); cached = undefined; return true; }
   catch (error) { console.error('User control delete failed:', error instanceof Error ? error.name : 'unknown'); return false; }
 }
 

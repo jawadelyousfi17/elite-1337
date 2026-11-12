@@ -37,6 +37,6 @@ export async function removeManagedUser(form: FormData) {
   const by = await actor(), login = loginSchema.safeParse(form.get('login'));
   if (!login.success) redirect('/admin/access?result=invalid');
   if (login.data === by) redirect('/admin/access?result=self');
-  const removed = await clearUserControl(login.data);
+  const removed = await clearUserControl(login.data, by);
   redirect(`/admin/access?result=${removed ? 'removed' : 'unavailable'}`);
 }

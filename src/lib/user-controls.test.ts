@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 const query = vi.hoisted(() => vi.fn());
+vi.mock('./policy-audit', () => ({ ensurePolicyAudit: async () => {} }));
 vi.mock('./db', () => ({ sql: () => query }));
 beforeEach(() => { vi.resetModules(); query.mockReset(); vi.stubEnv('DATABASE_URL', 'test'); vi.stubEnv('ADMIN_LOGINS', 'revoked'); });
 afterEach(() => { vi.unstubAllEnvs(); vi.useRealTimers(); });
