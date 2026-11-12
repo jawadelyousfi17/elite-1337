@@ -10,9 +10,11 @@ export function InfiniteRanks({ initial, query, pages, endpoint = '/api/leaderbo
   const [next, setNext] = useState(2);
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const end = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLOListElement>(null);
   const busy = useRef(false);
   const done = next > pages;
   const [far, setFar] = useState(false);
+  const [middle, setMiddle] = useState<number | null>(null);
 
   // "Back to top" appears once the list has carried the student well down the page.
   useEffect(() => {
@@ -20,6 +22,13 @@ export function InfiniteRanks({ initial, query, pages, endpoint = '/api/leaderbo
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
+  }, []);
+  // Centred on the list column, not the window, so on wide screens it sits clear of the avatars and names.
+  useEffect(() => {
+    const measure = () => { const box = list.current?.getBoundingClientRect(); setMiddle(box ? Math.round(box.left + box.width / 2) : null); };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
   const toTop = () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 
@@ -48,12 +57,12 @@ export function InfiniteRanks({ initial, query, pages, endpoint = '/api/leaderbo
   }, [done, load, state]);
 
   return <>
-    <ol className="pl-rows">{rows.map((row) => <li key={row.id} className="pl-item"><RankRow row={row}/></li>)}</ol>
+    <ol ref={list} className="pl-rows">{rows.map((row) => <li key={row.id} className="pl-item"><RankRow row={row}/></li>)}</ol>
     <div ref={end} className="pl-more" aria-live="polite">
       {state === 'loading' && <span className="pl-more-dots" aria-label="Loading more students"><i/><i/><i/></span>}
       {state === 'error' && <button type="button" className="pl-more-retry" onClick={() => { setState('idle'); void load(); }}>Could not load more. Try again</button>}
       {done && pages > 1 && <span className="pl-more-end">You reached the end</span>}
     </div>
-    <button type="button" className="pl-top" data-on={far || undefined} onClick={toTop} tabIndex={far ? 0 : -1} aria-hidden={!far}><ChevronUp size={18}/>Back to top</button>
+    <button type="button" className="pl-top" style={middle === null ? undefined : { left: middle }} data-on={far || undefined} onClick={toTop} tabIndex={far ? 0 : -1} aria-hidden={!far}><ChevronUp size={18}/>Back to top</button>
   </>;
 }

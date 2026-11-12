@@ -18,7 +18,7 @@ describe('split promo filters', () => {
     const { filters, defaultCohort } = resolveFilters({}, dataset, null, '2');
     expect(defaultCohort).toBe('2019-10');
     expect(filters).toMatchObject({ campus: 16, cohort: '2019-10' });
-    expect(listPage(dataset, filters, 2).podium).toMatchObject([{ id: 2, rank: 1 }]);
+    expect(listPage(dataset, filters, 2).listed).toMatchObject([{ id: 2, rank: 1 }]);
   });
 
   it.each(['2019-03', '2019-10', '2025'])('preserves %s through filter links and parsing', (cohort) => {
@@ -32,8 +32,7 @@ describe('split promo filters', () => {
     expect(listPage(dataset, { ...filters, bh: 'blackholed' }).lostRows.map((student) => student.id)).toEqual([3]);
     const combined = listPage(dataset, { ...filters, bh: 'all' });
     expect(combined.total).toBe(2);
-    expect(combined.podium.map((student) => student.id)).toEqual([1]);
-    expect(combined.listed.map((student) => student.id)).toEqual([3]);
+    expect(combined.listed.map((student) => student.id)).toEqual([1, 3]);
   });
 
   it('allows clearing the cohort to compare both promos', () => {

@@ -17,3 +17,18 @@ export function RaceLoading({ title }: { title?: string }) {
     </div>
   </main>;
 }
+
+/** Leaderboard and Piscine loader: the same switch, search, filters and rows as the page, so nothing jumps when it arrives. */
+export const LeaderboardSkeleton = ({ piscine = false }: { piscine?: boolean }) => <main className="shell pl" aria-busy="true" aria-label={piscine ? 'Loading the Piscine leaderboard' : 'Loading the leaderboard'}>
+  <aside className="pl-side" aria-hidden="true">
+    <div className="lb-sk-switch"/>
+    <div className="lb-sk-row"><div className="lb-sk-search"/><i className="lb-sk-filter"/></div>
+    <div className="lb-sk-tokens"><i/><i style={{ animationDelay: '90ms' }}/>{piscine && <i style={{ animationDelay: '180ms' }}/>}</div>
+    <div className="lb-sk-panel"/>
+  </aside>
+  <section className="pl-list sk-stack">
+    {piscine && <div className="lb-sk-stats" aria-hidden="true">{[0, 90, 180].map((delay) => <i key={delay} style={{ animationDelay: `${delay}ms` }}/>)}</div>}
+    <KiwiLoader title={piscine ? 'Kiwi is ranking the poolers…' : 'Kiwi is ranking the students…'} note="Fresh rankings can take a few seconds."/>
+    <RowSkeletons count={7}/>
+  </section>
+</main>;

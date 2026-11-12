@@ -1,20 +1,16 @@
 import { StickySide } from '@/components/sticky-side';
 import { KiwiNote } from '@/components/kiwi-guide';
 import Link from 'next/link';
-import { AlumniBadge } from '@/components/alumni-badge';
-import { FrozenBadge } from '@/components/frozen-badge';
-import { AnonymousAvatar, AnonymousTip } from '@/components/anonymous-tip';
-import { Campus, Cohort, Hourglass, Reverse, RotateCcw, Waves, X } from '@/components/icons';
-import { Avatar } from '@/components/avatar';
+import { Campus, Cohort, Hourglass, Reverse, RotateCcw, X } from '@/components/icons';
 import { FilterShell } from '@/components/filter-shell';
+import { RankingSwitch } from '@/components/ranking-switch';
 import { ScrollRow } from '@/components/scroll-row';
-import { NewTabMark, RankRow, appHref, newTab, pastel } from '@/components/rank-row';
 import { InfiniteRanks } from '@/components/infinite-ranks';
 import { requireStudent } from '@/lib/guard';
 import { loadRankingDataset } from '@/lib/dataset';
 import { DatasetState } from '@/components/dataset-state';
 import { getStudentProfile } from '@/lib/student-overview';
-import { ALL, avatarsFor, frozenSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters, type Ranked } from '@/lib/leaderboard-view';
+import { ALL, avatarsFor, frozenSeen, leaderboardHref as href, listPage, resolveFilters, rowData, type Filters } from '@/lib/leaderboard-view';
 import { cn } from '@/lib/utils';
 import { timeAgo } from '@/lib/time';
 
@@ -33,9 +29,8 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   // The list always opens at the top and loads the rest while scrolling, even from an old ?page= link.
   filters.page = 1;
   const view = listPage(dataset, filters, own?.id, await frozenSeen(dataset, filters));
-  const { blackholedMode, alumniMode, frozenMode, total, pages, podium, showWinner } = view;
-  const winner = podium[0];
-  const avatars = await avatarsFor([...(blackholedMode ? view.lostRows : view.listed), ...podium]);
+  const { blackholedMode, alumniMode, frozenMode, total, pages } = view;
+  const avatars = await avatarsFor(blackholedMode ? view.lostRows : view.listed);
   const rows = rowData(dataset, view, avatars, user.id);
   const query = new URL(href({ ...filters, page: 1 }), 'http://local').searchParams.toString();
 
@@ -48,19 +43,14 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
   const activeScope = scopes.find((scope) => same(scope.filters))?.label;
   const empty = blackholedMode
     ? <div className="pl-empty"><KiwiNote><h2>Nobody blackholed here</h2><p>Good news for this group.</p></KiwiNote></div>
-    : !showWinner || total > podium.length ? <div className="pl-empty"><KiwiNote>{alumniMode ? <><h2>No alumni here yet</h2><p>Nobody from this group has graduated so far.</p></> : frozenMode ? <><h2>Nobody frozen here</h2><p>Everyone in this group is on the move.</p></> : <><h2>No students here</h2><p>Kiwi looked everywhere. Try another filter.</p></>}</KiwiNote><Link className="pl-scope is-active" href={href(scopes[0].filters)}>Back to my cohort</Link></div> : null;
+    : <div className="pl-empty"><KiwiNote>{alumniMode ? <><h2>No alumni here yet</h2><p>Nobody from this group has graduated so far.</p></> : frozenMode ? <><h2>Nobody frozen here</h2><p>Everyone in this group is on the move.</p></> : <><h2>No students here</h2><p>Kiwi looked everywhere. Try another filter.</p></>}</KiwiNote><Link className="pl-scope is-active" href={href(scopes[0].filters)}>Back to my cohort</Link></div>;
 
   return <main className="shell pl">
     <aside className="pl-side">
       <StickySide/>
       <section className="pl-hero" aria-labelledby="pl-title">
-        <nav className="pp-switch" aria-label="Ranking type"><Link href="/leaderboard" className="is-active" aria-current="page">Common Core</Link><Link href="/piscines"><Waves size={15}/>Piscine</Link></nav>
-        <h1 id="pl-title">Leaderboard</h1>
-        {showWinner && <div className="pl-podium">
-          {podium[1] ? <RunnerUp student={podium[1]} src={avatars[podium[1].id]}/> : <span/>}
-          <Winner student={winner} src={avatars[winner.id]}/>
-          {podium[2] ? <RunnerUp student={podium[2]} src={avatars[podium[2].id]}/> : <span/>}
-        </div>}
+        <RankingSwitch active="students"/>
+        <h1 id="pl-title" className="sr-only">Leaderboard</h1>
       </section>
 
       <FilterBox filters={filters} campuses={dataset.campuses} cohorts={cohorts([...dataset.students, ...dataset.blackholed])} open={false} reset={href(scopes[0].filters)} isDefault={activeScope === 'Cohort' && !filters.q && !filters.bh}/>
@@ -76,37 +66,6 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
 
 const cohorts = (students: { commonCoreCohort: string | null }[]) => [...new Set(students.map((student) => student.commonCoreCohort).filter((year): year is string => !!year))].sort().reverse();
 
-function RunnerUp({ student, src }: { student: Ranked; src?: string }) {
-  // A student who asked to be removed keeps their place on the podium, with no name, level or link.
-  if (student.anonymous) return <span className="pl-podium-item"><div className="pl-runner" style={{ '--pastel': '#3a3a3a' } as React.CSSProperties} aria-label={`Rank ${student.rank}, anonymous student`}>
-    <div className="pl-runner-portrait"><AnonymousAvatar size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong><AnonymousTip>Anonymous</AnonymousTip></strong>
-  </div></span>;
-  return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-runner" style={{ '--pastel': pastel(student.rank) } as React.CSSProperties} aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
-    <div className="pl-runner-portrait"><Avatar login={student.login} src={src} size={72}/><span className="pl-runner-rank">{student.rank}</span></div>
-    <strong>{student.login}<NewTabMark/></strong>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge id={student.id}/>}
-    <span className="pl-runner-level">Lvl {student.level.toFixed(2)}</span>
-  </Link></span>;
-}
-
-function Winner({ student, src }: { student: Ranked; src?: string }) {
-  if (student.anonymous) return <span className="pl-podium-item"><div className="pl-winner" aria-label={`Rank ${student.rank}, anonymous student`}>
-    <div className="pl-winner-portrait">
-      <AnonymousAvatar size={96}/>
-      <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
-    </div>
-    <h2><AnonymousTip>Anonymous</AnonymousTip></h2>
-  </div></span>;
-  return <span className="pl-podium-item"><Link href={appHref(student.login)} {...newTab} className="pl-winner" aria-label={`Rank ${student.rank}, ${student.login}, level ${student.level.toFixed(2)}`}>
-    <div className="pl-winner-portrait">
-      <Avatar login={student.login} src={src} size={96}/>
-      <span className="pl-runner-rank pl-winner-rank" aria-hidden="true">{student.rank}</span>
-    </div>
-    <h2>{student.login}<NewTabMark/></h2>{student.alumni && <AlumniBadge/>}{student.frozen && <FrozenBadge id={student.id}/>}
-    <span className="pl-pill">Level {student.level.toFixed(2)}</span>
-  </Link></span>;
-}
-
 function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { filters: Filters; campuses: { id: number; name: string }[]; cohorts: string[]; open: boolean; reset: string; isDefault: boolean }) {
   const go = (change: Partial<Filters>) => href({ ...filters, ...change, page: 1 });
   const campusLabel = (id: number) => campuses.find((campus) => campus.id === id)?.name ?? `Campus ${id}`;
@@ -117,6 +76,7 @@ function FilterBox({ filters, campuses, cohorts, open, reset, isDefault }: { fil
   ].filter((token): token is NonNullable<typeof token> => !!token);
   const hidden: Record<string, string> = { campus: filters.campus ? String(filters.campus) : ALL, cohort: filters.cohort ?? ALL, ...(filters.bh ? { bh: filters.bh } : {}) };
   return <FilterShell action="/leaderboard" hidden={hidden} q={filters.q} placeholder="Search a login or name" clearHref={go({ q: undefined })} activeCount={isDefault ? 0 : tokens.length} defaultOpen={open}>
+    <RankingSwitch active="students" inPanel/>
     {(tokens.length > 0 || !isDefault) && <div className="pl-tokens" aria-label="Active filters" data-keep-scroll>
       {tokens.map((token) => <Link key={token.key} href={token.remove} scroll={false} className={`pl-token is-${token.tone}`} aria-label={`Remove ${token.label}`}>{token.label}<X size={13}/></Link>)}
       {!isDefault && <Link href={reset} scroll={false} className="pl-token-reset"><RotateCcw size={14}/> Reset to my cohort</Link>}

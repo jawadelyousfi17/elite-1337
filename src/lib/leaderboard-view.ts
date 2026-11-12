@@ -47,10 +47,10 @@ export function resolveFilters(raw: Raw, dataset: RankingDataset, profile: Profi
   return { filters, own, defaultCampus, defaultCohort };
 }
 
-/** One page of the list for the filters, with the podium kept out of the rows where it is shown. */
+/** One page of the list for the filters; the top three are ordinary rows, like every other student. */
 export function listPage(dataset: RankingDataset, filters: Filters, ownId?: number, seen?: ReadonlyMap<number, string | null>) {
   const blackholedMode = filters.bh === 'blackholed', alumniMode = filters.bh === 'alumni', frozenMode = filters.bh === 'frozen', everyoneMode = filters.bh === 'all';
-  const { rows, matches, total: rankedTotal, page: rankedPage, pages: rankedPages, podium } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode, seen }, ownId);
+  const { rows, matches, total: rankedTotal, page: rankedPage, pages: rankedPages } = selectLeaderboard(dataset.students, { ...filters, alumni: alumniMode, frozen: frozenMode, seen }, ownId);
   const inScope = (student: BlackholedStudent) => (!filters.campus || student.campusIds.includes(filters.campus)) && (!filters.cohort || student.commonCoreCohort === filters.cohort) && (!filters.q || matchesSearch(filters.q, [student.login, student.displayName]));
   const lost = blackholedMode || everyoneMode ? dataset.blackholed.filter((student) => !student.anonymous && inScope(student)) : [];
   if (filters.order === 'desc') lost.reverse();
@@ -58,11 +58,8 @@ export function listPage(dataset: RankingDataset, filters: Filters, ownId?: numb
   const mergedPages = Math.max(1, Math.ceil(merged.length / 25)), mergedPage = Math.min(filters.page, mergedPages);
   const mergedRows = merged.slice((mergedPage - 1) * 25, mergedPage * 25);
   const page = blackholedMode || everyoneMode ? mergedPage : rankedPage, pages = blackholedMode || everyoneMode ? mergedPages : rankedPages;
-  const showWinner = !!podium[0] && !filters.q && (!filters.bh || everyoneMode);
-  const onPodium = new Set(showWinner ? podium.map((student) => student.id) : []);
-  const base: (Ranked | BlackholedStudent)[] = everyoneMode ? mergedRows : rows;
-  const listed = page === 1 || filters.order === 'desc' ? base.filter((student) => !onPodium.has(student.id)) : base;
-  return { blackholedMode, alumniMode, frozenMode, total: blackholedMode || everyoneMode ? merged.length : rankedTotal, page, pages, podium, showWinner, listed, seen, lostRows: blackholedMode ? lost.slice((mergedPage - 1) * 25, mergedPage * 25) : [] };
+  const listed: (Ranked | BlackholedStudent)[] = everyoneMode ? mergedRows : rows;
+  return { blackholedMode, alumniMode, frozenMode, total: blackholedMode || everyoneMode ? merged.length : rankedTotal, page, pages, listed, seen, lostRows: blackholedMode ? lost.slice((mergedPage - 1) * 25, mergedPage * 25) : [] };
 }
 
 /** Last sessions of the frozen students in the filtered list, so it can run from the most recently seen; empty outside the Frozen view. */

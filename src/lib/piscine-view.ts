@@ -53,7 +53,7 @@ export function piscinePage(dataset: PiscineDataset, filters: PiscineFilters) {
   let matches = dataset.students.filter((student) => (!filters.q || matchesSearch(filters.q, [student.login, student.displayName])) && (!filters.admission || student.accepted === (filters.admission === 'accepted')));
   if (filters.order === 'desc') matches = [...matches].reverse();
   const pages = Math.max(1, Math.ceil(matches.length / 25)), page = Math.min(filters.page, pages);
-  return { matches, total: matches.length, pages, page, rows: matches.slice((page - 1) * 25, page * 25), podium: dataset.students.slice(0, 3), showPodium: !filters.q && !filters.admission && dataset.students.length > 0 };
+  return { matches, total: matches.length, pages, page, rows: matches.slice((page - 1) * 25, page * 25) };
 }
 
 export const piscineAvatars = (students: PiscineRank[]) => photoReferences(students);
