@@ -6,8 +6,9 @@ import { commonCoreCohort } from './cohorts';
 import { classifyPopulation, type StudentRank } from './ranking';
 import { maskAnonymous } from './anonymous';
 import { demoDataset, isDemo } from './demo';
+import { userControlSets } from './user-controls';
 
-export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreCohort: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean };
+export type BlackholedStudent = { id: number; login: string; displayName: string | null; level: number; campusIds: number[]; commonCoreCohort: string | null; blackholedAt: string; photo: string | null; anonymous?: boolean; hacker?: boolean };
 export type RankingDataset = { students: StudentRank[]; blackholed: BlackholedStudent[]; acceptedUserIds: number[]; campuses: ApiCampus[]; fetchedAt: string; complete: true };
 
 export function collectBlackholed(sources: { campusId: number; records: ApiCursusUser[] }[], curriculum: number, ranked: ReadonlySet<number>, now = Date.now()): BlackholedStudent[] {
@@ -42,11 +43,13 @@ let built: { stamp: string; data: RankingDataset } | undefined;
 async function fetchCompleteDataset(): Promise<RankingDataset> {
   if (isDemo()) return demoDataset();
   const ids = campusIds(), curriculum = cursusId();
-  const [campuses, loaded] = await Promise.all([
+  const [campuses, loaded, controls] = await Promise.all([
     Promise.all(ids.map((id) => campusInfo(id))),
-    Promise.all(ids.map(async (campusId) => ({ campusId, ...(await campusRecords(campusId, curriculum)) })))
+    Promise.all(ids.map(async (campusId) => ({ campusId, ...(await campusRecords(campusId, curriculum)) }))),
+    userControlSets(),
   ]);
-  const stamp = loaded.map((source) => `${source.campusId}:${source.fetchedAt}`).join('|');
+  const controlStamp = [...controls.hackers].sort().join(',') + '|' + [...controls.anonymized].sort().join(',');
+  const stamp = `${loaded.map((source) => `${source.campusId}:${source.fetchedAt}`).join('|')}|${controlStamp}`;
   if (built?.stamp === stamp) return built.data;
   const sources = loaded.map(({ campusId, records }) => ({ campusId, records }));
   const { students, exclusions } = classifyPopulation(sources, curriculum, excludedUserIds());
@@ -56,7 +59,8 @@ async function fetchCompleteDataset(): Promise<RankingDataset> {
   // "Updated" is the oldest campus download, so the label never claims fresher data than it shows.
   const fetchedAt = loaded.map((source) => source.fetchedAt).sort()[0];
   // Ranks were computed above with everyone; the removed students keep their place but lose their identity.
-  const data: RankingDataset = { students: maskAnonymous(students), blackholed: maskAnonymous(blackholed), acceptedUserIds, campuses, fetchedAt, complete: true };
+  const mark = <T extends { login: string }>(items: T[]) => items.map((item) => controls.hackers.has(item.login.toLowerCase()) ? { ...item, hacker: true as const } : item);
+  const data: RankingDataset = { students: maskAnonymous(mark(students), controls.anonymized), blackholed: maskAnonymous(mark(blackholed), controls.anonymized), acceptedUserIds, campuses, fetchedAt, complete: true };
   built = { stamp, data };
   return data;
 }

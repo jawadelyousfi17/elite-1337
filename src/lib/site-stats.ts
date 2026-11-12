@@ -1,10 +1,11 @@
 import { createHmac, randomUUID } from 'node:crypto';
 import { sql } from './db';
 import { PERIOD_DAYS, type PromoEventOutcome, type StatsPeriod } from './site-stats-core';
+import { userControlSets } from './user-controls';
 
 /**
- * First-party site stats in Neon: page views, visits and promo clicks. Visitors and visits are random cookie ids;
- * a signed-in student is stored only as a keyed hash of their 42 id, so the admin page shows counts, never people.
+ * First-party site stats in Neon: page views, visits and promo clicks use anonymous/keyed identifiers.
+ * The separate one-row-per-student presence table powers only the guarded live admin view.
  */
 
 export const VISITOR_COOKIE = 'e1337_v';
@@ -41,6 +42,14 @@ function ensureTable() {
       )`;
     await sql()`create index if not exists site_events_at on site_events (at)`;
     await sql()`create index if not exists site_events_visitor_at on site_events (visitor, at)`;
+    await sql()`
+      create table if not exists site_presence (
+        user_id bigint primary key check (user_id > 0),
+        login text not null,
+        path text not null,
+        last_seen timestamptz not null default now()
+      )`;
+    await sql()`create index if not exists site_presence_last_seen on site_presence (last_seen desc)`;
   })().catch((error) => { ready = undefined; throw error; });
   return ready;
 }
@@ -59,6 +68,36 @@ export async function recordView(path: string, who: Who) {
         and (select count(*) from site_events where at > now() - interval '1 minute') < 1500`;
   } catch (error) {
     console.error('Site stats view failed:', error instanceof Error ? error.name : 'unknown');
+  }
+}
+
+/** Refreshes one signed-in student's site heartbeat without creating analytics page views. */
+export async function recordPresence(userId: number, login: string, path: string) {
+  if (!process.env.DATABASE_URL || !Number.isSafeInteger(userId) || userId <= 0 || !login || login.length > 64) return;
+  try {
+    await ensureTable();
+    await sql()`
+      insert into site_presence (user_id, login, path, last_seen) values (${userId}, ${login}, ${path}, now())
+      on conflict (user_id) do update set login = excluded.login, path = excluded.path, last_seen = excluded.last_seen
+      where site_presence.path is distinct from excluded.path or site_presence.last_seen < now() - interval '30 seconds'`;
+  } catch (error) {
+    console.error('Site presence failed:', error instanceof Error ? error.name : 'unknown');
+  }
+}
+
+export type SitePresence = { id: number; login: string; path: string; lastSeen: string };
+
+/** Signed-in students with a heartbeat in the last five minutes, newest first. */
+export async function listOnlinePresence(): Promise<SitePresence[] | null> {
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    await ensureTable();
+    const rows = await sql()`select user_id, login, path, last_seen from site_presence where last_seen > now() - interval '5 minutes' order by last_seen desc`;
+    const { anonymized } = await userControlSets();
+    return rows.filter((row) => !anonymized.has(String(row.login).toLowerCase())).map((row) => ({ id: Number(row.user_id), login: String(row.login), path: String(row.path), lastSeen: new Date(row.last_seen).toISOString() }));
+  } catch (error) {
+    console.error('Site presence unavailable:', error instanceof Error ? error.name : 'unknown');
+    return null;
   }
 }
 

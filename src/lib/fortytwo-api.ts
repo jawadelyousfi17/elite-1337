@@ -18,7 +18,10 @@ export const cursusUserSchema = z.object({
 export const campusLocationSchema = z.object({
   id: z.number().int(), campus_id: z.number().int(), host: z.string().nullish(),
   begin_at: z.string().nullish(), end_at: z.string().nullish(),
-  user: z.object({ id: z.number().int() }).nullish(),
+  user: z.object({
+    id: z.number().int(), login: z.string().min(1).optional(), displayname: z.string().nullish(),
+    image: z.unknown().transform(intraPhotoPath).optional(),
+  }).nullish(),
 });
 export const projectUserSchema = z.object({
   id: z.number().int(), status: z.string(), updated_at: z.string(), created_at: z.string().nullish(),
@@ -218,13 +221,16 @@ export class FortyTwoClient {
     return data[0]?.end_at ?? data[0]?.begin_at ?? null;
   }
   async campusObservedHosts(campusId: number): Promise<string[]> {
-    // This is a bounded 100-record recent-use sample, never an enabled-seat inventory.
+    // A bounded recent-use sample discovers the campus shape without walking its full location history.
     const path = `campus/${campusId}/locations`;
     const base = { sort: '-begin_at', 'page[size]': String(PAGE_SIZE) };
     const first = await this.request(path, z.array(campusLocationSchema), { ...base, 'page[number]': '1' });
     if (first.total === null) throw new IncompletePopulationError('Recent campus locations omitted their total count');
-    if (first.data.some((item) => item.campus_id !== campusId)) throw new IncompletePopulationError('Recent campus locations include another campus');
-    return first.data.map((item) => item.host).filter((host): host is string => !!host);
+    const pages = Math.min(5, Math.ceil(first.total / PAGE_SIZE));
+    const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, index) => this.request(path, z.array(campusLocationSchema), { ...base, 'page[number]': String(index + 2) })));
+    const rows = [first.data, ...rest.map((page) => page.data)].flat();
+    if (rows.some((item) => item.campus_id !== campusId)) throw new IncompletePopulationError('Recent campus locations include another campus');
+    return rows.map((item) => item.host).filter((host): host is string => !!host);
   }
   async usersByPiscine(campusId: number, year: string, month?: string): Promise<ApiUserSummary[]> {
     const base = { 'filter[primary_campus_id]': String(campusId), 'filter[pool_year]': year, ...(month ? { 'filter[pool_month]': month } : {}), sort: 'id', 'page[size]': String(PAGE_SIZE) };
@@ -237,6 +243,25 @@ export class FortyTwoClient {
     const all = [first.data, ...remaining.map((page) => page.data)].flat();
     if (all.length !== first.total || new Set(all.map((user) => user.id)).size !== first.total) throw new IncompletePopulationError('Piscine list is incomplete');
     return all;
+  }
+  /** Piscine progress for a known candidate set, batched so one session never becomes one request per person. */
+  async cursusUsersFor(userIds: number[], cursusId: number): Promise<ApiCursusUser[]> {
+    const unique = [...new Set(userIds)];
+    const batches = Array.from({ length: Math.ceil(unique.length / PAGE_SIZE) }, (_, index) => unique.slice(index * PAGE_SIZE, (index + 1) * PAGE_SIZE));
+    const results = await Promise.all(batches.map(async (batch) => {
+      const base = { 'filter[cursus_id]': String(cursusId), 'filter[user_id]': batch.join(','), sort: 'id', 'page[size]': String(PAGE_SIZE) };
+      const first = await this.request('cursus_users', z.array(cursusUserSchema), { ...base, 'page[number]': '1' });
+      if (first.total === null) throw new IncompletePopulationError('Piscine progress omitted its total count');
+      const pages = Math.ceil(first.total / PAGE_SIZE);
+      if (pages > 2) throw new IncompletePopulationError('Piscine progress exceeded its candidate batch');
+      const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, i) => this.request('cursus_users', z.array(cursusUserSchema), { ...base, 'page[number]': String(i + 2) })));
+      if (rest.some((page) => page.total !== first.total)) throw new IncompletePopulationError('Piscine progress changed during pagination');
+      const rows = [first.data, ...rest.map((page) => page.data)].flat();
+      const allowed = new Set(batch);
+      if (rows.length !== first.total || new Set(rows.map((row) => row.id)).size !== rows.length || rows.some((row) => row.cursus_id !== cursusId || !allowed.has(row.user.id))) throw new IncompletePopulationError('Piscine progress is incomplete');
+      return rows;
+    }));
+    return results.flat();
   }
   async cursusUsers(campusId: number, cursusId: number): Promise<ApiCursusUser[]> {
     const path = 'cursus_users';

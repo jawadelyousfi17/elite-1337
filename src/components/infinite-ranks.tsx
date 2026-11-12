@@ -5,7 +5,7 @@ import { RankRow, type RankRowData } from '@/components/rank-row';
 import { ChevronUp } from '@/components/icons';
 
 /** Leaderboard rows that keep loading while you scroll, one 25-row page at a time. */
-export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[]; query: string; pages: number }) {
+export function InfiniteRanks({ initial, query, pages, endpoint = '/api/leaderboard/rows' }: { initial: RankRowData[]; query: string; pages: number; endpoint?: string }) {
   const [rows, setRows] = useState(initial);
   const [next, setNext] = useState(2);
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
@@ -29,7 +29,7 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
     setState('loading');
     try {
       // A request that never answers shows "Try again" after 20 s instead of loading forever.
-      const response = await fetch(`/api/leaderboard/rows?${query}${query ? '&' : ''}page=${next}`, { cache: 'no-store', signal: AbortSignal.timeout(20_000) });
+      const response = await fetch(`${endpoint}?${query}${query ? '&' : ''}page=${next}`, { cache: 'no-store', signal: AbortSignal.timeout(20_000) });
       if (!response.ok) throw new Error(String(response.status));
       const body = await response.json() as { rows: RankRowData[] };
       setRows((current) => { const seen = new Set(current.map((row) => row.id)); return [...current, ...body.rows.filter((row) => !seen.has(row.id))]; });
@@ -37,7 +37,7 @@ export function InfiniteRanks({ initial, query, pages }: { initial: RankRowData[
       setState('idle');
     } catch { setState('error'); }
     finally { busy.current = false; }
-  }, [next, pages, query]);
+  }, [endpoint, next, pages, query]);
 
   useEffect(() => {
     const target = end.current;

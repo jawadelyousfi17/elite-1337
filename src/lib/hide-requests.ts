@@ -49,7 +49,7 @@ export function hideRequestPayload(login: string, reason: string) {
       title: '🗑️ Profile removal request',
       description: reason,
       color: 0xedc5f9,
-      fields: [{ name: 'To apply', value: 'Add the login to ANONYMIZED_LOGINS in Vercel, then redeploy.', inline: false }, { name: 'Student', value: `[${login}](https://profile.intra.42.fr/users/${encodeURIComponent(login)})`, inline: true }],
+      fields: [{ name: 'To apply', value: 'Open Admin → User access, add the login, then enable Anonymous.', inline: false }, { name: 'Student', value: `[${login}](https://profile.intra.42.fr/users/${encodeURIComponent(login)})`, inline: true }],
       timestamp: new Date().toISOString(),
     }],
   };

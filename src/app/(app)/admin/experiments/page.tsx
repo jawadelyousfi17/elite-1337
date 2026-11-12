@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { requireStudent } from '@/lib/guard';
-import { isFeedbackAdmin } from '@/lib/feedback';
+import { isAccessAdmin } from '@/lib/user-controls';
 import { rankTestResults, type RankTestSummary, type ScrollMode } from '@/lib/rank-test';
 import { timeAgo } from '@/lib/time';
 import { cn } from '@/lib/utils';
@@ -15,7 +15,7 @@ const pct = (part: number, whole: number) => whole ? `${Math.round(part / whole 
 /** Leaderboard A/B test results, readable only by the logins in ADMIN_LOGINS; everyone else gets a 404. */
 export default async function ExperimentsPage() {
   const user = await requireStudent();
-  if (!isFeedbackAdmin(user.login)) notFound();
+  if (!await isAccessAdmin(user.login)) notFound();
   const results = await rankTestResults();
   const totals = results?.summary.reduce((sum, row) => ({ seen: sum.seen + row.seen, answered: sum.answered + row.answered }), { seen: 0, answered: 0 });
   // Final preference: who kept page numbers plus who switched to them, and the same for infinite scroll.

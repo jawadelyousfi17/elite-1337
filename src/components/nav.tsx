@@ -10,6 +10,7 @@ import { campusName, loadRankingDataset } from '@/lib/dataset';
 import { cohortRank } from '@/lib/ranking';
 import { getStudentProfile } from '@/lib/student-overview';
 import { intraPhotoUrl } from '@/lib/avatars/intra-photo';
+import { isAccessAdmin } from '@/lib/user-controls';
 
 async function viewerRanks(): Promise<ViewerRanks | null> {
   const session = await auth();
@@ -33,13 +34,14 @@ async function logout() {
 }
 
 /** The rank pill streams in on its own: a cold rankings download must never hold up the page under it. */
-async function RankedChip({ login }: { login: string }) {
-  return <NavRank ranks={await viewerRanks()} login={login} logout={logout}/>;
+async function RankedChip({ login, admin }: { login: string; admin: boolean }) {
+  return <NavRank ranks={await viewerRanks()} login={login} logout={logout} admin={admin}/>;
 }
 
 export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
   const session = loggedIn ? await auth() : null;
   const login = session?.user?.login ?? 'You';
+  const admin = await isAccessAdmin(session?.user?.login);
   return <>
     <header className="shell nav">
       <Link className="brand" href="/" aria-label="Elite 1337 home"><img src="/assets/elite-1337-icy.webp" alt="Elite 1337" width={680} height={180}/></Link>
@@ -47,7 +49,7 @@ export async function Nav({ loggedIn = false }: { loggedIn?: boolean }) {
         <nav className="navlinks" aria-label="Main navigation"><NavLinks variant="top"/></nav>
         <div className="nav-actions">
         <div className="nav-tools"><Announcements/><ThemeToggle/><GitHubStars variant="nav"/></div>
-        <Suspense fallback={<NavRank ranks={null} login={login} logout={logout}/>}><RankedChip login={login}/></Suspense>
+        <Suspense fallback={<NavRank ranks={null} login={login} logout={logout} admin={admin}/>}><RankedChip login={login} admin={admin}/></Suspense>
         </div>
       </> : <nav className="navlinks" aria-label="Main navigation"><Link href="/">Home</Link></nav>}
     </header>

@@ -24,14 +24,15 @@ it('returns only unknown states if the active API request fails', async () => {
   expect(snapshot.counts).toEqual({ occupied: 0, available: 0, unknown: 1, disabled: 0 });
   expect(JSON.stringify(snapshot)).not.toContain('429');
 });
-it('still shows anonymous occupied hosts if recent-host discovery fails', async () => {
+it('still shows occupied students if recent-host discovery fails', async () => {
   vi.mocked(fortyTwoApi.campusActiveLocations).mockResolvedValue([{
-    id: 1, campus_id: 16, host: 'e1r1p1', begin_at: new Date(Date.now() - 60_000).toISOString(), end_at: null, user: { id: 123 },
+    id: 1, campus_id: 16, host: 'e1r1p1', begin_at: new Date(Date.now() - 60_000).toISOString(), end_at: null, user: { id: 123, login: 'student123', displayname: 'Student 123' },
   }]);
   vi.mocked(fortyTwoApi.campusObservedHosts).mockRejectedValue(new Error('failed'));
   const snapshot = await getClusterSnapshot(16);
   expect(snapshot.complete).toBe(true);
   expect(snapshot.observedSample).toBe(false);
   expect(snapshot.counts.occupied).toBe(1);
+  expect(snapshot.seats[0].occupant).toMatchObject({ login: 'student123', displayName: 'Student 123' });
   expect(JSON.stringify(snapshot)).not.toContain('"user"');
 });

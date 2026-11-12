@@ -4,7 +4,6 @@ import { campusName, type BlackholedStudent, type RankingDataset } from './datas
 import { mergeByLevel, selectLeaderboard, type StudentRank } from './ranking';
 import { loadLastSeen } from './last-seen';
 import { matchesSearch } from './search';
-import { hackerLogins } from './hackers';
 import { photoReferences } from './avatars/intra-photo';
 import type { RankRowData } from '@/components/rank-row';
 
@@ -81,15 +80,14 @@ export function avatarsFor(people: { id: number; photo?: string | null }[]) {
 }
 
 export function rowData(dataset: RankingDataset, view: ReturnType<typeof listPage>, avatars: Record<number, string>, userId: string): RankRowData[] {
-  const hackers = hackerLogins();
   const campus = (ids: number[]) => ids.map((id) => campusName(dataset, id)).join(' · ');
-  const lostRow = (student: BlackholedStudent): RankRowData => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreCohort, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: hackers.has(student.login.toLowerCase()), blackholedAt: student.blackholedAt });
+  const lostRow = (student: BlackholedStudent): RankRowData => ({ kind: 'lost', id: student.id, login: student.login, level: student.level, year: student.commonCoreCohort, campus: campus(student.campusIds), src: avatars[student.id] ?? null, hacker: !!student.hacker, blackholedAt: student.blackholedAt });
   if (view.blackholedMode) return view.lostRows.map(lostRow);
   return view.listed.map((student) => !('rank' in student) ? lostRow(student) : student.anonymous ? {
     // Nothing but the place in the list leaves the server for an anonymous student.
     kind: 'ranked', id: student.id, login: 'Anonymous student', level: 0, year: null, campus: '', src: null, hacker: false, rank: student.rank, mine: false, alumni: false, frozen: false, anonymous: true,
   } as RankRowData : ({
     kind: 'ranked', id: student.id, login: student.login, level: student.level, year: student.commonCoreCohort, campus: campus(student.campusIds), src: avatars[student.id] ?? null,
-    hacker: hackers.has(student.login.toLowerCase()), rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen, ...(student.frozen && view.seen?.get(student.id) ? { lastSeen: view.seen.get(student.id)! } : {}),
+    hacker: !!student.hacker, rank: student.rank, mine: String(student.id) === userId, alumni: !!student.alumni, frozen: !!student.frozen, ...(student.frozen && view.seen?.get(student.id) ? { lastSeen: view.seen.get(student.id)! } : {}),
   } as RankRowData));
 }

@@ -4,12 +4,12 @@ import { AnonymousAvatar, AnonymousTip } from '@/components/anonymous-tip';
 import { HackerBadge } from '@/components/hacker-badge';
 import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
-import { ArrowUpRight, Hourglass } from '@/components/icons';
+import { ArrowUpRight, Check, Hourglass, X } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 /** One leaderboard row as plain data, so the server page and the infinite list render it the same way. */
 export type RankRowData = { id: number; login: string; level: number; year: string | null; campus: string; src: string | null; hacker: boolean }
-  & ({ kind: 'ranked'; rank: number; mine: boolean; alumni: boolean; frozen: boolean; lastSeen?: string; anonymous?: boolean } | { kind: 'lost'; blackholedAt: string });
+  & ({ kind: 'ranked'; rank: number; mine: boolean; alumni: boolean; frozen: boolean; lastSeen?: string; anonymous?: boolean; admission?: 'accepted' | 'not-accepted' } | { kind: 'lost'; blackholedAt: string });
 
 const pastels = ['var(--pastel-1)', 'var(--pastel-2)', 'var(--pastel-3)', 'var(--pastel-4)', 'var(--pastel-5)', 'var(--pastel-6)'];
 export const pastel = (rank: number) => pastels[(rank - 2 + pastels.length * 100) % pastels.length];
@@ -40,6 +40,7 @@ export function RankRow({ row }: { row: RankRowData }) {
       <span><b>Level {row.level.toFixed(2)}</b> · {row.year ?? '?'} · {row.campus}</span>
     </span>
     <span className="pl-ext" aria-hidden="true"><ArrowUpRight size={12} weight="bold"/></span>
+    {ranked && row.admission && <span className={`pp-admission is-${row.admission}`} aria-label={row.admission === 'accepted' ? 'Accepted' : 'Not accepted'} title={row.admission === 'accepted' ? 'Accepted' : 'Not accepted — no Common Core enrollment found'}>{row.admission === 'accepted' ? <Check size={16}/> : <X size={15}/>}</span>}
     {ranked ? <span className="pl-rank" aria-label={`Rank ${row.rank}`}>{row.rank}</span> : <span className="pl-bh is-lost"><Hourglass size={12}/>{shortDate(row.blackholedAt)}</span>}
   </div>;
 }

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { AlumniBadge } from '@/components/alumni-badge';
 import { FrozenBadge } from '@/components/frozen-badge';
 import { AnonymousAvatar, AnonymousTip } from '@/components/anonymous-tip';
-import { Campus, Cohort, Hourglass, Reverse, RotateCcw, X } from '@/components/icons';
+import { Campus, Cohort, Hourglass, Reverse, RotateCcw, Waves, X } from '@/components/icons';
 import { Avatar } from '@/components/avatar';
 import { FilterShell } from '@/components/filter-shell';
 import { ScrollRow } from '@/components/scroll-row';
@@ -54,6 +54,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
     <aside className="pl-side">
       <StickySide/>
       <section className="pl-hero" aria-labelledby="pl-title">
+        <nav className="pp-switch" aria-label="Ranking type"><Link href="/leaderboard" className="is-active" aria-current="page">Common Core</Link><Link href="/piscines"><Waves size={15}/>Piscine</Link></nav>
         <h1 id="pl-title">Leaderboard</h1>
         {showWinner && <div className="pl-podium">
           {podium[1] ? <RunnerUp student={podium[1]} src={avatars[podium[1].id]}/> : <span/>}

@@ -5,7 +5,6 @@ import { ArrowUpRight, Star } from '@/components/icons';
 import { intraPhotoUrl } from '@/lib/avatars/intra-photo';
 import { CORRECTOR_SAMPLE, loadCorrectorProfile } from '@/lib/corrector-profile';
 import { campusName, type RankingDataset } from '@/lib/dataset';
-import { isHacker } from '@/lib/hackers';
 import { cohortRank, topPercent } from '@/lib/ranking';
 import { withTimeout } from '@/lib/timeout';
 
@@ -65,7 +64,7 @@ export async function StudentProfile({ dataset, userId }: { dataset: RankingData
   return <>
     <header className="of-head sp-head">
       <Avatar login={person.login} name={person.displayName} src={intraPhotoUrl(person.id, person.photo)} size={64} className="sp-avatar"/>
-      <div className="sp-who"><h1>{person.login}{isHacker(person.login) && <HackerBadge/>}</h1>{person.displayName && <p>{person.displayName}</p>}</div>
+      <div className="sp-who"><h1>{person.login}{person.hacker && <HackerBadge/>}</h1>{person.displayName && <p>{person.displayName}</p>}</div>
       <a className="xp-chip sp-intra" href={`https://profile.intra.42.fr/users/${encodeURIComponent(person.login)}`} target="_blank" rel="noopener noreferrer">Intra<ArrowUpRight size={13} weight="bold"/></a>
     </header>
 

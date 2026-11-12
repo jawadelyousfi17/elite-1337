@@ -19,7 +19,7 @@ npm run typecheck && npm test
 1. Vercel → Add New Project → pick this repository.
 2. Set **Root Directory** to `github-card`. The framework is detected as Next.js.
 3. Environment variables: `GITHUB_TOKEN` (strongly recommended, see below) and `NEXT_PUBLIC_SITE_URL` (the public address).
-4. Under **Settings → Git → Ignored Build Step** you can skip builds when `github-card/` did not change: `git diff --quiet HEAD^ HEAD -- .`
+4. Under **Settings → Git → Ignored Build Step** you can skip builds when `github-card/` did not change: `git rev-parse --verify HEAD^ >/dev/null 2>&1 || exit 1; git diff --quiet HEAD^ HEAD -- .`. A checkout without a parent commit now builds normally instead of failing with Git exit 128.
 5. Give it its own domain. The domain is inside every card link people paste into their README, so pick it once: changing it later breaks the cards already published.
 
 It needs no `AUTH_SECRET`, 42 keys or `DATABASE_URL`.
