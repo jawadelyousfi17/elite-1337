@@ -1808,6 +1808,73 @@ h1 .hk-badge{margin-left:10px;font-size:12px;transform:translateY(-3px)}
 @media(max-width:520px){.landing-events{gap:6px}.landing-event-chip svg{display:none}}
 @media(max-width:400px){.landing-event-pill{gap:7px;font-size:12px}.landing-event-chip{padding:0 9px}}
 @media(prefers-reduced-motion:reduce){.landing-event-pill::before{animation:none}.landing-event-card,.landing-event-cta,.landing-event-cta-icon{transition:none}}
+/* Logo puzzle (pz-): Wedesign challenge, a full-screen page on the Black surface; flat panel left, leaderboard rows right */
+.pz-pill{border:0;font:inherit;cursor:pointer}
+.pz-kicker{color:#8796a6}
+.pz-thumb{color:var(--mint)}
+.pz-screen{position:fixed;inset:0;z-index:81;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);color:var(--text);font-family:var(--font-sans);animation:sv-fade .16s ease-out}
+.pz-screen:focus{outline:none}
+.pz-page{position:relative;padding-top:28px;padding-bottom:40px}
+.pz-head{position:relative;padding-right:56px;margin-bottom:24px}
+.pz-close{top:0;right:0}
+.pz-close:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.pz-title{margin:0;font-size:26px;font-weight:500;letter-spacing:-.04em;line-height:1.3}
+.pz-screen.is-solved .pz-title{color:var(--mint)}
+.pz-keys{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:30px;margin:10px 0 0}
+.pz-keys.is-hidden>span:not(.sr-only){visibility:hidden}
+.pz-key{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px 0 10px;border-radius:999px;background:#202020;color:#9a9a9a;font-size:13px;white-space:nowrap}
+.pz-key svg{flex-shrink:0;color:#cfcfcf}
+.pz-key.is-arrows{padding-left:5px}
+.pz-arrows{display:inline-flex;align-items:center;gap:3px}
+.pz-arrows i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#2b2b2b}
+.pz-key .pz-arrows svg{color:#8a8a8a}
+@media(max-width:700px),(hover:none) and (pointer:coarse){.pz-key.is-arrows{display:none}}
+.pz-layout{display:grid;grid-template-columns:minmax(380px,460px) minmax(0,1fr);gap:48px;align-items:start}
+.pz-game{position:sticky;top:20px;display:flex;flex-direction:column;gap:12px;padding:12px}
+.pz-stats{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.pz-stat{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 15px;border-radius:999px;background:#141414;color:#0a0a0a;font-size:14px;font-weight:500;white-space:nowrap}
+.pz-stat b{font-weight:600;font-variant-numeric:tabular-nums}
+.pz-stat.is-lilac{background:var(--pastel-1)}.pz-stat.is-mint{background:var(--mint);padding-left:12px;animation:pz-stamp-in .35s cubic-bezier(.2,1.4,.4,1)}
+.pz-stat.is-ranking{opacity:.7}
+@keyframes pz-stamp-in{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}.pz-stat.is-yellow{background:var(--pastel-2);padding-left:12px}
+.pz-again{display:inline-flex;align-items:center;gap:7px;height:38px;margin-left:auto;padding:0 16px;border:0;border-radius:999px;background:#141414;color:#d9d9d9;font:inherit;font-size:14px;cursor:pointer;transition:background .18s,color .18s}
+.pz-again:hover{background:#2b2b2b;color:#fff}
+.pz-again.is-active{background:#fff;color:#080808;font-weight:500}
+.pz-again:focus-visible,.pz-signin:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.pz-board-wrap{position:relative}
+.pz-board{position:relative;width:100%;aspect-ratio:1;border-radius:18px;background:#141414;overflow:hidden}
+.pz-board:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.pz-board.is-dealing .pz-tile{opacity:.4;cursor:wait}
+.pz-tile{position:absolute;left:0;top:0;width:calc(100% / 3);height:calc(100% / 3);padding:0;border:0;border-radius:14px;background-color:#202020;background-size:300% 300%;background-repeat:no-repeat;cursor:default;touch-action:none;user-select:none;-webkit-user-select:none;transform:translate(calc(var(--pz-x) * 100% + var(--pz-dx,0px)),calc(var(--pz-y) * 100% + var(--pz-dy,0px))) scale(.95);transition:transform .16s cubic-bezier(.2,.8,.2,1),opacity .3s,background-color .18s}
+.pz-tile.is-movable{cursor:grab}
+.pz-tile.is-movable:hover{background-color:#2b2b2b}
+.pz-tile.is-held{z-index:1;cursor:grabbing;background-color:#2b2b2b;transition:none}
+.pz-tile span{position:absolute;top:7px;left:7px;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#141414;color:#8a8a8a;font-size:11px;font-weight:600;line-height:20px;font-variant-numeric:tabular-nums}
+.pz-board.is-solved .pz-tile{opacity:0;transform:translate(calc(var(--pz-x) * 100%),calc(var(--pz-y) * 100%));transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s .15s}
+/* solve pop: the tiles melt into one mark, a small confetti burst, then the Solved pill */
+.pz-whole{position:absolute;inset:0;width:100%;height:100%;animation:pz-whole .5s .1s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes pz-whole{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.pz-celebrate{position:absolute;inset:0;z-index:3;pointer-events:none}
+.pz-bit{position:absolute;left:50%;top:50%;width:9px;height:14px;margin:-7px 0 0 -4.5px;border-radius:3px;background:var(--c);opacity:0;animation:pz-bit 1s .3s cubic-bezier(.1,.7,.3,1) forwards}
+.pz-bit:nth-child(3n){width:10px;height:10px;border-radius:50%}
+@keyframes pz-bit{0%{opacity:1;transform:rotate(var(--a)) translateY(0) rotate(0) scale(.4)}70%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(var(--r)) scale(1)}}
+.pz-stamp{position:absolute;left:12px;top:12px;z-index:4;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 15px;border-radius:999px;background:var(--mint);color:#060606;font-size:14px;font-weight:600;animation:pz-stamp .4s .6s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pz-stamp{from{opacity:0;transform:translateY(-6px) scale(.85)}to{opacity:1;transform:none}}
+/* after solving: the Wedesign application card, a nested card with the filled main action */
+.pz-apply{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:18px;background:#141414;animation:pz-apply .4s .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes pz-apply{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pz-apply p{margin:0;padding:0 4px;color:#9a9a9a;font-size:14px;line-height:20px}
+.pz-apply strong{display:block;margin-bottom:2px;color:var(--text);font-size:16px;font-weight:500;line-height:22px}
+.pz-apply-cta{display:flex;align-items:center;justify-content:center;gap:7px;height:46px;padding:0 18px;border-radius:999px;background:var(--mint);color:#060606;font-size:14px;font-weight:600;text-decoration:none;transition:transform .18s}
+.pz-apply-cta:hover{transform:translateY(-1px)}
+.pz-apply-cta:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.pz-apply{animation:none}.pz-apply-cta{transition:none}}
+.pz-list{min-width:0}
+.pz-list .pc-loader{padding-top:20px}
+.pz-signin{display:inline-flex;align-items:center;gap:8px;width:auto;height:46px;margin-top:22px;padding:0 22px;border:0;font:inherit;font-size:15px;cursor:pointer}
+@media(max-width:1023px){.pz-layout{grid-template-columns:1fr;gap:28px}.pz-game{position:static;width:min(100%,520px);justify-self:center}}
+@media(max-width:700px){.pz-kicker{display:none}.pz-page{padding-top:18px;padding-bottom:max(28px,env(safe-area-inset-bottom))}.pz-head{margin-bottom:18px}.pz-title{font-size:24px}.pz-tile{border-radius:12px}.pz-stat,.pz-again{height:36px;padding:0 13px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.pz-tile,.pz-board,.pz-board.is-solved .pz-tile,.pz-again{transition:none}.pz-screen,.pz-stamp,.pz-whole,.pz-stat.is-mint{animation:none}.pz-celebrate{display:none}}
 
 .avatar .avatar-fallback{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:inherit;background:var(--muted-surface);color:var(--foreground);font-weight:600;overflow:hidden}
 .avatar .avatar-fallback.is-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,#ffffff14 50%,transparent 80%);transform:translateX(-100%);animation:avatar-shimmer 1.3s ease-in-out infinite}
