@@ -2463,3 +2463,15 @@ html:not([data-tw-light]):not(:has(.landing)) .pp-summary>div.is-not-accepted{ba
 .gh-empty{display:grid;place-items:center;aspect-ratio:985/530;background:#202020;color:#9a9a9a;font-size:14px;text-align:center;padding:16px}
 @media(max-width:900px){.cd .gh-fields{order:6}}
 @media(max-width:700px){.gh-fields{grid-template-columns:1fr}}
+
+/* Keep correction metadata clear of student names on narrow screens. */
+@media(max-width:700px){
+  .pc .pc-summary{display:flex;flex-wrap:wrap}
+  .pc .pc-summary .is-count{flex-basis:100%;white-space:normal;flex-wrap:wrap}
+  .pc .pc-summary .is-time{margin-left:auto}
+  .pc .pl-row{display:grid;grid-template-columns:auto minmax(0,1fr);height:auto;min-height:82px}
+  .pc .pl-copy strong{flex-wrap:wrap;white-space:normal}
+  .pc .pl-copy strong a{overflow-wrap:anywhere}
+  .pc .pc-project{grid-column:2;max-width:100%;align-items:flex-start;text-align:left}
+  .pc .pc-project small{white-space:normal;flex-wrap:wrap}
+}

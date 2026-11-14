@@ -48,7 +48,7 @@ The client checks for updates every 60 seconds while visible and avoids overlapp
 
 The shared server-side 42 client spaces requests at least 600 ms apart and caps its own traffic at 1,180 requests per hour per server instance, leaving a small margin under the stated 1,200/hour application limit. HTTP 429 and transient server failures use bounded exponential backoff. The initial complete fetch is about a few dozen paginated requests and can take tens of seconds.
 
-Next.js Data Cache retains successful complete ranking and Piscine datasets for one hour. Failed or partial refreshes are not cached as complete data. Cache freshness is displayed on the leaderboard. Serverless instances do not share the in-memory request pacer, and cache behavior depends on deployment infrastructure; this MVP cannot guarantee a global application-wide request limit or durable rankings without shared infrastructure. Heavy concurrent cold starts can hit the 42 limit. The UI shows a rate-limit or incomplete-data state in that case. If traffic grows, move the API pacer and complete snapshots to shared persistent infrastructure.
+Next.js Data Cache retains successful complete ranking and Piscine datasets for 30 minutes. Failed or partial refreshes are not cached as complete data. Cache freshness is displayed on the leaderboard. Serverless instances do not share the in-memory request pacer, and cache behavior depends on deployment infrastructure; this MVP cannot guarantee a global application-wide request limit or durable rankings without shared infrastructure. Heavy concurrent cold starts can hit the 42 limit. The UI shows a rate-limit or incomplete-data state in that case. If traffic grows, move the API pacer and complete snapshots to shared persistent infrastructure.
 
 ## Student photos
 
@@ -67,4 +67,26 @@ Tests cover cohort semantics, Piscine filters and admission uncertainty, ties, c
 
 ## Vercel deployment
 
-Set `FORTYTWO_CLIENT_ID`, `FORTYTWO_CLIENT_SECRET`, `FORTYTWO_CURSUS_ID=21`, `FORTYTWO_PISCINE_CURSUS_ID=9`, `AUTH_SECRET`, and `AUTH_URL=https://www.elite-1337.app` as private Vercel environment variables. `FORTYTWO_CAMPUS_IDS=16,21,55,75` and `FORTYTWO_EXCLUDED_USER_IDS` are optional. V3.1 avatars additionally require private `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` values plus the one-time SQL setup above. Register `https://www.elite-1337.app/api/auth/callback/42` as the exact 42 redirect URI. Redeploy after changing Vercel environment variables, then check a real 1337 sign-in. The protected pages allow up to 60 seconds for a cold complete refresh; verify that your Vercel plan supports that function duration. Use HTTPS in production.
+Set `FORTYTWO_CLIENT_ID`, `FORTYTWO_CLIENT_SECRET`, `FORTYTWO_CURSUS_ID=21`, `FORTYTWO_PISCINE_CURSUS_ID=9`, `AUTH_SECRET`, and `AUTH_URL=https://www.elite-1337.app` as private Vercel environment variables. `FORTYTWO_CAMPUS_IDS=16,21,55,75` and `FORTYTWO_EXCLUDED_USER_IDS` are optional. Set `DATABASE_URL` for policies, shared API permits, durable snapshots and card sharing. Run `npx tsx --env-file=.env.local scripts/migrate.ts` before deploying this branch. Register `https://www.elite-1337.app/api/auth/callback/42` as the exact 42 redirect URI. Redeploy after changing Vercel environment variables, then check a real 1337 sign-in. The protected pages allow up to 60 seconds for a cold complete refresh; verify that your Vercel plan supports that function duration. Use HTTPS in production.
+
+## Review implementation operations
+
+Read [docs/implementation-status.md](docs/implementation-status.md) for changes, acceptance evidence, and limitations. This fork keeps upstream compatibility but implements each review item in its own commit.
+
+Production 42 reads now require `DATABASE_URL`: atomic PostgreSQL permits enforce 600 ms spacing and a rolling 1,100/hour application-client budget. The remaining 100 calls are headroom, not a guarantee for unlimited OAuth traffic or other applications sharing credentials. All deployments sharing the 42 application must use the same database. Never give test runs production credentials.
+
+Campus records use durable complete snapshots with 120-second refresh leases and a 30-minute freshness target. A stale snapshot is served while a background refresh runs. A cold reader without a snapshot may still wait or show unavailable while another worker holds the lease. Current policy masking is applied after loading snapshots. Policy database failures now fail closed, which can temporarily prevent sign-in and protected content.
+
+Waiting for correction means `waiting_for_correction`, matching the Go bot submission rule. The queue is not restricted to updates in the last 30 days. It remains bounded to ten 100-record pages and reports incomplete rather than silently truncating. Rows show project update time, not an invented submission timestamp. Only visible students in the selected campus ranking population are displayed.
+
+Correction statistics exclude Peer Video by project name/slug/path using the bot's rule and exclude records without project metadata. Return rate is not a measure of fairness. Profile numbers are eligible records within the latest 100, not lifetime totals. Changing these caches causes a one-time refill: each selected 30-day campus scope has four 10-day slices; 90 days has ten, with page counts dependent on campus volume.
+
+Card owners can disable or regenerate links from `/card`. Existing links work until changed. New origin responses are not cached; third-party caches of older images cannot be recalled. No global authentication-secret rotation is needed.
+
+Admin policy mutations have a transactional database audit trigger, preserving old/new rows and the actor, including deletion. The application does not expose audit deletion. Database owners retain database-level privileges; this is not tamper-proof storage. Back up the database and verify recovery before production rollout.
+
+Run both application suites: root `npm ci && npm run typecheck && npm test && npm run build`, then the same commands in `github-card/`. `npm run test:e2e` runs mobile demo smoke checks without production credentials. CI runs both apps independently. For a system browser locally, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium`.
+
+Verified layouts belong in `src/lib/cluster-layouts.json`, with source, verification timestamp, dimensions, enabled status and exact workstation IDs. Validation rejects duplicate/mismatched/out-of-bounds seats. The empty registry is intentional until actual verified inventory is supplied. Do not populate it with guesses.
+
+Licensing remains an owner decision; this work does not assign a license to upstream code.

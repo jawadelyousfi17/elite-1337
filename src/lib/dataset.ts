@@ -1,7 +1,9 @@
+import { z } from 'zod';
+import { durableSnapshot } from './durable-snapshot';
 import { unstable_cache } from 'next/cache';
 import { singleFlight } from './single-flight';
 import { campusIds, cursusId, excludedUserIds } from './config';
-import { fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus, type ApiCursusUser } from './fortytwo-api';
+import { cursusUserSchema, fortyTwoApi, IncompletePopulationError, RateBudgetError, type ApiCampus, type ApiCursusUser } from './fortytwo-api';
 import { commonCoreCohort } from './cohorts';
 import { classifyPopulation, type StudentRank } from './ranking';
 import { maskAnonymous } from './anonymous';
@@ -30,8 +32,14 @@ export function collectBlackholed(sources: { campusId: number; records: ApiCursu
  * instead of starting over and spending every request again. Rankings refresh every 30 minutes: a full download is
  * about 50 requests, so about 100 an hour.
  */
-const campusRecords = singleFlight(unstable_cache(async (campusId: number, curriculum: number) => ({ records: await fortyTwoApi.cursusUsers(campusId, curriculum), fetchedAt: new Date().toISOString() }),
-  ['1337-campus-cursus-users-v2'], { revalidate: 1800 }));
+const snapshotSchema = z.object({
+  records: z.array(cursusUserSchema.extend({ user: cursusUserSchema.shape.user.extend({ image: z.string().nullable().optional() }) })),
+  fetchedAt: z.string().datetime(),
+});
+const campusRecords = singleFlight(async (campusId: number, curriculum: number) => durableSnapshot(
+  `campus-records-v1:${campusId}:${curriculum}`, snapshotSchema,
+  async () => ({ records: await fortyTwoApi.cursusUsers(campusId, curriculum), fetchedAt: new Date().toISOString() }), 1_800_000,
+), 5_000);
 const campusInfo = singleFlight(unstable_cache(async (campusId: number) => fortyTwoApi.campus(campusId), ['1337-campus-info-v1'], { revalidate: 86_400 }));
 
 /**

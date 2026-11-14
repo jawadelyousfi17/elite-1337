@@ -5,13 +5,13 @@ const now = Date.parse('2026-10-23T12:00:00Z');
 const daysAgo = (days: number) => new Date(now - days * 86_400_000).toISOString();
 const ids: Record<string, number> = {};
 const row = (id: number, login: string | null, positive: boolean | null, days = 1) => ({
-  id, filled_at: daysAgo(days), corrector: login === null ? 'invisible' : { id: ids[login] ??= Object.keys(ids).length + 1, login }, flag: positive === null ? null : { name: positive ? 'Ok' : 'Incomplete work', positive },
+  id: id + 1, team: { project: { name: 'Libft', slug: 'libft' } }, filled_at: daysAgo(days), corrector: login === null ? 'invisible' : { id: ids[login] ??= Object.keys(ids).length + 1, login }, flag: positive === null ? null : { name: positive ? 'Ok' : 'Incomplete work', positive },
 });
 
 describe('pickEvaluations', () => {
   it('keeps filled, judged evaluations by people', () => {
     const picked = pickEvaluations([row(1, 'amine', false), row(2, null, false), row(3, 'sara', null), { ...row(4, 'sara', true), filled_at: null }], 16);
-    expect(picked.map((evaluation) => [evaluation.id, evaluation.corrector, evaluation.returned, evaluation.campusId])).toEqual([[1, 'amine', true, 16]]);
+    expect(picked.map((evaluation) => [evaluation.id, evaluation.corrector, evaluation.returned, evaluation.campusId])).toEqual([[2, 'amine', true, 16]]);
   });
 });
 
@@ -37,4 +37,12 @@ describe('strictCorrectors', () => {
   it('asks for more evaluations over longer windows', () => {
     expect([30, 60, 90].map(minEvaluations)).toEqual([5, 10, 15]);
   });
+});
+
+it('fills the visible top ten after removing hidden evaluators', () => {
+  const evaluations = Array.from({ length: 12 }, (_, i) => ({ id: i, campusId: 16, correctorId: i + 1, corrector: `person${String(i).padStart(2, '0')}`, at: daysAgo(1), returned: true }));
+  const result = strictCorrectors(evaluations, { now, min: 1, hidden: new Set(['person00', 'person01']) });
+  expect(result).toHaveLength(10);
+  expect(result[0].login).toBe('person02');
+  expect(result[9].login).toBe('person11');
 });

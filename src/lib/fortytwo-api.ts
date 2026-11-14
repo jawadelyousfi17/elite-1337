@@ -1,3 +1,4 @@
+import { SharedBudget } from './shared-budget';
 import { z } from 'zod';
 import { INTRA_CDN, MAX_PHOTO_BYTES, intraPhotoPath, validPhotoPath } from './avatars/intra-photo';
 
@@ -36,6 +37,7 @@ export type ApiProjectUser = z.infer<typeof projectUserSchema>;
 /** A peer evaluation; the corrector is an object for people (a string marks automated or hidden correctors). */
 export const scaleTeamSchema = z.object({
   id: z.number().int(), filled_at: z.string().nullish(),
+  team: z.object({ project: z.object({ name: z.string().nullish(), slug: z.string().nullish() }).nullish(), project_gitlab_path: z.string().nullish() }).nullish(),
   corrector: z.union([z.object({ id: z.number().int(), login: z.string() }), z.string()]).nullish(),
   flag: z.object({ name: z.string(), positive: z.boolean() }).nullish(),
 });
@@ -75,7 +77,7 @@ export class RequestPacer {
 export class FortyTwoClient {
   private token?: { value: string; expiresAt: number };
   private tokenPromise?: Promise<string>;
-  constructor(private pace = new RequestPacer(), private fetcher: typeof fetch = fetch) {}
+  constructor(private pace: { acquire(): Promise<void> } = new RequestPacer(), private fetcher: typeof fetch = fetch) {}
   private async appToken() {
     if (this.token && this.token.expiresAt > Date.now() + 60_000) return this.token.value;
     if (this.tokenPromise) return this.tokenPromise;
@@ -139,9 +141,9 @@ export class FortyTwoClient {
     const bytes = new Uint8Array(await response.arrayBuffer());
     return bytes.length > 0 && bytes.length <= MAX_PHOTO_BYTES ? bytes : null;
   }
-  async waitingForCorrection(campusId: number, from: string, to: string): Promise<ApiProjectUser[]> {
+  async waitingForCorrection(campusId: number): Promise<ApiProjectUser[]> {
     const path = 'projects_users';
-    const base = { 'filter[campus]': String(campusId), 'filter[status]': 'waiting_for_correction', [`range[updated_at]`]: `${from},${to}`, sort: 'id', 'page[size]': String(PAGE_SIZE) };
+    const base = { 'filter[campus]': String(campusId), 'filter[status]': 'waiting_for_correction', sort: 'id', 'page[size]': String(PAGE_SIZE) };
     const first = await this.request(path, z.array(projectUserSchema), { ...base, 'page[number]': '1' });
     if (first.total === null) throw new IncompletePopulationError('Pending corrections omitted their total count');
     const pages = Math.ceil(first.total / PAGE_SIZE);
@@ -287,4 +289,10 @@ export class FortyTwoClient {
 const globalForApi = globalThis as unknown as { fortyTwoPacer?: RequestPacer };
 const pacer = globalForApi.fortyTwoPacer ?? new RequestPacer();
 if (process.env.NODE_ENV !== 'production') globalForApi.fortyTwoPacer = pacer;
-export const fortyTwoApi = new FortyTwoClient(pacer);
+const sharedBudget = new SharedBudget();
+const coordinatedPacer = { async acquire() {
+  await pacer.acquire();
+  try { await sharedBudget.acquire(); }
+  catch { throw new RateBudgetError(); }
+} };
+export const fortyTwoApi = new FortyTwoClient(coordinatedPacer);
