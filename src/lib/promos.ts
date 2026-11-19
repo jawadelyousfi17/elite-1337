@@ -8,6 +8,7 @@ type PromoTarget = { href: string | null; campus: number };
  * Landing promos and the one campus each is open to. Links live here, on the server, so they never reach the page.
  */
 export const PROMO_TARGETS: Record<string, PromoTarget> = {
+  wedesign: { href: 'https://tally.so/r/6Dj64o', campus: CAMPUS.khouribga },
   robotics: { href: 'https://discord.gg/n4B2PrXmX', campus: CAMPUS.khouribga },
 };
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { Dialog } from 'radix-ui';
-import { Calendar, Check, Discord, MapPin, Users, X } from '@/components/icons';
+import { Calendar, Check, Discord, MapPin, Palette, Pencil, Users, X } from '@/components/icons';
 import { track } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 import type { PromoAccess } from '@/app/api/promos/route';
@@ -25,17 +25,27 @@ export type Promo = {
   /** Shown when the promo has no outside link and the student is let through. */
   allowed?: string;
   logo: string;
+  /** False keeps the promo in the navbar announcements only, off the landing top bar. */
+  landing?: boolean;
 };
 
 /** Open campus promos, shown on the landing page and in the navbar announcements. Remove an entry once its event is over. */
 export const PROMOS: Promo[] = [
+  {
+    id: 'wedesign', name: 'Wedesign Club', short: 'Join Wedesign', kicker: 'Club · Khouribga',
+    pitch: 'A club for students who love design: UI, branding and visuals. Fill in the short form to join.',
+    facts: [{ icon: <Palette size={15}/>, text: 'UI, branding and visuals' }, { icon: <Pencil size={15}/>, text: 'A short form to apply' }, { icon: <MapPin size={15}/>, text: '1337 Khouribga' }],
+    chip: 'Join', cta: 'Apply to join', ctaIcon: <Pencil size={16} weight="fill"/>, campus: 'Khouribga',
+    denied: 'The Wedesign Club is open to Khouribga students only, and your 42 profile shows another campus.',
+    logo: '/assets/events/wedesign-logo.webp',
+  },
   {
     id: 'robotics', name: '1337 Robotics Club', short: 'Robotics Club', kicker: 'Club · Khouribga',
     pitch: 'Workshops are coming this month. Only a few spots are available, so grab yours early.',
     facts: [{ icon: <Calendar size={15}/>, text: 'Workshops coming this month' }, { icon: <Users size={15}/>, text: 'Only a few spots available' }, { icon: <MapPin size={15}/>, text: '1337 Khouribga' }],
     chip: 'Join', cta: 'Join our Discord server', ctaIcon: <Discord size={16} weight="fill"/>, campus: 'Khouribga',
     denied: 'The 1337 Robotics Club is open to Khouribga students only, and your 42 profile shows another campus.',
-    logo: '/assets/events/robotics-logo.webp',
+    logo: '/assets/events/robotics-logo.webp', landing: false,
   },
 ];
 
