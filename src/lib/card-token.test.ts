@@ -28,3 +28,10 @@ describe('rank card link', () => {
     expect(validCardToken(7, signed)).toBe(false);
   });
 });
+
+it('revokes one owner without changing other owners or the auth secret', () => {
+  const old = new URL(cardPath(42, 'first')!, 'http://x').searchParams.get('t')!;
+  const other = token(43);
+  expect(validCardToken(42, old, 'second')).toBe(false);
+  expect(validCardToken(43, other)).toBe(true);
+});

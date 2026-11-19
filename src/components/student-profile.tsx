@@ -33,7 +33,7 @@ export async function CorrectorCard({ userId, login, self }: { userId: number; l
         </span>{rating.toFixed(1)}</span>}</dd></div>
       <div><dt>Ratings received</dt><dd>{fmt(rated)}</dd></div>
     </dl>
-    <p className="xp-note">{evaluations < FEW_EVALUATIONS ? `Only ${evaluations} ${evaluations === 1 ? 'evaluation' : 'evaluations'} so far${self ? '' : ` for ${login}`}, so these numbers can move a lot.` : `From the ${evaluations >= CORRECTOR_SAMPLE ? `last ${CORRECTOR_SAMPLE}` : fmt(evaluations)} evaluations.`}</p>
+    <p className="xp-note">Eligible evaluations within the latest {CORRECTOR_SAMPLE} records, not lifetime history. Peer Video and unidentified projects excluded. {evaluations < FEW_EVALUATIONS && `Only ${evaluations} eligible evaluations; this small sample can change quickly.`}</p>
   </section>;
 }
 

@@ -57,7 +57,7 @@ export default async function Leaderboard({ searchParams }: { searchParams: Prom
     </aside>
 
     <section className="pl-list" aria-label="Leaderboard">
-      <div className="pl-list-head"><p className="pl-count"><strong>{total.toLocaleString()}</strong> {blackholedMode ? 'blackholed' : alumniMode ? 'alumni' : total === 1 ? 'student' : 'students'}{filters.q && <> matching “{filters.q}”</>}<span className="pl-updated"> · updated {timeAgo(dataset.fetchedAt)}</span></p>
+      <div className="pl-list-head"><p className="pl-count"><strong>{total.toLocaleString()}</strong> {blackholedMode ? 'blackholed' : alumniMode ? 'alumni' : total === 1 ? 'student' : 'students'}{filters.q && <> matching “{filters.q}”</>}<span className="pl-updated"> · updated {timeAgo(dataset.fetchedAt)}{Date.now() - Date.parse(dataset.fetchedAt) > 1_800_000 && " · previous complete snapshot; refresh pending"}</span></p>
         <Link href={href({ ...filters, order: filters.order === 'desc' ? undefined : 'desc', page: 1 })} className={cn('pl-reverse', filters.order === 'desc' && 'is-on')} aria-pressed={filters.order === 'desc'} title={filters.order === 'desc' ? 'Show from the first rank' : 'Show from the last rank'}><Reverse size={15}/>Reverse</Link></div>
       {!rows.length ? empty : <InfiniteRanks key={query} initial={rows} query={query} pages={pages}/>}
     </section>

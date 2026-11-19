@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { useEffect, useTransition, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { Campus, Check, Cohort, Corrections, RefreshCw, Users, X } from '@/components/icons';
 import { CorrectionRows, type CorrectionRowData } from '@/components/correction-rows';
 
@@ -13,12 +14,20 @@ export type CorrectionScope = { campus: string; days: number; periods: { days: n
  * The count line and the list. `problem` replaces the list when the data could not load; `empty` is shown when there is nothing to list.
  */
 export function CorrectionsResults({ rows, mode, scope, problem, empty }: { rows: CorrectionRowData[]; mode: Mode; scope: CorrectionScope; problem: ReactNode; empty: ReactNode }) {
+  const router = useRouter();
+  const [refreshing, startTransition] = useTransition();
+  useEffect(() => {
+    if (mode !== 'waiting') return;
+    const timer = setInterval(() => { if (document.visibilityState === 'visible' && !refreshing) startTransition(() => router.refresh()); }, 300_000);
+    return () => clearInterval(timer);
+  }, [mode, refreshing, router]);
   const shown = rows;
   const Icon = mode === 'locked' ? Users : mode === 'validated' ? Check : mode === 'failed' ? X : Corrections;
   const unit = mode === 'locked' ? (shown.length === 1 ? 'team' : 'teams') : shown.length === 1 ? 'project' : 'projects';
   return <>
+    {mode === 'waiting' && <div className="pc-head"><h2>Who submitted a project?</h2><p>Students and teams currently waiting for correction. Ordered by last project update, not exact submission time.</p><button className="pl-chip" disabled={refreshing} onClick={() => startTransition(() => router.refresh())}><RefreshCw size={15}/>{refreshing ? 'Refreshing…' : 'Refresh'}</button></div>}
     <div className="pc-summary">
-      <span className="is-count"><Icon size={16}/><strong>{shown.length.toLocaleString('en-US')}</strong> {unit}{mode === 'validated' && ' validated'}{mode === 'failed' && ' failed'}{mode === 'locked' && ' locked'}</span>
+      <span className="is-count"><Icon size={16}/><strong>{shown.length.toLocaleString('en-US')}</strong> {unit}{mode === 'waiting' && ' waiting for correction'}{mode === 'validated' && ' validated'}{mode === 'failed' && ' failed'}{mode === 'locked' && ' locked'}</span>
       <span className="is-campus"><Campus size={16}/>{scope.campus}</span>
       {scope.periods.length > 0 && <nav data-keep-scroll className="st-period pc-period" aria-label="Period">{scope.periods.map((period) => <Link key={period.days} href={period.href} scroll={false} aria-current={period.days === scope.days ? 'true' : undefined} title={`Last ${period.days} days`}>{period.days}d</Link>)}</nav>}
       {scope.cohort && <span className="is-extra"><Cohort size={16}/>Promo {scope.cohort}</span>}

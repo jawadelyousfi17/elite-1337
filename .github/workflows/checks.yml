@@ -1,0 +1,37 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ['.', 'github-card']
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - if: matrix.app == '.'
+        run: npx playwright install --with-deps chromium
+      - if: matrix.app == '.'
+        run: npm run test:e2e
+        env:
+          CI: 'true'
+      - if: always() && matrix.app == '.'
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-preview
+          path: test-results/
+          retention-days: 7

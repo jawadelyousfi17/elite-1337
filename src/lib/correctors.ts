@@ -1,3 +1,4 @@
+import { eligibleEvaluation } from './evaluation-rules';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { singleFlight } from './single-flight';
@@ -15,15 +16,19 @@ export type CorrectorStat = { correctorId: number; login: string; campusId: numb
 
 /** Filled evaluations by people (not automated correctors) that carry a verdict. */
 export function pickEvaluations(rows: ApiScaleTeam[], campusId: number): Evaluation[] {
-  return rows.flatMap((row) => row.filled_at && row.flag && row.corrector && typeof row.corrector === 'object'
-    ? [{ id: row.id, campusId, correctorId: row.corrector.id, corrector: row.corrector.login, at: row.filled_at, returned: !row.flag.positive }]
-    : []);
+  const seen = new Set<number>();
+  return rows.flatMap((row) => {
+    if (!eligibleEvaluation(row) || seen.has(row.id) || !row.corrector || typeof row.corrector !== 'object' || !row.flag || !row.filled_at) return [];
+    seen.add(row.id);
+    return [{ id: row.id, campusId, correctorId: row.corrector.id, corrector: row.corrector.login, at: row.filled_at, returned: !row.flag.positive }];
+  });
 }
 
 /** Correctors ranked by the share of their evaluations that returned the project; ties by more returns, then login. */
-export function strictCorrectors(evaluations: Evaluation[], { days = 30, min = minEvaluations(days), campusId, limit = 10, now = Date.now() }: { days?: number; min?: number; campusId?: number; limit?: number; now?: number } = {}): CorrectorStat[] {
+export function strictCorrectors(evaluations: Evaluation[], { days = 30, min = minEvaluations(days), campusId, limit = 10, hidden = new Set<string>(), now = Date.now() }: { days?: number; min?: number; campusId?: number; limit?: number; hidden?: ReadonlySet<string>; now?: number } = {}): CorrectorStat[] {
   const byCorrector = new Map<number, CorrectorStat & { campuses: Map<number, number> }>();
   for (const evaluation of evaluations) {
+    if (hidden.has(evaluation.corrector.toLowerCase())) continue;
     const age = now - Date.parse(evaluation.at);
     if (age < 0 || age > days * DAY || (campusId && evaluation.campusId !== campusId)) continue;
     const stat = byCorrector.get(evaluation.correctorId) ?? { correctorId: evaluation.correctorId, login: evaluation.corrector, campusId: evaluation.campusId, evaluations: 0, returned: 0, rate: 0, campuses: new Map() };
@@ -50,14 +55,16 @@ const loadSlice = singleFlight(function loadSlice(campusId: number, slice: numbe
   return unstable_cache(async () => {
     const from = new Date(slice * SLICE_DAYS * DAY), to = new Date(current ? Date.now() : (slice + 1) * SLICE_DAYS * DAY);
     return pickEvaluations(await fortyTwoApi.scaleTeams(campusId, from.toISOString(), to.toISOString(), cursusId()), campusId);
-  }, ['1337-evaluations-v2', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 86_400 : 30 * 86_400 })();
+  }, ['1337-evaluations-v3', String(campusId), String(slice), ...(current ? ['open'] : [])], { revalidate: current ? 86_400 : 30 * 86_400 })();
 });
 
-export const loadEvaluations = cache(async (): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {
-  const now = Date.now(), last = sliceOf(now), first = sliceOf(now - Math.max(...CORRECTOR_WINDOWS) * DAY);
+export const loadEvaluations = cache(async (days: CorrectorWindow = 30, campusId?: number): Promise<{ status: 'ready'; evaluations: Evaluation[] } | { status: 'incomplete' | 'rate-limited' | 'unavailable' }> => {
+  if (!CORRECTOR_WINDOWS.includes(days) || (campusId !== undefined && !campusIds().includes(campusId))) return { status: 'unavailable' };
+  const campuses = campusId === undefined ? campusIds() : [campusId];
+  const now = Date.now(), last = sliceOf(now), first = sliceOf(now - days * DAY);
   const slices = Array.from({ length: last - first + 1 }, (_, index) => first + index);
   try {
-    const parts = await Promise.all(campusIds().flatMap((campusId) => slices.map((slice) => loadSlice(campusId, slice, slice === last))));
+    const parts = await Promise.all(campuses.flatMap((campusId) => slices.map((slice) => loadSlice(campusId, slice, slice === last))));
     const seen = new Set<number>();
     return { status: 'ready', evaluations: parts.flat().filter((evaluation) => !seen.has(evaluation.id) && seen.add(evaluation.id)) };
   } catch (error) {

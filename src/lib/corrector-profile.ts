@@ -1,3 +1,4 @@
+import { eligibleEvaluation } from './evaluation-rules';
 import { unstable_cache } from 'next/cache';
 import { z } from 'zod';
 import { singleFlight } from './single-flight';
@@ -27,8 +28,8 @@ export function summarizeCorrections(rows: Pick<Row, 'filled_at' | 'flag' | 'fee
 /** One request per student, shared by everyone who opens their page, refreshed every 6 hours. */
 const cached = singleFlight(unstable_cache(async (userId: number) => {
   const { data } = await fortyTwoApi.request(`users/${userId}/scale_teams/as_corrector`, z.array(rowSchema), { sort: '-filled_at', 'page[size]': String(CORRECTOR_SAMPLE) });
-  return summarizeCorrections(data);
-}, ['1337-corrector-profile-v1'], { revalidate: 21_600 }));
+  return summarizeCorrections(data.filter(eligibleEvaluation));
+}, ['1337-corrector-profile-v2'], { revalidate: 21_600 }));
 
 /** The student's corrector summary, or why it is missing; never throws, so the page renders without it. */
 export async function loadCorrectorProfile(userId: number): Promise<{ status: 'ready'; profile: CorrectorProfile } | { status: 'rate-limited' | 'unavailable' }> {

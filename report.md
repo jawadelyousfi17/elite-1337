@@ -1,4 +1,6 @@
-# Elite 1337 — project report
+# Elite 1337 — historical project report
+
+> Historical snapshot, not current deployment instructions. See [implementation status](docs/implementation-status.md) and README for the reviewed fork changes.
 
 Rankings and Common Core stats for 1337 students, built on the 42 Intra API.
 
