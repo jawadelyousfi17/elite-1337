@@ -2396,3 +2396,61 @@ html:not([data-tw-light]):not(:has(.landing)) .pp-summary>div.is-not-accepted{ba
 .gh-empty{display:grid;place-items:center;aspect-ratio:985/530;background:#202020;color:#9a9a9a;font-size:14px;text-align:center;padding:16px}
 @media(max-width:900px){.cd .gh-fields{order:6}}
 @media(max-width:700px){.gh-fields{grid-template-columns:1fr}}
+
+/* Wedesign form admin (ap-): imported applicants with status, roles and notes kept in localStorage */
+.ap-empty{display:flex;flex-direction:column;align-items:center;gap:18px;padding:40px 16px}
+.ap-empty .kiwi-note h2,.ap-none .kiwi-note h2{font-size:19px;font-weight:500}
+.ap-none{padding:40px 16px}
+.ap-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ap-search{position:relative;flex:1;min-width:0}
+.ap-search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#8a8a8a}
+.ap-search input{width:100%;height:44px;padding:0 16px 0 42px;border:0;border-radius:999px;background:#202020;color:var(--text);font:inherit;font-size:14px}
+.ap-search input:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.ap-import{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 16px;border:0;border-radius:999px;background:#202020;color:#d9d9d9;font:inherit;font-size:14px;font-weight:500;white-space:nowrap;cursor:pointer;transition:background .18s,color .18s}
+.ap-import:hover{background:#2b2b2b;color:#fff}
+.ap-import.is-main{background:var(--mint);color:#060606}
+.ap-import.is-quiet{background:transparent;color:#9a9a9a}
+.ap-import.is-quiet:hover{background:#202020;color:#ff9fa3}
+.ap-import:focus-visible,.ap-card button:focus-visible,.ap-card a:focus-visible,.ap-role-add input:focus-visible,.ap-role-add button:focus-visible,.ap-role-tag button:focus-visible,.ap-note:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.ap-roles{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:18px}
+.ap-roles-label{padding-right:4px;color:#9a9a9a;font-size:13px}
+.ap-role-tag{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 6px 0 13px;border-radius:999px;background:#202020;color:#d9d9d9;font-size:13px}
+.ap-role-tag button{display:grid;place-items:center;width:20px;height:20px;padding:0;border:0;border-radius:50%;background:#2b2b2b;color:#8a8a8a;cursor:pointer}
+.ap-role-tag button:hover{color:#ff9fa3}
+.ap-role-add{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 4px 0 12px;border-radius:999px;background:#141414}
+.ap-role-add input{width:92px;border:0;background:transparent;color:var(--text);font:inherit;font-size:13px}
+.ap-role-add input:focus{outline:none}
+.ap-role-add button{display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;border-radius:50%;background:var(--mint);color:#060606;cursor:pointer}
+.ap-role-add button:disabled{background:#2b2b2b;color:#666;cursor:default}
+.ap-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.ap-card{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:22px;background:#202020;box-shadow:inset 3px 0 0 transparent}
+.ap-card.is-interviewing{box-shadow:inset 3px 0 0 #fff0b5}
+.ap-card.is-done{box-shadow:inset 3px 0 0 var(--mint)}
+.ap-card.is-rejected{box-shadow:inset 3px 0 0 #ff8a8f}
+.ap-card.is-rejected .ap-head{opacity:.6}
+.ap-head{display:flex;align-items:center;gap:12px;min-width:0}
+.ap-who{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.ap-who strong{overflow:hidden;font-size:15px;font-weight:500;text-overflow:ellipsis;white-space:nowrap}
+.ap-who a{display:inline-flex;align-items:center;gap:3px;width:fit-content;color:#9a9a9a;font-size:13px;text-decoration:none}
+.ap-who a:hover{color:var(--text)}
+.ap-wa{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#141414;color:#8fe3a4;transition:background .18s}
+.ap-wa:hover{background:#2b2b2b}
+.ap-facts{display:flex;flex-wrap:wrap;gap:6px}
+.ap-facts span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#141414;color:#9a9a9a;font-size:12px;font-variant-numeric:tabular-nums}
+.ap-facts .is-red{color:#ff9fa3}
+.ap-interests{display:flex;flex-wrap:wrap;gap:5px}
+.ap-interests span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--pastel-1);color:#0a0a0a;font-size:12px;font-weight:500}
+.ap-status{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:3px;border-radius:999px;background:#141414}
+.ap-status button{height:32px;padding:0 6px;border:0;border-radius:999px;background:transparent;color:#9a9a9a;font:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:background .18s,color .18s}
+.ap-status button:hover{color:#fff}
+.ap-status button.is-on{background:#2b2b2b;color:#fff}
+.ap-status button.is-interviewing.is-on{background:#fff0b5;color:#0a0a0a}
+.ap-status button.is-done.is-on{background:var(--mint);color:#0a0a0a}
+.ap-status button.is-rejected.is-on{background:#ff8a8f;color:#0a0a0a}
+.ap-role-pick{display:flex;flex-wrap:wrap;gap:5px}
+.ap-role-pick button{height:30px;padding:0 12px;border:0;border-radius:999px;background:#141414;color:#9a9a9a;font:inherit;font-size:12px;cursor:pointer;transition:background .18s,color .18s}
+.ap-role-pick button:hover{background:#2b2b2b;color:#fff}
+.ap-role-pick button.is-on{background:#d9f7fa;color:#0a0a0a;font-weight:500}
+.ap-note{width:100%;min-height:38px;padding:9px 13px;border:0;border-radius:14px;background:#141414;color:var(--text);font:inherit;font-size:13px;line-height:20px;resize:vertical;field-sizing:content}
+@media(max-width:700px){.ap-bar{flex-wrap:wrap}.ap-search{flex-basis:100%}.ap-list{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ap-import,.ap-status button,.ap-role-pick button,.ap-wa{transition:none}}

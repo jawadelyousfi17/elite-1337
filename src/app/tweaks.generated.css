@@ -507,6 +507,33 @@ html[data-tw-surface]:not(:has(.landing)) .pp-admission.is-accepted{background:#
 html[data-tw-surface]:not(:has(.landing)) .pp-admission.is-not-accepted{background:#ff8a8f!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-field input{background:var(--tw-raise)!important}
 html[data-tw-surface]:not(:has(.landing)) .gh-empty{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-search input{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-import{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-import:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-import.is-main{background:var(--mint)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-import.is-quiet{background:transparent!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-import.is-quiet:hover{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-tag{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-tag button{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-add{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-add input{background:transparent!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-add button{background:var(--mint)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-add button:disabled{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-card{background:var(--tw-raise)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-wa{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-wa:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-facts span{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-interests span{background:var(--pastel-1)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status button{background:transparent!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status button.is-on{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status button.is-interviewing.is-on{background:#fff0b5!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status button.is-done.is-on{background:var(--mint)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-status button.is-rejected.is-on{background:#ff8a8f!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-pick button{background:var(--tw-card)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-pick button:hover{background:var(--tw-hover)!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-role-pick button.is-on{background:#d9f7fa!important}
+html[data-tw-surface]:not(:has(.landing)) .ap-note{background:var(--tw-card)!important}
 html[data-tw-accent] .pl-dot-mint{background:var(--tw-accent)!important}
 html[data-tw-accent] .pl-dot-mint-sm{background:var(--tw-accent)!important}
 html[data-tw-accent] .st-card h2 svg{color:var(--tw-accent)!important}
@@ -890,6 +917,20 @@ html[data-tw-radius] .pp-summary dt i{border-radius:50%!important}
 html[data-tw-radius] .pp-admission{border-radius:50%!important}
 @media (max-width:480px){html[data-tw-radius] .pp-summary>div{border-radius:calc(18px * var(--tw-r))!important}}
 html[data-tw-radius] .gh-field input{border-radius:calc(14px * var(--tw-r))!important}
+html[data-tw-radius] .ap-search input{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-import{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-role-tag{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-role-tag button{border-radius:50%!important}
+html[data-tw-radius] .ap-role-add{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-role-add button{border-radius:50%!important}
+html[data-tw-radius] .ap-card{border-radius:calc(22px * var(--tw-r))!important}
+html[data-tw-radius] .ap-wa{border-radius:50%!important}
+html[data-tw-radius] .ap-facts span{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-interests span{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-status{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-status button{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-role-pick button{border-radius:var(--tw-pill,999px)!important}
+html[data-tw-radius] .ap-note{border-radius:calc(14px * var(--tw-r))!important}
 html[data-tw-radius] :is([data-slot=button],[data-slot=badge]).rounded-full{border-radius:var(--tw-pill,999px)!important}
 html[data-tw-light]:not(:has(.landing)){color-scheme:light;--text:#141414;--foreground:#141414;--muted:#6a6a6a;--muted-foreground:#6a6a6a;--popover-foreground:#141414}
 html[data-tw-light]:not(:has(.landing)) body{color:#141414}
@@ -1437,6 +1478,29 @@ html[data-tw-light]:not(:has(.landing)) .pp-summary dd{color:#141414!important}
 html[data-tw-light]:not(:has(.landing)) .gh-field span{color:#5f5f5f!important}
 html[data-tw-light]:not(:has(.landing)) .gh-field input{background:#ecece9!important}
 html[data-tw-light]:not(:has(.landing)) .gh-empty{background:#ecece9!important;color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-search svg{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-search input{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .ap-import{background:#ecece9!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-import:hover{background:#e2e2df!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-import.is-quiet{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-import.is-quiet:hover{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .ap-roles-label{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-tag{background:#ecece9!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-tag button{background:#e2e2df!important;color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-add{background:#ffffff!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-add button:disabled{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .ap-card{background:#ecece9!important}
+html[data-tw-light]:not(:has(.landing)) .ap-who a{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-wa{background:#ffffff!important}
+html[data-tw-light]:not(:has(.landing)) .ap-wa:hover{background:#e2e2df!important}
+html[data-tw-light]:not(:has(.landing)) .ap-facts span{background:#ffffff!important;color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-status{background:#ffffff!important}
+html[data-tw-light]:not(:has(.landing)) .ap-status button{color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-status button:hover{color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-status button.is-on{background:#e2e2df!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-pick button{background:#ffffff!important;color:#5f5f5f!important}
+html[data-tw-light]:not(:has(.landing)) .ap-role-pick button:hover{background:#e2e2df!important;color:#141414!important}
+html[data-tw-light]:not(:has(.landing)) .ap-note{background:#ffffff!important}
 html:not([data-tw-light]):not(:has(.landing)){--primary:#a7d8b1!important;--ring:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .cluster-intra-totals button strong{background:#d9767b12!important}
 html:not([data-tw-light]):not(:has(.landing)) .cluster-live button b{background:#a7d8b11a!important}
@@ -1618,6 +1682,11 @@ html:not([data-tw-light]):not(:has(.landing)) .pp-summary>div.is-total{backgroun
 html:not([data-tw-light]):not(:has(.landing)) .pp-summary>div.is-accepted{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pp-admission.is-accepted{background:#a7d8b1!important}
 html:not([data-tw-light]):not(:has(.landing)) .pp-admission.is-not-accepted{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .ap-card.is-interviewing{box-shadow:inset 3px 0 0 #dccd92!important}
+html:not([data-tw-light]):not(:has(.landing)) .ap-card.is-rejected{box-shadow:inset 3px 0 0 #d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .ap-status button.is-interviewing.is-on{background:#dccd92!important}
+html:not([data-tw-light]):not(:has(.landing)) .ap-status button.is-rejected.is-on{background:#d9767b!important}
+html:not([data-tw-light]):not(:has(.landing)) .ap-role-pick button.is-on{background:#a9d1d6!important}
 /* Pale red reads poorly on white; use a deeper red for return figures. */
 html[data-tw-light]:not(:has(.landing)) :is(.st-returns-lead strong,.st-correctors-score strong,.st-rbars-avg em){color:#c92a3a!important}
 html[data-tw-light]:not(:has(.landing)) .st-correctors-list li+li{border-top-color:#0000000f!important}
