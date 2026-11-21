@@ -55,8 +55,17 @@ export function applicantsFromCsv(text: string): Applicant[] {
   return [...byLogin.values()].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
 }
 
-/** A wa.me link for a phone number, or null when it does not look like one. */
-export function whatsappLink(phone: string) {
+/** The meeting invite sent from the WhatsApp button, greeting the student by first name. */
+export function inviteMessage(firstName: string) {
+  return `Salam ${firstName},\nYou filled in the form to join the Wedesign Club - 1337. Good news: we're having a meeting tomorrow at 4 PM at E3 Events. Please make sure to come on time.\n\nJust confirm with me if you'll come, otherwise we can reschedule.`;
+}
+
+/** First name from the 42 display name, or the login when the student is not in the rankings. */
+export const firstName = (name: string | null | undefined, login: string) => name?.trim().split(/\s+/)[0] || login;
+
+/** A wa.me link for a phone number with an optional prefilled message, or null when it does not look like a number. */
+export function whatsappLink(phone: string, text?: string) {
   const digits = phone.replace(/[^\d]/g, '');
-  return digits.length >= 8 && digits.length <= 15 ? `https://wa.me/${digits}` : null;
+  if (digits.length < 8 || digits.length > 15) return null;
+  return `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 }

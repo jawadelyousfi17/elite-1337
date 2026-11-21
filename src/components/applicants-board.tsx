@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { Avatar } from '@/components/avatar';
 import { KiwiNote } from '@/components/kiwi-guide';
 import { ArrowUpRight, Plus, Search, Trash, Upload, WhatsApp, X } from '@/components/icons';
-import { DEFAULT_ROLES, STATUSES, applicantsFromCsv, whatsappLink, type Applicant, type ApplicantStatus } from '@/lib/applicants';
+import { DEFAULT_ROLES, STATUSES, applicantsFromCsv, firstName, inviteMessage, whatsappLink, type Applicant, type ApplicantStatus } from '@/lib/applicants';
 import { lookupApplicants, type ApplicantProfile } from '@/app/(app)/admin/form/actions';
 import { cn } from '@/lib/utils';
 
@@ -115,7 +115,7 @@ export function ApplicantsBoard() {
       </form>
     </div>
     {!shown.length ? <div className="ap-none"><KiwiNote><h2>Nobody here</h2><p>No applicant matches this filter.</p></KiwiNote></div> : <ul className="ap-list">{shown.map((item) => {
-      const mark = markOf(item.login), profile = profiles[item.login], wa = whatsappLink(item.whatsapp);
+      const mark = markOf(item.login), profile = profiles[item.login], wa = whatsappLink(item.whatsapp, inviteMessage(firstName(profile?.name, item.login)));
       return <li key={item.login} className={cn('ap-card', `is-${mark.status}`)}>
         <div className="ap-head">
           <Avatar login={item.login} name={profile?.name} src={profile?.photo} size={48}/>
@@ -123,7 +123,7 @@ export function ApplicantsBoard() {
             <strong>{profile?.name ?? item.login}</strong>
             <a href={`https://profile.intra.42.fr/users/${item.login}`} target="_blank" rel="noopener noreferrer">{item.login}<ArrowUpRight size={12}/></a>
           </div>
-          {wa && <a className="ap-wa" href={wa} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${item.login}`} title={item.whatsapp}><WhatsApp size={16}/></a>}
+          {wa && <a className="ap-wa" href={wa} target="_blank" rel="noopener noreferrer" aria-label={`Send the meeting invite to ${item.login} on WhatsApp`} title={`Send the meeting invite (${item.whatsapp})`}><WhatsApp size={16}/></a>}
         </div>
         <div className="ap-facts">
           {item.promo && <span>Promo {item.promo}</span>}
